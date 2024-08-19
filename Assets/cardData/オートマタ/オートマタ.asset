@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7536886c40d6f4e9a0eb068680469d, type: 3}
+  m_Name: "\u30AA\u30FC\u30C8\u30DE\u30BF"
+  m_EditorClassIdentifier: 
+  attackClip: {fileID: 7400000, guid: a68b82faac6ecde44aaa33e454986d5a, type: 2}
+  Id: 1
+  attack: 100
+  hp: 100
+  cost: 100
+  cardType: 1
+  cardName: "\u30AA\u30FC\u30C8\u30DE\u30BF"
+  longText: "\u653B\u6483\u6642\u3001\u88DC\u52A9\u30AB\u30FC\u30C9\u3060\u3063\u305F\u5834\u5408\u3001\u653B\u6483\u529B\u309250\u4E0A\u3052\u308B"
+  cardSprite: {fileID: 21300000, guid: 37029d64b06d5ff4f8805a73338a98ed, type: 3}
+  effectInfs:
+  - {fileID: 11400000, guid: c03adea5b5e6a5542a25d03d984ceed1, type: 2}
+  - {fileID: 11400000, guid: 37757a298d382e144b2b5194b256fccf, type: 2}

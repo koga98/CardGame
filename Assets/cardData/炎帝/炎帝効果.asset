@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e9c0f38ec0269d47867f7275fd1f4b3, type: 3}
+  m_Name: "\u708E\u5E1D\u52B9\u679C"
+  m_EditorClassIdentifier: 
+  animationClip: {fileID: 7400000, guid: 4854b95902d4ba04d8d8dd97962ec07f, type: 2}
+  audioClip: {fileID: 8300000, guid: 966fb3d6ab5d71b4ab4d2161cfacf000, type: 3}
+  triggers: 00000000
+  damageAmount: 200
+  conditionOnEffects: []
+  additionalEffects: []
+  conditionOnAdditionalEffects: []

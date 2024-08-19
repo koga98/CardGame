@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3133fa1342a348b4d9ddbb31f63cc5d4, type: 3}
+  m_Name: "\u5F71\u306B\u6F5C\u3080\u3082\u306E\u52B9\u679C3"
+  m_EditorClassIdentifier: 
+  animationClip: {fileID: 7400000, guid: 5b9ac1da253159945a93fa14b13e66fe, type: 2}
+  triggers: 04000000
+  conditionOnEffects:
+  - {fileID: 11400000, guid: 66bd01d0b74050748a43b86d7c43f39c, type: 2}
+  additionalEffects: []
+  conditionOnAdditionalEffects: []
+  IsConditionClear: 0

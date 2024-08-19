@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c022eecfd1639d4bba78104bd4d2e9c, type: 3}
+  m_Name: "\u5B64\u9AD8\u306E\u5263\u58EB\u30C4\u30A7\u30EB\u30CA \u52B9\u679C"
+  m_EditorClassIdentifier: 
+  animationClip: {fileID: 7400000, guid: 3e6c2a315aa6ee640a490ae45c702d64, type: 2}
+  audioClip: {fileID: 8300000, guid: 689eebda074283b4b8c4fac5eaadf8be, type: 3}
+  triggers: 02000000
+  destroyAmount: 2
+  targetType: 0
+  conditionOnEffects: []
+  additionalEffects:
+  - {fileID: 11400000, guid: 8fbf25eca4cf0e64999b199faf4a0e0e, type: 2}
+  - {fileID: 11400000, guid: 5b44036be2458c3438de4fa4ee028ea6, type: 2}
+  conditionOnAdditionalEffects:
+  - {fileID: 11400000, guid: e5dc8c5837c18b7448cd1a099f488815, type: 2}
+  ApplyToMyself: 0
