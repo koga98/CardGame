@@ -20,6 +20,6 @@ MonoBehaviour:
   cardType: 1
   cardName: "\u6226\u5834\u306E\u4E59\u5973\u30DF\u30FC\u30CA"
   longText: "\u5834\u306B\u51FA\u305F\u3068\u304D\u3001\u76F8\u624B\u306E\u5834\u306B\u3044\u308B\u30AB\u30FC\u30C9\u3059\u3079\u3066\u306B100\u306E\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
-  cardSprite: {fileID: 21300000, guid: acf24f91ea86d2140b7efa39f2011f06, type: 3}
+  cardSprite: {fileID: 21300000, guid: 0bd7ad21860335e48b523d3fb2bff396, type: 3}
   effectInfs:
   - {fileID: 11400000, guid: 194e6b56c96f4eb46aacd92457188be6, type: 2}

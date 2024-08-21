@@ -22,15 +22,15 @@ public class GameManager : MonoBehaviour
     public GameObject enemyLeaderPrefab;
     public AllCardInf allCardInf;
     public static List<int> myDeckInf = new List<int>();
-    public static List<int> enemyDeckInf = new List<int>();
+    public List<int> enemyDeckInf = new List<int>();
     public List<CardInf> enemyDeck;
     [SerializeField] private LeaderInf myLeaderInf;
     [SerializeField] private LeaderInf enemyLeaderInf;
     public GameObject panel;
     public GameObject canvas;
     [SerializeField] EnemyAI enemyAI;
-    public int i = 0;
-    public int k = 0;
+    public int myDeckIndex = 0;
+    public int enemyDeckIndex = 0;
     public bool finishEnemyTurn;
     public static bool P1canDraw;
     public static bool P2canDraw;
@@ -173,21 +173,20 @@ public class GameManager : MonoBehaviour
         Shuffle(myDeckInf);
         Shuffle(enemyDeckInf);
 
-        for (i = 0; i < 5; i++)
+        for (myDeckIndex = 0; myDeckIndex < 5; myDeckIndex++)
         {
             Transform hand = canvas.transform.Find("myHand");
             GameObject card = Instantiate(cardPrefab, hand, false);
-            card.GetComponent<Card>().P1SetUp(allCardInf.allList[myDeckInf[i]]);
-            Debug.Log(myDeckInf[i]);
+            card.GetComponent<Card>().P1SetUp(allCardInf.allList[myDeckInf[myDeckIndex]]);
             PHands.Add(card.GetComponent<Card>());
             card.transform.localScale = Vector3.one;
         }
 
-        for (k = 0; k < 5; k++)
+        for (enemyDeckIndex = 0; enemyDeckIndex < 5; enemyDeckIndex++)
         {
             Transform hand = canvas.transform.Find("enemyHand ");
             GameObject card = Instantiate(enemyCardPrefab, hand, false);
-            card.GetComponent<Card>().P2SetUp(allCardInf.allList[enemyDeckInf[k]]);
+            card.GetComponent<Card>().P2SetUp(allCardInf.allList[enemyDeckInf[enemyDeckIndex]]);
             card.transform.localScale = Vector3.one;
         }
 
@@ -274,10 +273,10 @@ public class GameManager : MonoBehaviour
             Transform hand = canvas.transform.Find("myHand");
             GameObject card = Instantiate(cardPrefab);
             card.transform.SetParent(hand);
-            card.GetComponent<Card>().P1SetUp(allCardInf.allList[myDeckInf[i]]);
+            card.GetComponent<Card>().P1SetUp(allCardInf.allList[myDeckInf[myDeckIndex]]);
             card.transform.localScale = Vector3.one;
             PHands.Add(card.GetComponent<Card>());
-            i++;
+            myDeckIndex++;
         }
 
     }
@@ -416,7 +415,7 @@ public class GameManager : MonoBehaviour
         await TriggerEffectsAsync(EnemyAI.EAllFields.ToList(), EffectInf.CardTrigger.OnTurnStart);
 
         // Enemy AI actions
-        enemyAI.drawCard(k, allCardInf.allList[enemyDeckInf[k]], canvas, enemyCardPrefab, this);
+        enemyAI.drawCard(enemyDeckIndex, allCardInf.allList[enemyDeckInf[enemyDeckIndex]], canvas, enemyCardPrefab, this);
         turnStatus = TurnStatus.OnEnemyOnPlay;
         await enemyAI.PlayCard(this.GetComponent<GameManager>());
         turnStatus = TurnStatus.OnEnemyAttack;

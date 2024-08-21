@@ -25,13 +25,13 @@ public class EffectMethod
 
     public async Task P2DrawCard(ApplyEffectEventArgs e, int drawAmount, DrawCard drawCard)
     {
-        GameObject manager = GameObject.Find("EnemyAI");
-        EnemyAI enemyAI = manager.GetComponent<EnemyAI>();
-        GameObject go = GameObject.Find("GameManager");
-        GameManager gom = go.GetComponent<GameManager>();
+        GameObject ai = GameObject.Find("EnemyAI");
+        EnemyAI enemyAI = ai.GetComponent<EnemyAI>();
+        GameObject manager = GameObject.Find("GameManager");
+        GameManager gameManager = manager.GetComponent<GameManager>();
         for (int i = 0; i < drawAmount; i++)
         {
-            enemyAI.drawCard(gom.k, gom.allCardInf.allList[GameManager.enemyDeckInf[gom.k]], gom.canvas, gom.cardPrefab, gom);
+            enemyAI.drawCard(gameManager.enemyDeckIndex, gameManager.allCardInf.allList[gameManager.enemyDeckInf[gameManager.enemyDeckIndex]], gameManager.canvas, gameManager.enemyCardPrefab, gameManager);
         }
         await drawCard.EffectOfEffect(e);
     }
@@ -269,6 +269,7 @@ public class EffectMethod
     public async Task P2CannnotDraw(ApplyEffectEventArgs e, CannnotDraw cannnotDraw)
     {
         GameManager.p2CannotDrawEffectList.Add(e.Card);
+        Debug.Log(GameManager.p2CannotDrawEffectList.Count);
         await cannnotDraw.EffectOfEffect(e);
     }
 
@@ -465,59 +466,22 @@ public class EffectMethod
     {
         for (int i = 0; i < destroyAmount; i++)
         {
-
-            if (targetType == TargetType.All)
+            
+            List<Card> cards = P1GetTargetCards(targetType);
+            Debug.Log(cards.Count);
+            int randomValue = UnityEngine.Random.Range(0, cards.Count);
+            if (cards.Count == 0 && randomValue == 0)
             {
-                int randomValue = UnityEngine.Random.Range(0, e.PCards.Count);
-                if (e.PCards == null)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.PCards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.PCards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.PCards[randomValue].DestoryThis();
-
-                }
+                return;
             }
-            else if (targetType == TargetType.Attack)
+            else
             {
-                int randomValue = UnityEngine.Random.Range(0, e.PAttackCards.Count);
-                if (e.PAttackCards == null)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.PAttackCards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.PAttackCards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.PAttackCards[randomValue].DestoryThis();
-                }
+                e.ChoiceCard = cards[randomValue];
+                await randomDestroyCard.EffectOfEffect(e);
+                cards[randomValue].gameObject.SetActive(false);
+                await Task.Delay(1);
+                await cards[randomValue].DestoryThis();
             }
-            else if (targetType == TargetType.Defence)
-            {
-                int randomValue = UnityEngine.Random.Range(0, e.PDefenceCards.Count);
-                Debug.Log(e.PDefenceCards.Count);
-                Debug.Log(randomValue);
-                if (e.PDefenceCards == null || e.PDefenceCards.Count == 0)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.PDefenceCards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.PDefenceCards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.PDefenceCards[randomValue].DestoryThis();
-                }
-            }
-
         }
     }
 
@@ -525,56 +489,21 @@ public class EffectMethod
     {
         for (int i = 0; i < destroyAmount; i++)
         {
-
-            if (targetType == TargetType.All)
+            List<Card> cards = P2GetTargetCards(targetType);
+            Debug.Log(cards.Count);
+            int randomValue = UnityEngine.Random.Range(0, cards.Count);
+            if (cards.Count == 0 && randomValue == 0)
             {
-                int randomValue = UnityEngine.Random.Range(0, e.Cards.Count);
-                if (e.Cards == null)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.Cards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.Cards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.Cards[randomValue].DestoryThis();
-                }
+                return;
             }
-            else if (targetType == TargetType.Attack)
+            else
             {
-                int randomValue = UnityEngine.Random.Range(0, e.EAttackCards.Count);
-                if (e.EAttackCards == null)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.EAttackCards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.EAttackCards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.EAttackCards[randomValue].DestoryThis();
-                }
+                e.ChoiceCard = cards[randomValue];
+                await randomDestroyCard.EffectOfEffect(e);
+                cards[randomValue].gameObject.SetActive(false);
+                await Task.Delay(1);
+                await cards[randomValue].DestoryThis();
             }
-            else if (targetType == TargetType.Defence)
-            {
-                int randomValue = UnityEngine.Random.Range(0, e.EDefenceCards.Count);
-                if (e.EDefenceCards == null)
-                {
-                    return;
-                }
-                else
-                {
-                    e.ChoiceCard = e.EDefenceCards[randomValue];
-                    await randomDestroyCard.EffectOfEffect(e);
-                    e.EDefenceCards[randomValue].gameObject.SetActive(false);
-                    await Task.Delay(1);
-                    await e.EDefenceCards[randomValue].DestoryThis();
-                }
-            }
-
         }
     }
 
@@ -667,7 +596,7 @@ public class EffectMethod
         GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.checkPanel.SetActive(true);
         choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
-        choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[GameManager.myDeckInf[gameManager.i]]);
+        choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[GameManager.myDeckInf[gameManager.myDeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
         Transform under = parentTransform.Find("underButton");
@@ -684,7 +613,7 @@ public class EffectMethod
         GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.checkPanel.SetActive(true);
         choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
-        choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[GameManager.enemyDeckInf[gameManager.k]]);
+        choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[gameManager.enemyDeckInf[gameManager.enemyDeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
         Transform under = parentTransform.Find("underButton");

@@ -114,7 +114,6 @@ public class SaveButton : MonoBehaviour
             deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
             //ロードしたのが何番目のデータなのかを検知して
             GameManager.myDeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
-            GameManager.enemyDeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
             SceneManager.LoadScene("playGame");
         }
         

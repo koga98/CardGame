@@ -1,5 +1,80 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &478137071761250097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6615596889174022251}
+  - component: {fileID: 5741499614650752609}
+  - component: {fileID: 8084035835934423918}
+  m_Layer: 5
+  m_Name: blindPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &6615596889174022251
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478137071761250097}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2382181198301099062}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0.04789734, y: -2.8107}
+  m_SizeDelta: {x: 5.2963, y: 12.259}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5741499614650752609
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478137071761250097}
+  m_CullTransparentMesh: 1
+--- !u!114 &8084035835934423918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 478137071761250097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1575106873050178216
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,6 +119,7 @@ RectTransform:
   - {fileID: 1419665117832523106}
   - {fileID: 8274663905196776619}
   - {fileID: 2437927982784552989}
+  - {fileID: 6615596889174022251}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -104,6 +180,7 @@ MonoBehaviour:
   ActivePanel: {fileID: 2699816052494327854}
   attackPanel: {fileID: 8340779345110962966}
   defencePanel: {fileID: 1990801131631832213}
+  blindPanel: {fileID: 478137071761250097}
   canAvoidAttack: 0
   attackText: {fileID: 3391889925069487945}
   amountText: {fileID: 4372625950981842442}
@@ -113,10 +190,8 @@ MonoBehaviour:
   backColor: {fileID: 2082469946779603286}
   sprite: {fileID: 0}
   elapsedTurns: 0
-  continuationSpelEffectTurns: 0
   CardOwner: 0
   canAttackTarget: 1
-  beforeCanAttackTarget: 0
   effectApplied: 0
   inf: {fileID: 0}
   attack: 0
@@ -124,6 +199,7 @@ MonoBehaviour:
   maxHp: 0
   cost: 0
   attackPre: 0
+  restrictionClick: 0
 --- !u!114 &8969939803173318288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,7 +673,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7895, y: 0.00081444}
+  m_AnchoredPosition: {x: 0.7895, y: 0.00081443787}
   m_SizeDelta: {x: 116.9068, y: 145.85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8855908828075660505

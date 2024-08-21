@@ -20,7 +20,7 @@ MonoBehaviour:
   cardType: 2
   cardName: "\u672A\u6765\u8996"
   longText: "\u5C71\u672D\u306E\u4E0A\u3092\u4E00\u679A\u78BA\u8A8D\u3057\u3001\u305D\u306E\u307E\u307E\u306B\u3059\u308B\u304B\u3001\u30C7\u30C3\u30AD\u306E\u4E00\u756A\u4E0B\u306B\u7F6E\u304F\u3002\r"
-  cardSprite: {fileID: 0}
+  cardSprite: {fileID: 21300000, guid: 8094672fd72e1c74c921f98f83613f06, type: 3}
   effectInfs:
   - {fileID: 11400000, guid: 77a118dcf786d7f42a357b4a17308511, type: 2}
   - {fileID: 11400000, guid: 7771fda3638699845914c2586069f2d8, type: 2}

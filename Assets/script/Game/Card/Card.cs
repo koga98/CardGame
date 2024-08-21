@@ -22,6 +22,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public GameObject ActivePanel;
     public GameObject attackPanel;
     public GameObject defencePanel;
+    public GameObject blindPanel;
     public bool canAvoidAttack;
     public TextMeshProUGUI attackText;
     public TextMeshProUGUI amountText;
@@ -144,6 +145,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         cost = cardInf.cost;
         attackedList[0] = true;
         CardOwner = PlayerID.Player2;
+        blindPanel.SetActive(true);
         if (inf.cardType == CardType.Spel)
         {
             backColor.color = Color.blue;

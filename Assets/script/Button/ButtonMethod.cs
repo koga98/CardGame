@@ -10,7 +10,6 @@ public class ButtonMethod : MonoBehaviour
         AudioManager.Instance.ButtonSound();
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        Debug.Log(gameManager.i);
         GameManager.completeButtonChoice = true;
     }
 
@@ -19,9 +18,8 @@ public class ButtonMethod : MonoBehaviour
         AudioManager.Instance.ButtonSound();
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        GameManager.myDeckInf.Add(GameManager.myDeckInf[gameManager.i]);
-        GameManager.myDeckInf.RemoveAt(gameManager.i);
-        Debug.Log(gameManager.i);
+        GameManager.myDeckInf.Add(GameManager.myDeckInf[gameManager.myDeckIndex]);
+        GameManager.myDeckInf.RemoveAt(gameManager.myDeckIndex);
         GameManager.completeButtonChoice = true;
     }
 
@@ -29,8 +27,8 @@ public class ButtonMethod : MonoBehaviour
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        GameManager.enemyDeckInf.Add(GameManager.enemyDeckInf[gameManager.k]);
-        GameManager.enemyDeckInf.RemoveAt(gameManager.k);
+        gameManager.enemyDeckInf.Add(gameManager.enemyDeckInf[gameManager.enemyDeckIndex]);
+        gameManager.enemyDeckInf.RemoveAt(gameManager.enemyDeckIndex);
         GameManager.completeButtonChoice = true;
     }
 

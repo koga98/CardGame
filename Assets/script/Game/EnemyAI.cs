@@ -67,6 +67,7 @@ public class EnemyAI : MonoBehaviour
 
     public void drawCard(int k, CardInf enemyDeckInf, GameObject canvas, GameObject enemyCardPrefab, GameManager gameManager)
     {
+        Debug.Log(GameManager.p2CannotDrawEffectList.Count);
         if (GameManager.p2CannotDrawEffectList.Count == 0)
         {
             AudioManager.Instance.PlayDrawSound();
@@ -76,7 +77,7 @@ public class EnemyAI : MonoBehaviour
             card.GetComponent<Card>().P2SetUp(enemyDeckInf);
             card.transform.localScale = Vector3.one;
             hands.Add(card.GetComponent<Card>());
-            gameManager.k++;
+            gameManager.enemyDeckIndex++;
         }
 
     }
@@ -167,6 +168,7 @@ public class EnemyAI : MonoBehaviour
                 GameObject card = playCard.gameObject;
                 if (card != null)
                 {
+                    playCard.blindPanel.SetActive(false);
                     hands.Remove(playCard);
                     if (playCard.inf.cardType == CardType.Attack)
                     {
@@ -211,6 +213,11 @@ public class EnemyAI : MonoBehaviour
     public async Task SpelMethod(Card card)
     {
         await ProcessCardEffects(card);
+        if (card.transform.parent == GameObject.Find("SpelPanel").transform)
+        {
+        }else{
+            Destroy(card.gameObject);
+        }
     }
 
     public async Task DefenceMethod(Card card)
@@ -374,8 +381,8 @@ public class EnemyAI : MonoBehaviour
                             int randomValue = UnityEngine.Random.Range(0, 2);
                             if (randomValue == 0)
                             {
-                                GameManager.enemyDeckInf.Add(GameManager.enemyDeckInf[gameManager.k]);
-                                GameManager.enemyDeckInf.RemoveAt(gameManager.k);
+                                gameManager.enemyDeckInf.Add(gameManager.enemyDeckInf[gameManager.enemyDeckIndex]);
+                                gameManager.enemyDeckInf.RemoveAt(gameManager.enemyDeckIndex);
                             }
 
                         }
