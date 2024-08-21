@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using GameNamespace;
 using System.Threading.Tasks;
 using System.Linq;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "New Draw Aoe", menuName = "Effect/Aoe")]
 public class AoeCard : EffectInf
@@ -101,6 +102,7 @@ public class AoeCard : EffectInf
     // エフェクト再生メソッド
     private async Task PlayEffect(GameObject effectPrefab, Transform field)
     {
+        field.GetComponent<HorizontalLayoutGroup>().enabled = false;
         GameObject effectInstance = Instantiate(effectPrefab, field);
         Animator effectAnimator = effectInstance.GetComponent<Animator>();
         effectAnimator.Play(animationClip.name);
@@ -118,5 +120,6 @@ public class AoeCard : EffectInf
         }
 
         Destroy(effectInstance);
+        field.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
 }

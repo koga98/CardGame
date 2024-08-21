@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using GameNamespace;
 using System.Threading.Tasks;
+using UnityEngine.UI;
 
 
 [CreateAssetMenu(fileName = "New Draw Aoe", menuName = "Effect/AoeDestroy")]
@@ -124,12 +125,14 @@ public class AoeDestroy : EffectInf
 
     private async Task ApplyEffectAsync(GameObject effectPrefab, Transform fieldTransform)
     {
+        fieldTransform.GetComponent<HorizontalLayoutGroup>().enabled = false;
         GameObject effect = Instantiate(effectPrefab, fieldTransform);
         Animator effectAnimator = effect.GetComponent<Animator>();
         effectAnimator.Play(animationClip.name);
         AudioManager.Instance.EffectSound(audioClip);
         await WaitForAnimationAsync(effectAnimator, animationClip.name);
         Destroy(effect);
+        fieldTransform.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
 
     private async Task WaitForAnimationAsync(Animator animator, string animationName)

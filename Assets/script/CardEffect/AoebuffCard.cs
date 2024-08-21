@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GameNamespace;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "New Aoebuff Card", menuName = "Effect/AoebuffCard")]
 public class AoebuffCard : EffectInf
