@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 17
+  controlID: 38
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 18
+  controlID: 39
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 19
+  controlID: 40
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -317,6 +317,7 @@ MonoBehaviour:
     - {fileID: 896545652013733439, guid: 3a5496b9a019cba479473c41d4131750, type: 2}
     - {fileID: -3965226594046659486, guid: 94dd84fab3a9c4e419baeb90ffcefa07, type: 2}
     - {fileID: -6262377583604797104, guid: 04107aec04d6abe4a8cfd9a33f25021d, type: 2}
+    - {fileID: 7906055025226325493, guid: 5a88d1e0fe14ca049acde010b16d97d2, type: 2}
     m_ValueSerializationHelper:
     - e00: 0.95550627
       e01: 0
@@ -382,10 +383,26 @@ MonoBehaviour:
       e31: 0
       e32: 0
       e33: 1
+    - e00: 1
+      e01: 0
+      e02: 0
+      e03: 0
+      e10: 0
+      e11: 1
+      e12: 0
+      e13: 0
+      e20: 0
+      e21: 0
+      e22: 1
+      e23: 0
+      e30: 0
+      e31: 0
+      e32: 0
+      e33: 1
   m_PreviewAnimator: {fileID: 0}
-  m_AnimatorController: {fileID: 9100000, guid: 04107aec04d6abe4a8cfd9a33f25021d, type: 2}
+  m_AnimatorController: {fileID: 9100000, guid: 5a88d1e0fe14ca049acde010b16d97d2, type: 2}
   m_BreadCrumbs:
-  - m_Target: {fileID: -6262377583604797104, guid: 04107aec04d6abe4a8cfd9a33f25021d, type: 2}
+  - m_Target: {fileID: 7906055025226325493, guid: 5a88d1e0fe14ca049acde010b16d97d2, type: 2}
     m_ScrollPosition: {x: 0, y: 0}
   stateMachineGraph: {fileID: 0}
   stateMachineGraphGUI: {fileID: 0}
@@ -443,7 +460,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/cardData
+    - Assets/script/Game
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -451,16 +468,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/cardData
+  - Assets/script/Game
   m_LastFoldersGridSize: -1
   m_LastProjectPath: "C:\\Users\\\u5CF6\u8C37\u88D5\u8CB4\\\u30A8\u30D5\u30A7\u30AF\u30C8\u30B3\u30FC\u30C9\u30EA\u30D5\u30A1\u30AF\u30BF\u30EA\u30F3\u30B0"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 46660000
-    m_LastClickedID: 26182
-    m_ExpandedIDs: 000000001c6600001e6600004266000046660000526600003c88000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 889}
+    m_SelectedIDs: 6e660000
+    m_LastClickedID: 26222
+    m_ExpandedIDs: 000000002666000028660000506600005c66000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -488,7 +505,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000001c6600001e660000
+    m_ExpandedIDs: 000000002666000028660000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -628,9 +645,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 96630000
+      m_SelectedIDs: 0c0f0000
       m_LastClickedID: 0
-      m_ExpandedIDs: 6446feff1876feffa822ffffc64bffff32abffff1afbffff566400006e64000060710000c07100001c7a00007c7a0000387e0000987e0000
+      m_ExpandedIDs: feb2ffff48b3ffff3eb5ffff52b5ffff62b5ffff82b5ffff1afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1010,9 +1027,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 878.5279, y: 560.5036, z: -0.2280331}
+    m_Target: {x: 757.5988, y: 483.71118, z: -0.7254063}
     speed: 2
-    m_Value: {x: 878.5279, y: 560.5036, z: -0.2280331}
+    m_Value: {x: 757.5988, y: 483.71118, z: -0.7254063}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1062,9 +1079,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 633.4232
+    m_Target: 683.16046
     speed: 2
-    m_Value: 633.4232
+    m_Value: 683.16046
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1082,8 +1099,8 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LastSceneViewOrtho: 1
+  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
   m_SceneVisActive: 1

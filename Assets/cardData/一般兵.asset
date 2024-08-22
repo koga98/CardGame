@@ -20,5 +20,5 @@ MonoBehaviour:
   cardType: 1
   cardName: "\u4E00\u822C\u5175"
   longText: 
-  cardSprite: {fileID: 0}
+  cardSprite: {fileID: 21300000, guid: f7b06bc0d3dcb2d4094025eaf8886fa5, type: 3}
   effectInfs: []
