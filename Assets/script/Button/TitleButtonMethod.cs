@@ -11,48 +11,58 @@ public class TitleButtonMethod : MonoBehaviour
     public GameObject nextAction;
     public GameObject buttonParent;
     public int buttonNumber;
+    int buttonDealCoount;
+
+    void Start()
+    {
+        buttonDealCoount = 0;
+    }
     public void MakeDeckButton()
     {
-        if (nextAction != null)
+        if (buttonDealCoount == 0)
         {
-            nextAction.SetActive(true);
-        }
-
-        if (buttonParent != null)
-        {
-            buttonParent.SetActive(true);
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            string filePath = Application.persistentDataPath + "/" + "SaveData.json" + i.ToString();
-            if (File.Exists(filePath))
+            if (nextAction != null)
             {
-                try
-                {
-                    using (StreamReader streamReader = new StreamReader(filePath))
-                    {
-                        string data = streamReader.ReadToEnd();
-                        DeckDatabaseCollection deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
+                nextAction.SetActive(true);
+            }
 
-                        // ロードしたのが何番目のデータなのかを検知して
-                        if (deckDatabaseCollection.cardDataLists[0].idLists.Count == 40)
+            if (buttonParent != null)
+            {
+                buttonParent.SetActive(true);
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                string filePath = Application.persistentDataPath + "/" + "SaveData.json" + i.ToString();
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        using (StreamReader streamReader = new StreamReader(filePath))
                         {
-                            GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
-                            newButton.GetComponentInChildren<Text>().text = "デッキ" + i.ToString();
-                            newButton.GetComponent<TitleButtonMethod>().buttonNumber = i;
+                            string data = streamReader.ReadToEnd();
+                            DeckDatabaseCollection deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
+
+                            // ロードしたのが何番目のデータなのかを検知して
+                            if (deckDatabaseCollection.cardDataLists[0].idLists.Count == 40)
+                            {
+                                GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
+                                newButton.GetComponentInChildren<Text>().text = "デッキ" + i.ToString();
+                                newButton.GetComponent<TitleButtonMethod>().buttonNumber = i;
+                            }
                         }
                     }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError("データの読み込みに失敗しました: " + e.Message);
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("データの読み込みに失敗しました: " + e.Message);
+                    }
                 }
             }
         }
 
         // Textコンポーネントの設定（親オブジェクトかその子オブジェクトにあるかを確認）
         Text nextActionText = nextAction.GetComponentInChildren<Text>();
+        buttonDealCoount++;
         if (nextActionText != null)
         {
             if (buttonParent.transform.childCount == 0)
@@ -63,6 +73,7 @@ public class TitleButtonMethod : MonoBehaviour
             else
             {
                 nextActionText.text = "デッキを選択";
+
             }
         }
         else
@@ -112,7 +123,8 @@ public class TitleButtonMethod : MonoBehaviour
         }
     }
 
-    public void ChoiceDeckNumber(){
+    public void ChoiceDeckNumber()
+    {
         AudioManager.Instance.ButtonSound();
         SceneManager.LoadScene("ChoiceDeckNumber");
     }

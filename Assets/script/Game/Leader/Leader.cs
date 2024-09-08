@@ -17,12 +17,11 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     public Sprite sprite;
     public Image leaderImage;
     public LeaderInf inf;
-    EnemyCardAnimation enemyCardAnimation;
-    CardAnimation cardAnimation;
     public TextMeshProUGUI healthText;
     public Text protectShieldText;
     GameObject manager;
     GameManager gameManager;
+    UIManager uIManager;
     public bool restrictionClick;
 
     public int Hp
@@ -50,7 +49,8 @@ public class Leader : MonoBehaviour, IPointerClickHandler
             if (protectShield != value)
             {
                 protectShield = value;
-                if(protectShield < 0){
+                if (protectShield < 0)
+                {
                     protectShield = 0;
                 }
                 _ = UpdateShieldAsync();
@@ -67,6 +67,7 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     {
         manager = GameObject.Find("GameManager");
         gameManager = manager.GetComponent<GameManager>();
+        uIManager = manager.GetComponent<UIManager>();
         restrictionClick = false;
     }
     void Update()
@@ -101,6 +102,24 @@ public class Leader : MonoBehaviour, IPointerClickHandler
         ProtectShield = leaderInf.protectShield;
         playerType = PlayerType.Player2;
     }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (GameManager.defenceObject != null && !restrictionClick)
+            {
+                restrictionClick = true;
+                StartCoroutine(AttackCoroutine());
+            }
+        }
+    }
+     private IEnumerator AttackCoroutine()
+    {
+        // 非同期メソッドを実行し、その完了を待つ
+        yield return AttackedLeaderAsync().AsCoroutine();
+        restrictionClick = false;
+    }
     public async Task AttackedLeaderAsync()
     {
         Leader leader = GameManager.defenceObject.GetComponent<Leader>();
@@ -121,42 +140,22 @@ public class Leader : MonoBehaviour, IPointerClickHandler
         if (attackCard != null && leader != null)
         {
             UpdateAttackCount(attackCard);
-
-            if (leader.ProtectShield > 0)
+            if (attackCard.inf.effectInfs != null)
             {
-                if (attackCard.inf.effectInfs != null)
-                {
-                    await EffectDealAsync(attackCard);
-                }
-                if (attackCard.inf.attackClip != null)
-                {
-                    await AttackEffectAsync(attackCard, leader);
-                }
-
-                leader.ProtectShield -= (int)(attackCard.attack * (1 - shieldDamageCutAmount));
-                leader.protectShieldText.text = leader.ProtectShield.ToString();
+                await EffectWhenAttacking(attackCard);
             }
-            else
+            if (attackCard.inf.attackClip != null)
             {
-                if (attackCard.inf.attackClip != null)
-                {
-                    await AttackEffectAsync(attackCard, leader);
-                }
-                leader.Hp -= attackCard.attack;
-                leader.healthText.text = leader.Hp.ToString();
+                await AttackEffectAsync(attackCard, leader);
             }
 
             // 必要に応じてカードの破壊処理などを追加
             if (leader.Hp <= 0)
             {
                 Destroy(GameManager.defenceObject);
-                // 防御オブジェクトのリセット
             }
-            // 攻撃後に攻撃オブジェクトをリセット
             attackCard.attackPre = false;
-            await EffectEndDealAsync();
             ResetAnimations(cardAnimation, enemyCardAnimation, anim);
-
             GameManager.attackObject = null;
             GameManager.defenceObject = null;
         }
@@ -177,6 +176,48 @@ public class Leader : MonoBehaviour, IPointerClickHandler
         await WaitForAnimationToEndAsync(attackEffectAnimator, attackCard.inf.attackClip.name);
 
         Destroy(attackEffect);
+        if (leader.ProtectShield > 0)
+        {
+            leader.ProtectShield -= (int)(attackCard.attack * (1 - shieldDamageCutAmount));
+            leader.protectShieldText.text = leader.ProtectShield.ToString();
+        }
+        else
+        {
+            leader.Hp -= attackCard.attack;
+            leader.healthText.text = leader.Hp.ToString();
+        }
+
+        EffectEndDeal();
+    }
+
+    private async void EffectEndDeal()
+    {
+        await ProcessEffectEnd(CardManager.P1EffectDuringAttacking);
+        await ProcessEffectEnd(CardManager.P2EffectDuringAttacking);
+    }
+
+    private async Task ProcessEffectEnd(List<Card> effectList)
+    {
+        if (effectList.Count == 0 || effectList[0] == null) return;
+
+        var currentCard = effectList[0];
+
+        foreach (var effectInf in currentCard.inf.effectInfs)
+        {
+            foreach (EffectInf.CardTrigger cardTrigger in effectInf.triggers)
+            {
+                if (cardTrigger == EffectInf.CardTrigger.EndAttack && effectInf is ICardEffect cardEffect)
+                {
+                    await cardEffect.Apply(new ApplyEffectEventArgs(
+                        currentCard,
+                        EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
+                        GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields
+                    ));
+                }
+            }
+        }
+
+        effectList[0] = null;
     }
 
     private async Task WaitForAnimationToEndAsync(Animator animator, string animationName)
@@ -185,7 +226,6 @@ public class Leader : MonoBehaviour, IPointerClickHandler
         {
             // 現在のアニメーションのステート情報を取得
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
             // 指定されたアニメーションが再生中かつアニメーションが完了した場合
             if (stateInfo.IsName(animationName) && stateInfo.normalizedTime >= 1.0f)
             {
@@ -200,14 +240,25 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     {
         GameObject attackEffect = Instantiate(gameManager.animationPrefab, leader.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
+        if (leader.playerType == PlayerType.Player1)
+        {
+            ReverseAnim(attackEffect);
+        }
         AudioManager.Instance.PlayBattleSound();
         attackEffectAnimator.Play(shieldClip.name);
-
         // アニメーションが終了するまで待機するタスク
         await WaitForAnimationToEndAsync(attackEffectAnimator, shieldClip.name);
 
         Destroy(attackEffect);
         await OnProtectShieldChanged();
+    }
+
+    private void ReverseAnim(GameObject attackEffect)
+    {
+        Transform transform = attackEffect.transform;
+        Vector3 localScale = transform.localScale;
+        localScale.x = localScale.x * -1;
+        transform.localScale = localScale;
     }
 
     private void ResetAnimations(CardAnimation cardAnimation, EnemyCardAnimation enemyCardAnimation, leaderAnimation anim)
@@ -223,59 +274,29 @@ public class Leader : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private async Task EffectEndDealAsync()
+    private async Task EffectWhenAttacking(Card attackCard)
     {
-        if (CardManager.P1EffectDuringAttacking.Count != 0 && CardManager.P1EffectDuringAttacking[0] != null)
+        if (attackCard.inf.effectInfs != null)
         {
-            var attackingCard = CardManager.P1EffectDuringAttacking[0];
-            for (int i = 0; i < attackingCard.inf.effectInfs.Count; i++)
+            for (int i = 0; i < attackCard.inf.effectInfs.Count; i++)
             {
-                foreach (EffectInf.CardTrigger cardTrigger in attackingCard.inf.effectInfs[i].triggers)
+                foreach (EffectInf.CardTrigger cardTrigger in attackCard.inf.effectInfs[i].triggers)
                 {
-                    if (cardTrigger == EffectInf.CardTrigger.EndAttack)
+                    if (cardTrigger == EffectInf.CardTrigger.OnAttack)
                     {
-                        if (attackingCard.inf.effectInfs[i] is ICardEffect cardEffect)
+                        if (attackCard.inf.effectInfs[i] is ICardEffect cardEffect)
                         {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(attackingCard, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
-                                , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                }
-            }
-            CardManager.P1EffectDuringAttacking[0] = null;
-        }else if (CardManager.P2EffectDuringAttacking.Count != 0 && CardManager.P2EffectDuringAttacking[0] != null)
-        {
-            for (int i = 0; i < CardManager.P2EffectDuringAttacking[0].inf.effectInfs.Count; i++)
-            {
-                foreach (EffectInf.CardTrigger cardTrigger in CardManager.P2EffectDuringAttacking[0].inf.effectInfs[i].triggers)
-                {
-                    if (cardTrigger == EffectInf.CardTrigger.EndAttack)
-                    {
-                        if (CardManager.P2EffectDuringAttacking[0].inf.effectInfs[i] is ICardEffect cardEffect)
-                        {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(CardManager.P2EffectDuringAttacking[0], EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
+                            await cardEffect.Apply(new ApplyEffectEventArgs(attackCard, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
                             , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
                         }
                     }
-                }
-            }
-            CardManager.P2EffectDuringAttacking[0] = null;
-        }
-    }
-
-    private async Task EffectDealAsync(Card attackCard)
-    {
-        for (int i = 0; i < attackCard.inf.effectInfs.Count; i++)
-        {
-            foreach (EffectInf.CardTrigger cardTrigger in attackCard.inf.effectInfs[i].triggers)
-            {
-                if (cardTrigger == EffectInf.CardTrigger.OnAttackProtectShield || cardTrigger == EffectInf.CardTrigger.OnAttack)
-                {
-                    if (attackCard.inf.effectInfs[i] is ICardEffect cardEffect)
+                    else if (cardTrigger == EffectInf.CardTrigger.OnDuringAttack)
                     {
-                        // Applyメソッドが非同期メソッドであると仮定してawaitで呼び出す
-                        await cardEffect.Apply(new ApplyEffectEventArgs(attackCard, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
+                        if (attackCard.inf.effectInfs[i] is ICardEffect cardEffect)
+                        {
+                            await cardEffect.Apply(new ApplyEffectEventArgs(attackCard, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
                             , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
+                        }
                     }
                 }
             }
@@ -299,83 +320,47 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     {
         if (playerType == PlayerType.Player1)
         {
-            for (int i = 0; i < CardManager.P1CardsWithEffectOnField.Count; i++)
-            {
-                for (int e = 0; e < CardManager.P1CardsWithEffectOnField[i].inf.effectInfs.Count; e++)
-                {
-                    for (int k = 0; k < CardManager.P1CardsWithEffectOnField[i].inf.effectInfs[e].triggers.Count; k++)
-                    {
-                        if (CardManager.P1CardsWithEffectOnField[i].inf.effectInfs[e].triggers[k] == EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease)
-                        {
-                            if (CardManager.P1CardsWithEffectOnField[i].inf.effectInfs[e] is ICardEffect cardEffect)
-                            {
-                                await cardEffect.Apply(new ApplyEffectEventArgs(CardManager.P1CardsWithEffectOnField[i], EnemyAI.EAllFields, EnemyAI.AttackFields,
-                                EnemyAI.DefenceFields, GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                            }
-                        }
-                    }
-                }
-
-            }
+            await ProcessBasicEffect(CardManager.P1CardsWithEffectOnField);
         }
         else
         {
-            for (int i = 0; i < CardManager.P2CardsWithEffectOnField.Count; i++)
+            await ProcessBasicEffect(CardManager.P2CardsWithEffectOnField);
+        }
+    }
+
+    private async Task ProcessBasicEffect(List<Card> effectList)
+    {
+        for (int i = 0; i < effectList.Count; i++)
+        {
+            for (int e = 0; e < effectList[i].inf.effectInfs.Count; e++)
             {
-                for (int e = 0; e < CardManager.P2CardsWithEffectOnField[i].inf.effectInfs.Count; e++)
+                for (int k = 0; k < effectList[i].inf.effectInfs[e].triggers.Count; k++)
                 {
-                    for (int k = 0; i < CardManager.P2CardsWithEffectOnField[i].inf.effectInfs[e].triggers.Count; k++)
+                    if (effectList[i].inf.effectInfs[e].triggers[k] == EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease)
                     {
-                        if (CardManager.P2CardsWithEffectOnField[i].inf.effectInfs[e].triggers[k] == EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease)
+                        if (effectList[i].inf.effectInfs[e] is ICardEffect cardEffect)
                         {
-                            if (CardManager.P2CardsWithEffectOnField[i].inf.effectInfs[e] is ICardEffect cardEffect)
-                            {
-                                await cardEffect.Apply(new ApplyEffectEventArgs(CardManager.P2CardsWithEffectOnField[i], EnemyAI.EAllFields, EnemyAI.AttackFields,
-                                EnemyAI.DefenceFields, GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                            }
+                            await cardEffect.Apply(new ApplyEffectEventArgs(effectList[i], EnemyAI.EAllFields, EnemyAI.AttackFields,
+                            EnemyAI.DefenceFields, GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
                         }
                     }
                 }
-
             }
+
         }
     }
 
     private void GameOver()
     {
-        gameManager.gameSetPanel.SetActive(true);
+        uIManager.GameSetPanelActive();
         if (playerType == PlayerType.Player1)
         {
-            gameManager.gameSetText.text = "You Lose";
+            uIManager.ChangeGameSetText("You Lose");
         }
         else if (playerType == PlayerType.Player2)
         {
-            gameManager.gameSetText.text = "You Win";
+            uIManager.ChangeGameSetText("You Win");
         }
     }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            if (GameManager.defenceObject != null && !restrictionClick)
-            {
-                restrictionClick = true;
-                StartCoroutine(OnPointerClickCoroutine());
-            }
-        }
-    }
-
-    private IEnumerator OnPointerClickCoroutine()
-    {
-        // GameManagerを取得
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-
-        // 非同期メソッドを実行し、その完了を待つ
-        yield return AttackedLeaderAsync().AsCoroutine();
-        restrictionClick = false;
-    }
-
 
 }

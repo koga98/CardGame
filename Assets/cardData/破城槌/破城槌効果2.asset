@@ -18,5 +18,5 @@ MonoBehaviour:
   conditionOnEffects: []
   additionalEffects: []
   conditionOnAdditionalEffects: []
-  buffType: 0
-  cancleBuffAmount: 0
+  buffType: 1
+  cancleBuffAmount: 2

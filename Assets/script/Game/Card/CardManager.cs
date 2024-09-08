@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
+    public static List<Card> PAttackFields;
+    public static List<Card> PDefenceFields;
     //守護用のリスト
     public static List<Card> P1CardsWithProtectEffectOnField;
     public static List<Card> P2CardsWithProtectEffectOnField;
@@ -26,6 +28,9 @@ public class CardManager : MonoBehaviour
     public static List<Card> P1CannotAttackMyDefenceCard;
     public static List<Card> P2CannotAttackMyDefenceCard;
 
+    public static List<bool> p1CannotDrawEffectList;
+    public static List<bool> p2CannotDrawEffectList;
+
     void Start(){
         P1EffectDuringAttacking = new List<Card>();
         P2EffectDuringAttacking = new List<Card>();
@@ -39,5 +44,7 @@ public class CardManager : MonoBehaviour
         P1CardsWithProtectEffectOnField = new List<Card>();
         P1CannotAttackMyDefenceCard = new List<Card>();
         P2CannotAttackMyDefenceCard = new List<Card>();
+        p1CannotDrawEffectList = new List<bool>();
+        p2CannotDrawEffectList = new List<bool>();
     }
 }

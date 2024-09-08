@@ -12,9 +12,10 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 {
     Vector3 touchPosition;
     public Transform defaultParent;
-    public Transform choicePanel;
     public GameObject canvas;
     GameManager gameManager;
+    ManaManager manaManager;
+    UIManager uIManager;
     public GameObject myHand;
     public GameObject myAttackField;
     public GameObject myDefenceField;
@@ -24,9 +25,10 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     Card card;
     GameObject clickedObject;
     public bool completeChoice = false;
+    public bool cancelChoice = false;
     public static bool OnCoroutine = false;
     public static bool OnButtonCoroutine = false;
-    public bool canDrag = true;
+    public bool canDrag = false;
 
     float defaultZPosition = 0;
     string currentSceneName;
@@ -36,16 +38,16 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     void Start()
     {
-        canDrag = true;
         if (SceneManager.GetActiveScene().name == "playGame")
         {
             GameObject manager = GameObject.Find("GameManager");
             gameManager = manager.GetComponent<GameManager>();
-            choicePanel = GameObject.Find("ChoicePosition").transform;
+            manaManager = manager.GetComponent<ManaManager>();
+            uIManager = manager.GetComponent<UIManager>();
             spelPanel = GameObject.Find("SpelPanel").transform;
         }
 
-
+        cancelChoice = false;
         completeChoice = false;
         OnCoroutine = false;
         currentSceneName = SceneManager.GetActiveScene().name;
@@ -69,14 +71,27 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                     MoveCards(direction);
                 }
             }
-
         }
     }
-
-    private void MoveCards(Vector3 direction)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        gameObject.transform.localPosition += new Vector3(direction.x * 0.9f, 0, 0);
+        StartCoroutine(OnPointerClickCoroutine(eventData));
+    }
 
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        // プレイシーンとターンステータスのチェック
+        if (SceneManager.GetActiveScene().name != "playGame" || GameManager.turnStatus != GameManager.TurnStatus.OnPlay)
+            return;
+
+        InitializeSceneObjects();
+
+        clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+        OnBeginDragEffects();
+        if (clickedObject == null || !CanDragCard(clickedObject, eventData))
+            return;
+
+        StartDrag();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -99,77 +114,29 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         }
         else if (!canDrag)
         {
-
-
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        StartCoroutine(OnPointerClickCoroutine(eventData));
-    }
-
-    public IEnumerator OnPointerClickCoroutine(PointerEventData eventData)
-    {
-        if (OnCoroutine)
-        {
-            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-            if (clickedObject.tag == "Enemy")
-            {
-                Card clickedObjectCard = clickedObject.GetComponent<Card>();
-
-                Debug.Log(gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice);
-                gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
-
-                yield return StartCoroutine(ApplyEffectCoroutine(gameManager.choiceCard.GetComponent<Card>().inf.effectInfs[0],
-                                new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields, clickedObjectCard)));
-            }
-            else
-            {
-                OnCoroutine = false;
-            }
-        }
-
-        if (OnButtonCoroutine)
-        {
-            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-            if (clickedObject.tag == "Card")
-            {
-                yield break; // コルーチンを終了
-            }
-            else
-            {
-                OnButtonCoroutine = false;
-            }
-        }
-    }
-
-    public void canDragPanel(GameObject clickedObject)
-    {
-        if (clickedObject.transform.parent == myHand.transform)
-        {
-            gameManager.someTexts.text = "このカードはプレイできません";
-            gameManager.panel.SetActive(true);
-            StartCoroutine(WaitForClosePanel());
-            canDrag = false;
-        }
-    }
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        // プレイシーンとターンステータスのチェック
-        if (SceneManager.GetActiveScene().name != "playGame" || GameManager.turnStatus != GameManager.TurnStatus.OnPlay)
             return;
+        }
+    }
 
-        InitializeSceneObjects();
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (SceneManager.GetActiveScene().name == "playGame" && GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        {
+            if (currentSceneName.Equals("playGame"))
+            {
+                HandlePlayGame(eventData);
+            }
+            else if (currentSceneName.Equals("makeDeck"))
+            {
+                HandleDekeMake(eventData);
+            }
+            gameManager.detailPanel.SetActive(false);
+        }
+    }
+    private void MoveCards(Vector3 direction)
+    {
+        gameObject.transform.localPosition += new Vector3(direction.x * 0.9f, 0, 0);
 
-        clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-        ApplyCardEffects();
-        if (clickedObject == null || !CanDragCard(clickedObject, eventData))
-            return;
-
-        StartDrag();
     }
 
     private void InitializeSceneObjects()
@@ -193,13 +160,14 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         var cardComponent = cardObject.GetComponent<Card>();
 
-        if(!canDrag){
+        if (!canDrag)
+        {
             canDragPanel(cardObject);
             return false;
         }
 
         // マナコストチェック
-        if (gameManager.P1_mana < cardComponent.cost)
+        if (manaManager.P1_mana < cardComponent.cost)
         {
             canDragPanel(cardObject);
             return false;
@@ -213,7 +181,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         }
 
         // カードの位置チェック
-        if (eventData.position.y > 180)
+        if (card.transform.position.y > 180)
         {
             canDragPanel(cardObject);
             return false;
@@ -223,7 +191,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         return true;
     }
 
-    private void ApplyCardEffects()
+    private void OnBeginDragEffects()
     {
         foreach (var effect in card.inf.effectInfs)
         {
@@ -237,7 +205,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                                                                   GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
                     }
                 }
-                    
+
             }
         }
     }
@@ -248,67 +216,102 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         Vector3 worldPosition = rectTransform.TransformPoint(rectTransform.rect.center);
         worldPosition.z = defaultZPosition;
         siblingIndex = transform.GetSiblingIndex();
-
         canvas = GameObject.Find("Canvas");
         defaultParent = canvas.transform;
-
         transform.SetParent(defaultParent, false);
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    private void HandlePlayGame(PointerEventData eventData)
     {
-        if (SceneManager.GetActiveScene().name == "playGame" && GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+        card = clickedObject.GetComponent<Card>();
+        if (eventData.position.y > 180)
         {
-            if (currentSceneName.Equals("playGame"))
-            {
-                clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-                card = clickedObject.GetComponent<Card>();
-                if (eventData.position.y > 180)
-                {
-                    AudioManager.Instance.PlayPlayCardSound();
-                    
-                    gameManager.P1_mana -= card.cost;
-                    gameManager.P1_manaText.text = gameManager.manaChange();
-                    if (card.inf.cardType == CardType.Defence)
-                    {
-                        StartCoroutine(DefenceMethod());
-                    }
-                    else if (card.inf.cardType == CardType.Attack)
-                    {
-                        StartCoroutine(AttackMethod());
-                    }
-                    else if (card.inf.cardType == CardType.Spel)
-                    {
-                        StartCoroutine(SpelMethod());
-                    }
-                    GameManager.PHands.Remove(card);
-                    card.ActivePanel.SetActive(false);
-                    canDrag = false;
-                    //ここでアクティブパネルの操作をする
-                    StartCoroutine(OnP1ManaChanged());
-                }
-                else
-                {
-                    transform.SetParent(myHand.transform, false);
-                    transform.SetSiblingIndex(siblingIndex);
-                }
-            }
-            else if (currentSceneName.Equals("makeDeck"))
-            {
-                if (eventData.position.y > 310)
-                {
-                    transform.SetParent(deckList, false);
-                }
-                else
-                {
-                    transform.SetParent(cardOption, false);
-                    transform.SetSiblingIndex(siblingIndex);
-                }
-            }
-            gameManager.detailPanel.SetActive(false);
+            StartCoroutine(PlayCard());
+        }
+        else
+        {
+            CancelPlayCard();
+        }
+    }
+
+    private void HandleDekeMake(PointerEventData eventData)
+    {
+        if (eventData.position.y > 310)
+        {
+            transform.SetParent(deckList, false);
+        }
+        else
+        {
+            transform.SetParent(cardOption, false);
+            transform.SetSiblingIndex(siblingIndex);
+        }
+    }
+
+    private IEnumerator PlayCard()
+    {
+        AudioManager.Instance.PlayPlayCardSound();
+        yield return StartCoroutine(ExecuteChoiceCardEffect(card));
+        if (!cancelChoice)
+        {
+            manaManager.P1ManaDecrease(card.cost);
+            ExecuteCardEffect();
+            AddCardOnFields();
+            GameManager.PHands.Remove(card);
+            card.ActivePanel.SetActive(false);
+            canDrag = false;
+            //ここでアクティブパネルの操作をする
+            StartCoroutine(OnP1ManaChanged());
+        }
+
+    }
+
+    private void AddCardOnFields()
+    {
+        if (card.inf.cardType == CardType.Defence)
+        {
+            GameManager.PDefenceFields.Add(card);
+            GameManager.PAllFields.Add(card);
+        }
+        else if (card.inf.cardType == CardType.Attack)
+        {
+            GameManager.PAttackFields.Add(card);
+            GameManager.PAllFields.Add(card);
         }
         
+    }
 
+    private IEnumerator ExecuteChoiceCardEffect(Card card)
+    {
+        if (card.inf.effectInfs[0].triggers[0] == EffectInf.CardTrigger.OnPlay)
+        {
+            uIManager.ChoicePanelActive();
+            clickedObject.transform.SetParent(uIManager.ChoiceCardPlace.transform, false);
+            gameManager.choiceCard = clickedObject;
+            yield return StartCoroutine(WaitForChoiceCoroutine(card));
+        }
+    }
+
+    private void ExecuteCardEffect()
+    {
+        if (card.inf.cardType == CardType.Defence)
+        {
+            StartCoroutine(DefenceMethod());
+        }
+        else if (card.inf.cardType == CardType.Attack)
+        {
+            StartCoroutine(AttackMethod());
+        }
+        else if (card.inf.cardType == CardType.Spel)
+        {
+            StartCoroutine(SpelMethod());
+        }
+    }
+
+    private void CancelPlayCard()
+    {
+        transform.SetParent(myHand.transform, false);
+        transform.SetSiblingIndex(siblingIndex);
     }
 
     private IEnumerator OnP1ManaChanged()
@@ -316,7 +319,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         foreach (var card in GameManager.PHands)
         {
             GameObject cardObject = card.gameObject;
-            if (card.cost > gameManager.P1_mana)
+            if (card.cost > manaManager.P1_mana)
             {
                 cardObject.GetComponent<CardDragAndDrop>().canDrag = false;
             }
@@ -351,11 +354,15 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         }
     }
 
-    public IEnumerator ProcessCardEffectsCoroutine(Card card)
+    private IEnumerator ProcessCardEffectsCoroutine(Card card)
     {
         if (card.inf.cardType == CardType.Spel)
         {
             card.transform.SetParent(spelPanel, false);
+        }
+        if (card.inf.voice != null)
+        {
+            AudioManager.Instance.voiceSound(card.inf.voice);
         }
         // ランダム効果カードの特別な処理
         if (card.inf is RandomCardInf randomCardInf)
@@ -366,14 +373,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields)));
             Destroy(card.gameObject);
             yield break; // これ以上の効果は処理しない
-        }
-
-        if (card.inf.effectInfs[0].triggers[0] == EffectInf.CardTrigger.OnPlay)
-        {
-            clickedObject.transform.SetParent(choicePanel, false);
-            gameManager.choiceCard = clickedObject;
-            StartCoroutine(WaitForChoiceCoroutine(card));
-            yield break;
         }
 
         foreach (var effect in card.inf.effectInfs)
@@ -440,21 +439,21 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         }
     }
 
-    public IEnumerator SpelMethod()
+    private IEnumerator SpelMethod()
     {
         yield return StartCoroutine(ProcessCardEffectsCoroutine(card));
         if (OnButtonCoroutine || transform.parent == spelPanel)
         {
-        }else{
+        }
+        else
+        {
             Destroy(card.gameObject);
         }
-        
-
     }
 
-    public IEnumerator AttackMethod()
+    private IEnumerator AttackMethod()
     {
-        if (clickedObject.transform.parent != choicePanel.transform)
+        if (clickedObject.transform.parent != uIManager.ChoiceCardPlace.transform)
         {
             transform.SetParent(myAttackField.transform, false);
         }
@@ -462,116 +461,20 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         {
             yield return StartCoroutine(ProcessCardEffectsCoroutine(card));
         }
-        
-        GameManager.PAttackFields.Add(card);
-        GameManager.PAllFields.Add(card);
     }
 
-    public IEnumerator DefenceMethod()
+    private IEnumerator DefenceMethod()
     {
-        if (clickedObject.transform.parent != choicePanel.transform)
+        if (clickedObject.transform.parent != uIManager.ChoiceCardPlace.transform)
         {
             transform.SetParent(myDefenceField.transform, false);
         }
         yield return StartCoroutine(ProcessCardEffectsCoroutine(card));
-        GameManager.PDefenceFields.Add(card);
-        GameManager.PAllFields.Add(card);
     }
-
-    private IEnumerator AfterChoiceEffectCoroutine(Card card)
-    {
-        OnCoroutine = false;
-        foreach (var effect in card.inf.effectInfs)
-        {
-            foreach (var trigger in effect.triggers)
-            {
-                switch (trigger)
-                {
-                    case EffectInf.CardTrigger.ButtonOperetion:
-
-                        if (effect is ICardEffect buttonEffect)
-                        {
-                            ApplyEffectEventArgs args = new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields);
-                            yield return StartCoroutine(ApplyEffectCoroutine(buttonEffect, args));
-                        }
-                        OnButtonCoroutine = true;
-                        yield return StartCoroutine(WaitForButtonCoroutine(card));
-                        break;
-
-                    case EffectInf.CardTrigger.SpelEffectSomeTurn:
-                        CardManager.P1SpelEffectAfterSomeTurn.Add(card);
-                        card.transform.SetParent(spelPanel, false);
-                        break;
-
-                    case EffectInf.CardTrigger.AfterPlay:
-                        if (effect is ICardEffect afterPlayEffect)
-                        {
-                            ApplyEffectEventArgs args = new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields);
-                            yield return StartCoroutine(ApplyEffectCoroutine(afterPlayEffect, args));
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.FromPlayToDie:
-                        if (effect is ICardEffect fromPlayToDieEffect)
-                        {
-                            ApplyEffectEventArgs args = new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields);
-                            yield return StartCoroutine(ApplyEffectCoroutine(fromPlayToDieEffect, args));
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.OnFieldOnAfterPlay:
-                        if (effect is ICardEffect onFieldEffect)
-                        {
-                            CardManager.P1CardsWithEffectOnField.Add(card);
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease:
-                        if (effect is ICardEffect afterPlayAndProtectShieldDecrease)
-                        {
-                            ApplyEffectEventArgs args = new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields);
-                            yield return StartCoroutine(ApplyEffectCoroutine(afterPlayAndProtectShieldDecrease, args));
-                            CardManager.P1CardsWithEffectOnField.Add(card);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-
-    public void ApplyOnFieldEffect()
-    {
-        foreach (var effectCard in CardManager.P1CardsWithEffectOnField)
-        {
-            foreach (var effect in effectCard.inf.effectInfs)
-            {
-                for (int i = 0; i < effect.triggers.Count; i++)
-                {
-                    if (effect.triggers[i] == EffectInf.CardTrigger.OnFieldOnAfterPlay)
-                    {
-                        if (effect is ICardEffect cardEffect)
-                        {
-                            cardEffect.Apply(new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
-                            , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private IEnumerator WaitForClosePanel()
     {
         yield return new WaitForSeconds(0.5f);
-        gameManager.panel.SetActive(false);
-
+        uIManager.MessagePanelInActive();
     }
 
     private IEnumerator WaitForChoiceCoroutine(Card card)
@@ -584,16 +487,32 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         {
             OnCoroutine = true;
         }
-        while (OnCoroutine)
+        yield return new WaitUntil(() => completeChoice);
+        if (OnCoroutine)
         {
-            yield return new WaitUntil(() => completeChoice);
+            cancelChoice = false;
             gameObject.transform.SetParent(myAttackField.transform, false);
+            uIManager.ChoicePanelInActive();
             GameManager.PAttackFields.Add(card);
-            yield return StartCoroutine(AfterChoiceEffectCoroutine(gameManager.choiceCard.GetComponent<Card>()));
         }
-        yield return new WaitUntil(() => !OnCoroutine);
-        transform.SetParent(myAttackField.transform, false);
+        else
+        {
+            completeChoice = false;
+            cancelChoice = true;
+            transform.SetParent(myHand.transform, false);
+            uIManager.ChoicePanelInActive();
+        }
+    }
 
+    private void canDragPanel(GameObject clickedObject)
+    {
+        if (clickedObject.transform.parent == myHand.transform)
+        {
+            gameManager.someTexts.text = "このカードはプレイできません";
+            uIManager.MessagePanelActive();
+            StartCoroutine(WaitForClosePanel());
+            canDrag = false;
+        }
     }
 
     private IEnumerator WaitForButtonCoroutine(Card card)
@@ -623,6 +542,39 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             if (card.inf.cardType == CardType.Spel)
             {
                 Destroy(card.gameObject);
+            }
+        }
+    }
+    private IEnumerator OnPointerClickCoroutine(PointerEventData eventData)
+    {
+        if (OnCoroutine)
+        {
+            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            if (clickedObject.tag == "Enemy")
+            {
+                Card clickedObjectCard = clickedObject.GetComponent<Card>();
+                gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+                yield return StartCoroutine(ApplyEffectCoroutine(gameManager.choiceCard.GetComponent<Card>().inf.effectInfs[0],
+                                new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
+                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields, clickedObjectCard)));
+            }
+            else
+            {
+                OnCoroutine = false;
+                gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+            }
+        }
+
+        if (OnButtonCoroutine)
+        {
+            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            if (clickedObject.tag == "Card")
+            {
+                yield break; // コルーチンを終了
+            }
+            else
+            {
+                OnButtonCoroutine = false;
             }
         }
     }

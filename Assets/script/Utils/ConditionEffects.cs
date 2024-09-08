@@ -278,7 +278,6 @@ public class ConditionEffects
         }
         else if (leader != null && card == null)
         {
-            
             if (property == "プロテクトバリア" && leader.ProtectShield > 0)
             {
                 return true;

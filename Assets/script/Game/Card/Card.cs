@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using GameNamespace;
 using System.Threading.Tasks;
+using System.Linq;
 
 public enum PlayerID
 {
@@ -37,8 +38,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
     GameManager gameManager;
     //攻撃対象になるかを決めるためのもの
     public bool canAttackTarget = true;
-    public bool effectApplied = false;
-    public event Action<List<Card>> OnMultipleCardEffect;
     public CardInf inf;
     public int attack;
     public int hp;
@@ -50,7 +49,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public bool attackPre = false;
     private DeckMake deckMake;
     public bool restrictionClick;
-
     public bool Attacked
     {
         get { return attacked; }
@@ -90,11 +88,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             hp = maxHp;
         }
-    }
-
-    public void MultipleCardEffect(List<Card> cards)
-    {
-        OnMultipleCardEffect?.Invoke(cards);
     }
 
     public void P1SetUp(CardInf cardInf)
@@ -154,16 +147,69 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void reflectAmount(int amount)
-    {
-        amountText.text = "×" + amount.ToString();
-    }
-
     public async Task DestoryThis()
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.nowDestory = true;
+        P1CardDestory();
+        P2CardDestory();
+        await EffectAfterDie();
+        Destroy(this.gameObject);
+        gameManager.nowDestory = false;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (GameManager.defenceObject != null && !restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
+            {
+                restrictionClick = true;
+                StartCoroutine(AttackCoroutine());
+            }
+            else
+            {
+                ShowCardDetail();
+            }
+        }
+    }
+
+    public void reflectAmount(int amount)
+    {
+        amountText.text = "×" + amount.ToString();
+    }
+
+    private async Task EffectAfterDie(){
+        if (inf.effectInfs != null)
+        {
+            for (int i = 0; i < inf.effectInfs.Count; i++)
+            {
+                foreach (EffectInf.CardTrigger cardTrigger in inf.effectInfs[i].triggers)
+                {
+                    if (cardTrigger == EffectInf.CardTrigger.AfterDie || cardTrigger == EffectInf.CardTrigger.FromPlayToDie)
+                    {
+                        if (inf.effectInfs[i] is ICardEffect cardEffect)
+                        {
+                            await cardEffect.Apply(new ApplyEffectEventArgs(this, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
+                            GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (attackedList.Count > 0)
+        {
+            Attacked = attackedList[attackedList.Count - 1];
+        }
+    }
+
+    private void P1CardDestory()
+    {
         if (GameManager.PAllFields.Contains(this))
         {
             GameManager.PAllFields.Remove(this);
@@ -176,7 +222,31 @@ public class Card : MonoBehaviour, IPointerClickHandler
                 GameManager.PAttackFields.Remove(this);
             }
         }
-        else if (EnemyAI.EAllFields.Contains(this))
+        var cardLists = new List<List<Card>>
+    {
+    CardManager.P1CardsWithEffectOnField,
+    CardManager.P1SpelEffectAfterSomeTurn,
+    CardManager.P1CannotAttackMyDefenceCard,
+    CardManager.P1CardsWithProtectEffectOnField,
+    CardManager.P1CannotPlayDefenceCard,
+    CardManager.P1EffectDuringAttacking
+    };
+        foreach (var list in cardLists)
+        {
+            if (list.Contains(this))
+            {
+                list.Remove(this);
+            }
+        }
+        if (CardManager.p1CannotDrawEffectList.Contains(this))
+        {
+            CardManager.p1CannotDrawEffectList.Remove(this);
+        }
+    }
+
+    private void P2CardDestory()
+    {
+        if (EnemyAI.EAllFields.Contains(this))
         {
             EnemyAI.EAllFields.Remove(this);
             if (this.inf.cardType == CardType.Defence)
@@ -188,137 +258,31 @@ public class Card : MonoBehaviour, IPointerClickHandler
                 EnemyAI.AttackFields.Remove(this);
             }
         }
-
-        if (CardManager.P1CardsWithEffectOnField.Contains(this))
+        var cardLists = new List<List<Card>>
+    {
+    CardManager.P2CardsWithEffectOnField,
+    CardManager.P2SpelEffectAfterSomeTurn,
+    CardManager.P2CannotAttackMyDefenceCard,
+    CardManager.P2CardsWithProtectEffectOnField,
+    CardManager.P2CannotPlayDefenceCard,
+    CardManager.P2EffectDuringAttacking
+    };
+        foreach (var list in cardLists)
         {
-            CardManager.P1CardsWithEffectOnField.Remove(this);
-        }
-        else if (CardManager.P1SpelEffectAfterSomeTurn.Contains(this))
-        {
-            CardManager.P1SpelEffectAfterSomeTurn.Remove(this);
-        }
-        else if (CardManager.P1CannotAttackMyDefenceCard.Contains(this))
-        {
-            CardManager.P1CannotAttackMyDefenceCard.Remove(this);
-        }
-        else if (CardManager.P1CardsWithProtectEffectOnField.Contains(this))
-        {
-            CardManager.P1CardsWithProtectEffectOnField.Remove(this);
-        }
-        else if (GameManager.p1CannotDrawEffectList.Contains(this))
-        {
-            GameManager.p1CannotDrawEffectList.Remove(this);
-        }
-        else if (CardManager.P1CannotPlayDefenceCard.Contains(this))
-        {
-            CardManager.P1CannotPlayDefenceCard.Remove(this);
-        }
-
-        if (CardManager.P2CardsWithEffectOnField.Contains(this))
-        {
-            CardManager.P2CardsWithEffectOnField.Remove(this);
-        }
-        else if (CardManager.P2SpelEffectAfterSomeTurn.Contains(this))
-        {
-            CardManager.P2SpelEffectAfterSomeTurn.Remove(this);
-        }
-        else if (CardManager.P2CannotAttackMyDefenceCard.Contains(this))
-        {
-            CardManager.P2CannotAttackMyDefenceCard.Remove(this);
-        }
-        else if (CardManager.P2CardsWithProtectEffectOnField.Contains(this))
-        {
-            CardManager.P2CardsWithProtectEffectOnField.Remove(this);
-        }
-        else if (GameManager.p2CannotDrawEffectList.Contains(this))
-        {
-            GameManager.p2CannotDrawEffectList.Remove(this);
-        }
-        else if (CardManager.P2CannotPlayDefenceCard.Contains(this))
-        {
-            CardManager.P2CannotPlayDefenceCard.Remove(this);
-        }
-        if (inf.effectInfs != null)
-        {
-            for (int i = 0; i < inf.effectInfs.Count; i++)
+            if (list.Contains(this))
             {
-                foreach (EffectInf.CardTrigger cardTrigger in inf.effectInfs[i].triggers)
-                {
-                    if (cardTrigger == EffectInf.CardTrigger.AfterDie)
-                    {
-                        if (inf.effectInfs[i] is ICardEffect cardEffect)
-                        {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(this, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                            GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                    if (cardTrigger == EffectInf.CardTrigger.FromPlayToDie)
-                    {
-                        if (inf.effectInfs[i] is ICardEffect cardEffect)
-                        {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(this, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                            GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                }
+                list.Remove(this);
             }
         }
-        Destroy(this.gameObject);
-        gameManager.nowDestory = false;
-    }
 
-    private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (attackedList.Count > 0)
+        if (CardManager.p2CannotDrawEffectList.Contains(this))
         {
-            Attacked = attackedList[attackedList.Count - 1];
+            CardManager.p2CannotDrawEffectList.Remove(this);
         }
+
     }
 
-    private void OnChangeAttacked()
-    {
-        if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack && CardOwner == PlayerID.Player1)
-        {
-            ActivePanel.SetActive(!attacked);
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            if (GameManager.defenceObject != null && !restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
-            {
-                restrictionClick = true;
-                StartCoroutine(OnPointerClickCoroutine());
-            }
-            else
-            {
-                if (SceneManager.GetActiveScene().name == "playGame")
-                {
-                    gameManager.detailPanel.SetActive(true);
-                    gameManager.cardDetailText[0].text = inf.cardName;
-                    gameManager.cardDetailText[1].text = inf.cost.ToString();
-                    gameManager.cardDetailText[2].text = inf.attack.ToString();
-                    gameManager.cardDetailText[3].text = inf.hp.ToString();
-                    gameManager.cardDetailText[4].text = inf.longText;
-                    gameManager.cardDetailText[5].text = inf.cardType.ToString();
-                }
-                else if (SceneManager.GetActiveScene().name == "makeDeck")
-                {
-                    deckMake.detailPanel.SetActive(true);
-                    deckMake.DetailText[0].text = inf.cardName;
-                    deckMake.DetailText[1].text = inf.cost.ToString();
-                    deckMake.DetailText[2].text = inf.attack.ToString();
-                    deckMake.DetailText[3].text = inf.hp.ToString();
-                    deckMake.DetailText[4].text = inf.longText;
-                    deckMake.DetailText[5].text = inf.cardType.ToString();
-                }
-            }
-        }
-    }
-
-    private IEnumerator OnPointerClickCoroutine()
+    private IEnumerator AttackCoroutine()
     {
         // GameManagerを取得
         if (GameManager.defenceObject != null)
@@ -329,6 +293,38 @@ public class Card : MonoBehaviour, IPointerClickHandler
             // 非同期メソッドを実行し、その完了を待つ
             yield return gameManager.AttackCard().AsCoroutine();
             restrictionClick = false;
+        }
+    }
+
+    private void ShowCardDetail()
+    {
+        if (SceneManager.GetActiveScene().name == "playGame")
+        {
+            gameManager.detailPanel.SetActive(true);
+            gameManager.cardDetailText[0].text = inf.cardName;
+            gameManager.cardDetailText[1].text = inf.cost.ToString();
+            gameManager.cardDetailText[2].text = inf.attack.ToString();
+            gameManager.cardDetailText[3].text = inf.hp.ToString();
+            gameManager.cardDetailText[4].text = inf.longText;
+            gameManager.cardDetailText[5].text = inf.cardType.ToString();
+        }
+        else if (SceneManager.GetActiveScene().name == "makeDeck")
+        {
+            deckMake.detailPanel.SetActive(true);
+            deckMake.DetailText[0].text = inf.cardName;
+            deckMake.DetailText[1].text = inf.cost.ToString();
+            deckMake.DetailText[2].text = inf.attack.ToString();
+            deckMake.DetailText[3].text = inf.hp.ToString();
+            deckMake.DetailText[4].text = inf.longText;
+            deckMake.DetailText[5].text = inf.cardType.ToString();
+        }
+    }
+
+    private void OnChangeAttacked()
+    {
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack && CardOwner == PlayerID.Player1)
+        {
+            ActivePanel.SetActive(!attacked);
         }
     }
 }

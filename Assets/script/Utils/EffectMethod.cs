@@ -138,20 +138,26 @@ public class EffectMethod
 
     public async Task CancelBuffMyAttackCard(ApplyEffectEventArgs e, TargetType buffType, CancelAttackBuff cancelAttackBuff, int cancleBuffAmount)
     {
+        int amount = cancleBuffAmount;
+        if (cancleBuffAmount == 2)
+        {
+            amount = e.Card.attack / cancleBuffAmount;
+        }
         if (buffType == TargetType.All)
         {
-            e.Card.attack -= cancleBuffAmount;
+
+            e.Card.attack -= amount;
             e.Card.attackText.text = e.Card.attack.ToString();
-            await utilMethod.DamageMethod(e.Card, cancleBuffAmount);
+            await utilMethod.DamageMethod(e.Card, amount);
         }
         else if (buffType == TargetType.Attack)
         {
-            e.Card.attack -= cancleBuffAmount;
+            e.Card.attack -= amount;
             e.Card.attackText.text = e.Card.attack.ToString();
         }
         else if (buffType == TargetType.Defence)
         {
-            await utilMethod.DamageMethod(e.Card, cancleBuffAmount);
+            await utilMethod.DamageMethod(e.Card, amount);
         }
         await cancelAttackBuff.EffectOfEffect(e);
     }
@@ -250,26 +256,25 @@ public class EffectMethod
 
     public async Task P1CannnotDraw(ApplyEffectEventArgs e, CannnotDraw cannnotDraw)
     {
-        GameManager.p1CannotDrawEffectList.Add(e.Card);
+        CardManager.p1CannotDrawEffectList.Add(e.Card);
         await cannnotDraw.EffectOfEffect(e);
     }
 
     public async Task P1CannnotDrawCancel(ApplyEffectEventArgs e, CannnotDrawCancel cannnotDrawCancel)
     {
-        GameManager.p1CannotDrawEffectList.RemoveAt(GameManager.p1CannotDrawEffectList.Count - 1);
+        CardManager.p1CannotDrawEffectList.RemoveAt(CardManager.p1CannotDrawEffectList.Count - 1);
         await cannnotDrawCancel.EffectOfEffect(e);
     }
 
     public async Task P2CannnotDrawCancel(ApplyEffectEventArgs e, CannnotDrawCancel cannnotDrawCancel)
     {
-        GameManager.p2CannotDrawEffectList.RemoveAt(GameManager.p2CannotDrawEffectList.Count - 1);
+        CardManager.p2CannotDrawEffectList.RemoveAt(CardManager.p2CannotDrawEffectList.Count - 1);
         await cannnotDrawCancel.EffectOfEffect(e);
     }
 
     public async Task P2CannnotDraw(ApplyEffectEventArgs e, CannnotDraw cannnotDraw)
     {
-        GameManager.p2CannotDrawEffectList.Add(e.Card);
-        Debug.Log(GameManager.p2CannotDrawEffectList.Count);
+        CardManager.p2CannotDrawEffectList.Add(e.Card);
         await cannnotDraw.EffectOfEffect(e);
     }
 
@@ -329,46 +334,33 @@ public class EffectMethod
     public async Task P2ManaDecrease(ApplyEffectEventArgs e, int decreaseAmount, ManaDecrease manaDecrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-
-        if (decreaseAmount == 1)
-        {
-            gameManager.P2_mana /= 2;
-            await manaDecrease.EffectOfEffect(e);
-            return;
-        }
-        gameManager.P2_mana -= decreaseAmount;
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaDecrease.EffectOfEffect(e);
+        manaManager.P2ManaDecrease(decreaseAmount);
     }
 
     public async Task P1ManaDecrease(ApplyEffectEventArgs e, int decreaseAmount, ManaDecrease manaDecrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaDecrease.EffectOfEffect(e);
-        if (decreaseAmount == 1)
-        {
-            gameManager.P1_mana /= 2;
-            gameManager.P1_manaText.text = gameManager.manaChange();
-            return;
-        }
-        gameManager.P1_mana -= decreaseAmount;
-        gameManager.P1_manaText.text = gameManager.manaChange();
+        manaManager.P1ManaDecrease(decreaseAmount);
     }
 
     public async Task P1MaxManaIncrease(ApplyEffectEventArgs e, int increaseAmount, MaxManaIncrease maxManaIncrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
-        gameManager.P1MaxMana += increaseAmount;
+        manaManager.P1MaxManaIncrease(increaseAmount);
     }
     public async Task P2MaxManaIncrease(ApplyEffectEventArgs e, int increaseAmount, MaxManaIncrease maxManaIncrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
-        gameManager.P2MaxMana += increaseAmount;
+        manaManager.P2MaxManaIncrease(increaseAmount);
+        
     }
 
     public async Task P1ShieldDamageCut(ApplyEffectEventArgs e, double damageCut, ProtectShieldDamageCut protectShieldDamageCut)
@@ -466,7 +458,7 @@ public class EffectMethod
     {
         for (int i = 0; i < destroyAmount; i++)
         {
-            
+
             List<Card> cards = P1GetTargetCards(targetType);
             Debug.Log(cards.Count);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
@@ -523,19 +515,17 @@ public class EffectMethod
     public async Task P1ManaHeal(ApplyEffectEventArgs e, int healAmount, ManaHeal manaHeal)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaHeal.EffectOfEffect(e);
-        gameManager.P1_mana += healAmount;
-        gameManager.P1_manaText.text = gameManager.manaChange();
+        manaManager.P1ManaHeal(healAmount);
     }
 
     public async Task P2ManaHeal(ApplyEffectEventArgs e, int healAmount, ManaHeal manaHeal)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaHeal.EffectOfEffect(e);
-        gameManager.P2_mana += healAmount;
-        gameManager.P2_manaText.text = gameManager.P2manaChange();
+        manaManager.P2ManaHeal(healAmount);
     }
 
     public async Task CancelNotAttacked(ApplyEffectEventArgs e, CancelNotAttacked cancelNotAttacked)
@@ -594,8 +584,9 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        uIManager.CheckPanelActive();
+        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
         choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[GameManager.myDeckInf[gameManager.myDeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
@@ -611,8 +602,9 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        uIManager.CheckPanelActive();
+        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
         choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[gameManager.enemyDeckInf[gameManager.enemyDeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
@@ -627,7 +619,8 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        Transform checkPanelTransform = gameManager.checkPanel.transform;
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        Transform checkPanelTransform = uIManager.checkPanel.transform;
         int childCount = checkPanelTransform.childCount;
         Transform targetTransform = checkPanelTransform.GetChild(childCount - 1);
         GameObject target = targetTransform.gameObject;
@@ -636,9 +629,9 @@ public class EffectMethod
             UnityEngine.Object.Destroy(target);
         }
 
-        if (gameManager.checkPanel != null)
+        if (uIManager.checkPanel != null)
         {
-            gameManager.checkPanel.SetActive(false);
+            uIManager.CheckPanelInActive();
         }
     }
 
@@ -705,6 +698,7 @@ public class EffectMethod
         {
             case TargetType.All:
                 card.attack += buffAmount;
+                card.maxHp += buffAmount;
                 card.hp += buffAmount;
                 break;
             case TargetType.Attack:
@@ -718,6 +712,7 @@ public class EffectMethod
                 }
                 break;
             case TargetType.Defence:
+                card.maxHp += buffAmount;
                 card.hp += buffAmount;
                 break;
         }

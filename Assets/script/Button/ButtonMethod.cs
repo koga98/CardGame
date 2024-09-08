@@ -63,5 +63,13 @@ public class ButtonMethod : MonoBehaviour
         return null;
     }
 
+    public void CancelChoice(){
+        GameObject manager = GameObject.Find("GameManager");
+        GameManager gameManager = manager.GetComponent<GameManager>();
+        CardDragAndDrop.OnCoroutine = false;
+        gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+        gameManager.choiceCard.GetComponent<CardDragAndDrop>().cancelChoice = true;
+    }
+
 
 }

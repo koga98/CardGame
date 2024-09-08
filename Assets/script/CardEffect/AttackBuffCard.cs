@@ -18,6 +18,18 @@ public class AttackBuffCard : EffectInf, ICardEffect
     {
         if (ApplyConditionEffects(conditionOnEffects, e))
         {
+            if (triggers[0] == CardTrigger.OnDuringAttack)
+            {
+                if (e.Card.CardOwner == PlayerID.Player1)
+                {
+                    Debug.Log("ばぐってる");
+                    CardManager.P1EffectDuringAttacking.Add(e.Card);
+                }
+                else if (e.Card.CardOwner == PlayerID.Player2)
+                {
+                    CardManager.P2EffectDuringAttacking.Add(e.Card);
+                }
+            }
             await effectMethod.BuffMyCard(e, buffAmount, targetType, this);
         }
 
@@ -32,7 +44,8 @@ public class AttackBuffCard : EffectInf, ICardEffect
 
     private bool ApplyConditionEffects(List<ConditionEffectsInf> conditions, ApplyEffectEventArgs e)
     {
-        return conditions.Count == 0 || conditions.All(condition => condition.ApplyEffect(e));
+        IsConditionClear = conditions.Count == 0 || conditions.All(condition => condition.ApplyEffect(e));
+        return IsConditionClear;
     }
 
 

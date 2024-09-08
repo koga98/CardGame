@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "\u7834\u6EC5\u306E\u5C11\u5973\u30EC\u30A4"
   m_EditorClassIdentifier: 
   attackClip: {fileID: 7400000, guid: e581bf56e45f10f42933ef156d8614b6, type: 2}
+  voice: {fileID: 8300000, guid: eb1d74a9907eb5e44af88e4db3107193, type: 3}
   Id: 28
   attack: 700
   hp: 200

@@ -67,8 +67,8 @@ public class EnemyAI : MonoBehaviour
 
     public void drawCard(int k, CardInf enemyDeckInf, GameObject canvas, GameObject enemyCardPrefab, GameManager gameManager)
     {
-        Debug.Log(GameManager.p2CannotDrawEffectList.Count);
-        if (GameManager.p2CannotDrawEffectList.Count == 0)
+        Debug.Log(CardManager.p2CannotDrawEffectList.Count);
+        if (CardManager.p2CannotDrawEffectList.Count == 0)
         {
             AudioManager.Instance.PlayDrawSound();
             Transform hand = canvas.transform.Find("enemyHand ");
@@ -82,7 +82,7 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    public async Task PlayCard(GameManager gameManager)
+    public async Task PlayCard(ManaManager manaManager)
     {
         continueMethod = true;
         while (continueMethod)
@@ -92,113 +92,122 @@ public class EnemyAI : MonoBehaviour
             {
                 if (playCard == null)
                 {
-                    Debug.Log(gameManager.P2_mana);
-                    Debug.Log(hand.cost);
-                    if (gameManager.P2_mana >= hand.cost)
+                    if (manaManager.P2_mana >= hand.cost)
                     {
-                        if (CardManager.P2CannotPlayDefenceCard.Count == 0)
-                        {
-                            playCard = hand;
-                        }
-                        else if (CardManager.P2CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence)
-                        {
-                            playCard = hand;
-                        }
-                        foreach (var effect in hand.inf.effectInfs)
-                        {
-                            for (int i = 0; i < effect.triggers.Count; i++)
-                            {
-                                if (effect.triggers[i] == EffectInf.CardTrigger.OnBeginDrag)
-                                {
-                                    if (effect is ICardEffect cardEffect)
-                                    {
-                                        await cardEffect.Apply(new ApplyEffectEventArgs(hand, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
-                                        , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                                    }
-                                }
-                            }
-                            if (hand.gameObject.GetComponent<CardDragAndDrop>().canDrag)
-                            {
-                                playCard = hand;
-                            }
-                            else
-                            {
-                                playCard = null;
-                            }
-                        }
-
+                        await OnBeginDragEffect(hand);
+                        playCard = PlayCardSelecte(hand);
                     }
                 }
                 else
                 {
-                    if (gameManager.P2_mana >= hand.cost && playCard.cost < hand.cost)
+                    if (manaManager.P2_mana >= hand.cost && playCard.cost < hand.cost)
                     {
-                        if (CardManager.P2CannotPlayDefenceCard.Count == 0)
-                        {
-                            playCard = hand;
-                        }
-                        else if (CardManager.P2CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence)
-                        {
-                            playCard = hand;
-                        }
-                        foreach (var effect in hand.inf.effectInfs)
-                        {
-                            for (int i = 0; i < effect.triggers.Count; i++)
-                            {
-                                if (effect.triggers[i] == EffectInf.CardTrigger.OnBeginDrag)
-                                {
-                                    if (effect is ICardEffect cardEffect)
-                                    {
-                                        await cardEffect.Apply(new ApplyEffectEventArgs(hand, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
-                                        , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                                    }
-                                }
-                            }
-                        }
-                        if (hand.gameObject.GetComponent<CardDragAndDrop>().canDrag)
-                        {
-                            playCard = hand;
-                        }
+                        await OnBeginDragEffect(hand);
+                        playCard = SetBetterCard(playCard, hand);
                     }
                 }
-
             }
             if (playCard != null)
             {
-                GameObject card = playCard.gameObject;
-                if (card != null)
-                {
-                    playCard.blindPanel.SetActive(false);
-                    hands.Remove(playCard);
-                    if (playCard.inf.cardType == CardType.Attack)
-                    {
-                        await AttackMethod(playCard);
-                    }
-                    else if (playCard.inf.cardType == CardType.Defence)
-                    {
-                        await DefenceMethod(playCard);
-                    }
-                    else if (playCard.inf.cardType == CardType.Spel)
-                    {
-                        await SpelMethod(playCard);
-                    }
-                    gameManager.P2_mana -= playCard.cost;
-                    AudioManager.Instance.PlayPlayCardSound();
-                    if (gameManager.P2_mana == 0)
-                    {
-                        continueMethod = false;
-                    }
-                }
+                await PlaySelectedCard(playCard, manaManager);
             }
             else
             {
                 continueMethod = false;
             }
         }
-        Debug.Log("PlayCardメソッド内終了");
+    }
+    public async Task Attack()
+    {
+        await WaitUntilFalse(() => continueMethod);
+        GameObject manager = GameObject.Find("GameManager");
+        GameManager gameManager = manager.GetComponent<GameManager>();
+        var attackFieldsCopy = AttackFields?.ToList() ?? new List<Card>();
+        var defenceFieldsCopy = DefenceFields?.ToList() ?? new List<Card>();
+        IEnumerable<Card> allFields = attackFieldsCopy.Concat(defenceFieldsCopy);
+
+        // Convert the IEnumerable to a list for index-based access
+        var allFieldsList = allFields.ToList();
+        await AllCardAttackEnemy(allFieldsList,gameManager);
     }
 
-    public async Task AttackMethod(Card card)
+    private async Task OnBeginDragEffect(Card hand)
+    {
+        foreach (var effect in hand.inf.effectInfs)
+        {
+            for (int i = 0; i < effect.triggers.Count; i++)
+            {
+                if (effect.triggers[i] == EffectInf.CardTrigger.OnBeginDrag)
+                {
+                    if (effect is ICardEffect cardEffect)
+                    {
+                        await cardEffect.Apply(new ApplyEffectEventArgs(hand, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields
+                        , GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
+                    }
+                }
+            }
+        }
+    }
+
+    private Card PlayCardSelecte(Card hand)
+    {
+        bool ClearCardEffectConditon = hand.gameObject.GetComponent<CardDragAndDrop>().canDrag;
+        bool NoRestrictPlayDefenceCard = CardManager.P2CannotPlayDefenceCard.Count == 0;
+        bool IsNotDefenceCard = CardManager.P2CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence;
+        bool canPlayDefenceCard;
+        if (NoRestrictPlayDefenceCard || IsNotDefenceCard)
+            canPlayDefenceCard = true;
+        else
+            canPlayDefenceCard = false;
+
+        if (canPlayDefenceCard && ClearCardEffectConditon)
+            return hand;
+        else
+            return null;
+    }
+
+    private Card SetBetterCard(Card playCard, Card hand)
+    {
+        bool ClearCardEffectConditon = hand.gameObject.GetComponent<CardDragAndDrop>().canDrag;
+        bool NoRestrictPlayDefenceCard = CardManager.P2CannotPlayDefenceCard.Count == 0;
+        bool IsNotDefenceCard = CardManager.P2CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence;
+        bool canPlayDefenceCard;
+        if (NoRestrictPlayDefenceCard || IsNotDefenceCard)
+            canPlayDefenceCard = true;
+        else
+            canPlayDefenceCard = false;
+
+        if (canPlayDefenceCard && ClearCardEffectConditon)
+            return hand;
+        else
+            return playCard;
+    }
+
+    private async Task PlaySelectedCard(Card playCard, ManaManager manaManager)
+    {
+        playCard.blindPanel.SetActive(false);
+        hands.Remove(playCard);
+        if (playCard.inf.cardType == CardType.Attack)
+        {
+            await AttackMethod(playCard);
+        }
+        else if (playCard.inf.cardType == CardType.Defence)
+        {
+            await DefenceMethod(playCard);
+        }
+        else if (playCard.inf.cardType == CardType.Spel)
+        {
+            await SpelMethod(playCard);
+        }
+        manaManager.P2_mana -= playCard.cost;
+        AudioManager.Instance.PlayPlayCardSound();
+        if (manaManager.P2_mana == 0)
+        {
+            continueMethod = false;
+        }
+    }
+
+    private async Task AttackMethod(Card card)
     {
         card.transform.SetParent(enemyAttackField.transform, false);
         AttackFields.Add(card);
@@ -207,20 +216,21 @@ public class EnemyAI : MonoBehaviour
         {
             await ProcessCardEffects(card);
         }
-        Debug.Log("AttackMethod終了");
     }
 
-    public async Task SpelMethod(Card card)
+    private async Task SpelMethod(Card card)
     {
         await ProcessCardEffects(card);
         if (card.transform.parent == GameObject.Find("SpelPanel").transform)
         {
-        }else{
+        }
+        else
+        {
             Destroy(card.gameObject);
         }
     }
 
-    public async Task DefenceMethod(Card card)
+    private async Task DefenceMethod(Card card)
     {
         card.transform.SetParent(enemyDefenceField.transform, false);
         EAllFields.Add(card);
@@ -229,22 +239,8 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    public async Task Attack()
+    private async Task AllCardAttackEnemy(List<Card> allFieldsList,GameManager gameManager)
     {
-        await WaitUntilFalse(() => continueMethod);
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-
-        // Combine both attack and defense fields
-        //IEnumerable<Card> allFields = (AttackFields ?? Enumerable.Empty<Card>()).Concat(DefenceFields ?? Enumerable.Empty<Card>());
-        var attackFieldsCopy = AttackFields?.ToList() ?? new List<Card>();
-        var defenceFieldsCopy = DefenceFields?.ToList() ?? new List<Card>();
-        IEnumerable<Card> allFields = attackFieldsCopy.Concat(defenceFieldsCopy);
-
-        // Convert the IEnumerable to a list for index-based access
-        var allFieldsList = allFields.ToList();
-        Debug.Log(allFieldsList.Count);
-
         for (int i = 0; i < allFieldsList.Count; i++)
         {
             Card filed = allFieldsList[i];
@@ -253,7 +249,6 @@ public class EnemyAI : MonoBehaviour
             {
                 GameManager.attackObject = filed.gameObject;
                 GameManager.defenceObject = SelectDefenceObject(filed, GameManager.PAttackFields, GameManager.PDefenceFields);
-                Debug.Log(GameManager.defenceObject);
 
                 // If the attack clip is not null, proceed with attack animation
                 if (filed.inf.attackClip != null)
@@ -265,7 +260,6 @@ public class EnemyAI : MonoBehaviour
                     else
                     {
                         await gameManager.AttackCard();
-                        Debug.Log(i + "終了");
                     }
                 }
             }
@@ -318,8 +312,6 @@ public class EnemyAI : MonoBehaviour
         return defenceObject ?? leader;
     }
 
-    // Helper method to find the best target in a given field
-    //オブジェクトが破壊されていた時にメソッド処理中に呼び出され、それを代入してしまっている
     private GameObject FindBestTarget(List<Card> cards, Card filed)
     {
         GameObject bestTarget = null;
@@ -342,7 +334,7 @@ public class EnemyAI : MonoBehaviour
         return bestTarget;
     }
 
-    public async Task ProcessCardEffects(Card card)
+    private async Task ProcessCardEffects(Card card)
     {
         // ランダム効果カードの特別な処理
         if (card.inf is RandomCardInf randomCardInf)
@@ -430,7 +422,6 @@ public class EnemyAI : MonoBehaviour
                 }
             }
         }
-        Debug.Log("ProcessCardEffects終了");
     }
     private static async void CollectionChangedAsync(object sender, NotifyCollectionChangedEventArgs e)
     {
@@ -460,6 +451,5 @@ public class EnemyAI : MonoBehaviour
                 }
             }
         }
-
     }
 }
