@@ -111,8 +111,7 @@ public class CardManager : MonoBehaviour
             AudioManager.Instance.PlayDrawSound();
             if (Owner == PlayerType.Player2)
             {
-                GameObject card = Instantiate(cardPrefab);
-                card.transform.SetParent(hand);
+                GameObject card = Instantiate(cardPrefab, hand, false);
                 card.GetComponent<Card>().P2SetUp(allCardInf.allList[enemyDeckInf[DeckIndex]]);
                 card.transform.localScale = Vector3.one;
                 Hands.Add(card.GetComponent<Card>());
@@ -120,8 +119,7 @@ public class CardManager : MonoBehaviour
             }
             else if (Owner == PlayerType.Player1)
             {
-                GameObject card = Instantiate(cardPrefab);
-                card.transform.SetParent(hand);
+                GameObject card = Instantiate(cardPrefab, hand, false);
                 card.GetComponent<Card>().P1SetUp(allCardInf.allList[DeckInf[DeckIndex]]);
                 card.transform.localScale = Vector3.one;
                 Hands.Add(card.GetComponent<Card>());
