@@ -542,10 +542,8 @@ public class EffectMethod
 
     public void P1InstantiateToken(CardInf token)
     {
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
         CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-        GameObject cardObject = UnityEngine.Object.Instantiate(gameManager.cardPrefab);
+        GameObject cardObject = UnityEngine.Object.Instantiate(cardManager.cardPrefab);
         cardObject.GetComponent<Card>().P1SetUp(token);
         GameObject myAttackField = GameObject.Find("myAttackField");
         GameObject myDefenceField = GameObject.Find("myDefenceField");
@@ -566,10 +564,8 @@ public class EffectMethod
 
     public void P2InstantiateToken(CardInf token)
     {
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
         CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
-        GameObject cardObject = UnityEngine.Object.Instantiate(gameManager.enemyCardPrefab);
+        GameObject cardObject = UnityEngine.Object.Instantiate(cardManager.cardPrefab);
         cardObject.GetComponent<Card>().P2SetUp(token);
         cardObject.GetComponent<Card>().blindPanel.SetActive(false);
         GameObject enemyAttackField = GameObject.Find("enemyAttackField");
@@ -596,7 +592,7 @@ public class EffectMethod
         UIManager uIManager = manager.GetComponent<UIManager>();
         CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         uIManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
+        choiceCard = UnityEngine.Object.Instantiate(cardManager.cardPrefab, uIManager.checkPanel.transform, false);
         choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[CardManager.DeckInf[cardManager.DeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
@@ -615,7 +611,7 @@ public class EffectMethod
         UIManager uIManager = manager.GetComponent<UIManager>();
         CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         uIManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
+        choiceCard = UnityEngine.Object.Instantiate(cardManager.cardPrefab, uIManager.checkPanel.transform, false);
         choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[CardManager.enemyDeckInf[cardManager.DeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");

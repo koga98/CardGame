@@ -17,8 +17,6 @@ public class GameManager : MonoBehaviour
     public CardManager player2CardManager;
     public ManaManager manaManager;
     public UIManager uIManager;
-    public GameObject cardPrefab;
-    public GameObject enemyCardPrefab;
     public GameObject leaderPrefab;
     public GameObject enemyLeaderPrefab;
     public AllCardInf allCardInf;
