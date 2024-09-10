@@ -477,6 +477,39 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             uIManager.ChoiceCardPlace.SetActive(false);
         }
     }
+    private IEnumerator OnPointerClickCoroutine(PointerEventData eventData)
+    {
+        if (OnCoroutine)
+        {
+            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            if (clickedObject.tag == "Enemy")
+            {
+                Card clickedObjectCard = clickedObject.GetComponent<Card>();
+                gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+                yield return StartCoroutine(ApplyEffectCoroutine(gameManager.choiceCard.GetComponent<Card>().inf.effectInfs[0],
+                                new ApplyEffectEventArgs(card, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
+                                GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields, clickedObjectCard)));
+            }
+            else
+            {
+                OnCoroutine = false;
+                gameManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+            }
+        }
+
+        if (OnButtonCoroutine)
+        {
+            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            if (clickedObject.tag == "Card")
+            {
+                yield break; // コルーチンを終了
+            }
+            else
+            {
+                OnButtonCoroutine = false;
+            }
+        }
+    }
 
     private void ShowCannotDragMessage(GameObject clickedObject)
     {

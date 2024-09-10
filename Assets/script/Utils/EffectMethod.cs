@@ -466,7 +466,7 @@ public class EffectMethod
     {
         for (int i = 0; i < destroyAmount; i++)
         {
-            
+
             List<Card> cards = P1GetTargetCards(targetType);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
             if (cards.Count == 0 && randomValue == 0)

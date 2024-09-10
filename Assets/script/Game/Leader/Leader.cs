@@ -115,6 +115,7 @@ public class Leader : MonoBehaviour, IPointerClickHandler
             {
                 StartCoroutine(attackManager.AttackLeaderCoroutine());
             }
+
         }
     }
 

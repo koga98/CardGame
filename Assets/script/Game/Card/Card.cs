@@ -188,6 +188,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             await P2CardDestory();
         }
+        Debug.Log("終わり");
         await effectManager.EffectAfterDie(this);
         Destroy(this.gameObject);
         gameManager.nowDestory = false;
@@ -292,12 +293,14 @@ public class Card : MonoBehaviour, IPointerClickHandler
             if (GameManager.defenceObject != null && !gameManager.restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
             {
                 gameManager.restrictionClick = true;
+                Debug.Log("発生1");
                 StartCoroutine(OnPointerClickCoroutine());
                 
             }
             else
             {
-                if (SceneManager.GetActiveScene().name == "playGame" && !blindPanel.activeSelf)
+
+                if (SceneManager.GetActiveScene().name == "playGame")
                 {
                     uIManager.DetailPanelActive(inf);
                 }

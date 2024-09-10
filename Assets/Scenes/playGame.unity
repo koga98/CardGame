@@ -3601,11 +3601,16 @@ GameObject:
   m_Component:
   - component: {fileID: 1668571898}
   - component: {fileID: 1668571897}
+<<<<<<< HEAD
   - component: {fileID: 1668571900}
   - component: {fileID: 1668571901}
   - component: {fileID: 1668571902}
   - component: {fileID: 1668571903}
   - component: {fileID: 1668571904}
+=======
+  - component: {fileID: 1668571899}
+  - component: {fileID: 1668571900}
+>>>>>>> 6b680c9b2337113d24102b3cbe88d67012e86f91
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3625,15 +3630,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee03a4ef5146444c9db1252f7d25042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1CardManager: {fileID: 822356386}
-  player2CardManager: {fileID: 205969696}
   manaManager: {fileID: 1668571900}
-  uIManager: {fileID: 1668571901}
   cardPrefab: {fileID: 1886205860272788798, guid: 636ed28648242f4428d3efe6aea49c45, type: 3}
   enemyCardPrefab: {fileID: 1575106873050178216, guid: 2e0610531c15e4d4f98bed338b3798c7, type: 3}
   leaderPrefab: {fileID: 1564859748892802202, guid: 182c43d47a9d86749995b604bf8d3bdb, type: 3}
   enemyLeaderPrefab: {fileID: 7447574546681705576, guid: fddfaad7e2d0f29438402cae422a836e, type: 3}
+  ChoicePanel: {fileID: 60068620}
+  ChoiceCardPlace: {fileID: 543494261}
   allCardInf: {fileID: 11400000, guid: 684e677b2cda3184dad05485ca192dd8, type: 2}
+  enemyDeckInf: 0000000000000000000000000000000005000000050000000600000006000000060000000700000007000000070000000900000009000000090000000e0000000e0000000e0000001000000010000000100000001200000012000000120000001400000014000000140000001600000016000000160000001800000018000000180000001b0000001b0000001b0000001e0000001e0000001a0000001a000000
+  enemyDeck:
+  - {fileID: 11400000, guid: 2d33e3a03667c854a855c248fe652483, type: 2}
+  - {fileID: 11400000, guid: dee6edbc8509ea44eac04b14886b25c8, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: dee6edbc8509ea44eac04b14886b25c8, type: 2}
+  - {fileID: 0}
   myLeaderInf: {fileID: 11400000, guid: 52d16d9f8a6c75c44b46d7fea381457f, type: 2}
   enemyLeaderInf: {fileID: 11400000, guid: 8774f2bdbc91a1944af1fbd4692f6c97, type: 2}
   canvas: {fileID: 505862951}
@@ -3677,6 +3688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01931f300ddbe7a4bb93e8a0a73fa18b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   effectManager: {fileID: 1668571902}
   P1_manaText: {fileID: 919194988}
   P2_manaText: {fileID: 2050448971}
@@ -3757,6 +3769,22 @@ MonoBehaviour:
   aoeEffectPrefab: {fileID: 4402817406193648063, guid: 679e9c32df64cf54ca3550bda54d1ad8, type: 3}
   buffEffectPrefab: {fileID: 4165391453984570132, guid: 511809fd9f49e234eaf2065b67dd2099, type: 3}
   effectManager: {fileID: 1668571902}
+=======
+--- !u!114 &1668571900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668571896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01931f300ddbe7a4bb93e8a0a73fa18b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  P1_manaText: {fileID: 919194988}
+  P2_manaText: {fileID: 2050448971}
+>>>>>>> 6b680c9b2337113d24102b3cbe88d67012e86f91
 --- !u!1 &1687432985
 GameObject:
   m_ObjectHideFlags: 0
