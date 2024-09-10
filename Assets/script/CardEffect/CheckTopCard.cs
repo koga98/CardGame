@@ -13,7 +13,7 @@ public class CheckTopCard : EffectInf
     public List<EffectInf> additionalEffects;
     public List<ConditionEffectsInf> conditionOnAdditionalEffects;
     public bool ApplyToMyself;
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
         if (AreConditionsMet(conditionOnEffects, e))
         {
@@ -24,11 +24,10 @@ public class CheckTopCard : EffectInf
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
 
-        return Task.CompletedTask;
     }
 
     private void HandleTopCardEffect(ApplyEffectEventArgs e)

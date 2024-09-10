@@ -8,30 +8,28 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class EffectMethod
+public class EffectMethod 
 {
     private GameObject choiceCard;
     UtilMethod utilMethod = new UtilMethod();
     public async Task P1DrawCard(ApplyEffectEventArgs e, int drawAmount, DrawCard drawCard)
     {
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+
         for (int i = 0; i < drawAmount; i++)
         {
-            gameManager.drawCard();
+            cardManager.drawCard();
         }
         await drawCard.EffectOfEffect(e);
     }
 
     public async Task P2DrawCard(ApplyEffectEventArgs e, int drawAmount, DrawCard drawCard)
     {
-        GameObject ai = GameObject.Find("EnemyAI");
-        EnemyAI enemyAI = ai.GetComponent<EnemyAI>();
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         for (int i = 0; i < drawAmount; i++)
         {
-            enemyAI.drawCard(gameManager.enemyDeckIndex, gameManager.allCardInf.allList[gameManager.enemyDeckInf[gameManager.enemyDeckIndex]], gameManager.canvas, gameManager.enemyCardPrefab, gameManager);
+            cardManager.drawCard();
         }
         await drawCard.EffectOfEffect(e);
     }
@@ -108,25 +106,29 @@ public class EffectMethod
 
     public async Task P1CannotAttackOtherCard(ApplyEffectEventArgs e, CannotAttackOtherCard cannotAttackOtherCard)
     {
-        CardManager.P1CardsWithProtectEffectOnField.Add(e.Card);
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        cardManager.CardsWithProtectEffectOnField.Add(e.Card);
         await cannotAttackOtherCard.EffectOfEffect(e);
     }
 
     public async Task P2CannotAttackOtherCard(ApplyEffectEventArgs e, CannotAttackOtherCard cannotAttackOtherCard)
     {
-        CardManager.P2CardsWithProtectEffectOnField.Add(e.Card);
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        cardManager.CardsWithProtectEffectOnField.Add(e.Card);
         await cannotAttackOtherCard.EffectOfEffect(e);
     }
 
     public async Task P1CannotAttackOtherDeffenceCard(ApplyEffectEventArgs e, CannotAttackOtherDeffenceCard cannotAttackOtherDeffenceCard)
     {
-        CardManager.P1CannotAttackMyDefenceCard.Add(e.Card);
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        cardManager.CannotAttackMyDefenceCard.Add(e.Card);
         await cannotAttackOtherDeffenceCard.EffectOfEffect(e);
     }
 
     public async Task P2CannotAttackOtherDeffenceCard(ApplyEffectEventArgs e, CannotAttackOtherDeffenceCard cannotAttackOtherDeffenceCard)
     {
-        CardManager.P2CannotAttackMyDefenceCard.Add(e.Card);
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        cardManager.CannotAttackMyDefenceCard.Add(e.Card);
         await cannotAttackOtherDeffenceCard.EffectOfEffect(e);
     }
 
@@ -138,20 +140,26 @@ public class EffectMethod
 
     public async Task CancelBuffMyAttackCard(ApplyEffectEventArgs e, TargetType buffType, CancelAttackBuff cancelAttackBuff, int cancleBuffAmount)
     {
+        int amount = cancleBuffAmount;
+        if (cancleBuffAmount == 2)
+        {
+            amount = e.Card.attack / cancleBuffAmount;
+        }
         if (buffType == TargetType.All)
         {
-            e.Card.attack -= cancleBuffAmount;
+
+            e.Card.attack -= amount;
             e.Card.attackText.text = e.Card.attack.ToString();
-            await utilMethod.DamageMethod(e.Card, cancleBuffAmount);
+            await utilMethod.DamageMethod(e.Card, amount);
         }
         else if (buffType == TargetType.Attack)
         {
-            e.Card.attack -= cancleBuffAmount;
+            e.Card.attack -= amount;
             e.Card.attackText.text = e.Card.attack.ToString();
         }
         else if (buffType == TargetType.Defence)
         {
-            await utilMethod.DamageMethod(e.Card, cancleBuffAmount);
+            await utilMethod.DamageMethod(e.Card, amount);
         }
         await cancelAttackBuff.EffectOfEffect(e);
     }
@@ -178,7 +186,7 @@ public class EffectMethod
 
     public async Task HealCard(ApplyEffectEventArgs e, int healAmount, HpHealCard hpHealCard, string target = null)
     {
-        if (target != null)
+        if (string.IsNullOrEmpty(target))
         {
             foreach (Card card in e.PCards)
             {
@@ -250,26 +258,29 @@ public class EffectMethod
 
     public async Task P1CannnotDraw(ApplyEffectEventArgs e, CannnotDraw cannnotDraw)
     {
-        GameManager.p1CannotDrawEffectList.Add(e.Card);
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        cardManager.CannotDrawEffectList.Add(e.Card);
         await cannnotDraw.EffectOfEffect(e);
     }
 
     public async Task P1CannnotDrawCancel(ApplyEffectEventArgs e, CannnotDrawCancel cannnotDrawCancel)
     {
-        GameManager.p1CannotDrawEffectList.RemoveAt(GameManager.p1CannotDrawEffectList.Count - 1);
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        cardManager.CannotDrawEffectList.RemoveAt(cardManager.CannotDrawEffectList.Count - 1);
         await cannnotDrawCancel.EffectOfEffect(e);
     }
 
     public async Task P2CannnotDrawCancel(ApplyEffectEventArgs e, CannnotDrawCancel cannnotDrawCancel)
     {
-        GameManager.p2CannotDrawEffectList.RemoveAt(GameManager.p2CannotDrawEffectList.Count - 1);
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        cardManager.CannotDrawEffectList.RemoveAt(cardManager.CannotDrawEffectList.Count - 1);
         await cannnotDrawCancel.EffectOfEffect(e);
     }
 
     public async Task P2CannnotDraw(ApplyEffectEventArgs e, CannnotDraw cannnotDraw)
     {
-        GameManager.p2CannotDrawEffectList.Add(e.Card);
-        Debug.Log(GameManager.p2CannotDrawEffectList.Count);
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        cardManager.CannotDrawEffectList.Add(e.Card);
         await cannnotDraw.EffectOfEffect(e);
     }
 
@@ -329,46 +340,33 @@ public class EffectMethod
     public async Task P2ManaDecrease(ApplyEffectEventArgs e, int decreaseAmount, ManaDecrease manaDecrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-
-        if (decreaseAmount == 1)
-        {
-            gameManager.P2_mana /= 2;
-            await manaDecrease.EffectOfEffect(e);
-            return;
-        }
-        gameManager.P2_mana -= decreaseAmount;
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaDecrease.EffectOfEffect(e);
+        manaManager.P2ManaDecrease(decreaseAmount);
     }
 
     public async Task P1ManaDecrease(ApplyEffectEventArgs e, int decreaseAmount, ManaDecrease manaDecrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaDecrease.EffectOfEffect(e);
-        if (decreaseAmount == 1)
-        {
-            gameManager.P1_mana /= 2;
-            gameManager.P1_manaText.text = gameManager.manaChange();
-            return;
-        }
-        gameManager.P1_mana -= decreaseAmount;
-        gameManager.P1_manaText.text = gameManager.manaChange();
+        manaManager.P1ManaDecrease(decreaseAmount);
     }
 
     public async Task P1MaxManaIncrease(ApplyEffectEventArgs e, int increaseAmount, MaxManaIncrease maxManaIncrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
-        gameManager.P1MaxMana += increaseAmount;
+        manaManager.P1MaxManaIncrease(increaseAmount);
     }
     public async Task P2MaxManaIncrease(ApplyEffectEventArgs e, int increaseAmount, MaxManaIncrease maxManaIncrease)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
-        gameManager.P2MaxMana += increaseAmount;
+        manaManager.P2MaxManaIncrease(increaseAmount);
+        
     }
 
     public async Task P1ShieldDamageCut(ApplyEffectEventArgs e, double damageCut, ProtectShieldDamageCut protectShieldDamageCut)
@@ -395,14 +393,16 @@ public class EffectMethod
 
     public async Task P1CannotPlayAssistCard(ApplyEffectEventArgs e, CannotPlayAssistCard cannotPlayAssistCard)
     {
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         await cannotPlayAssistCard.EffectOfEffect(e);
-        CardManager.P1CannotPlayDefenceCard.Add(e.Card);
+        cardManager.CannotPlayDefenceCard.Add(e.Card);
     }
 
     public async Task P2CannotPlayAssistCard(ApplyEffectEventArgs e, CannotPlayAssistCard cannotPlayAssistCard)
     {
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         await cannotPlayAssistCard.EffectOfEffect(e);
-        CardManager.P2CannotPlayDefenceCard.Add(e.Card);
+        cardManager.CannotPlayDefenceCard.Add(e.Card);
     }
 
     public async Task P1BuffAttackFieldCards(ApplyEffectEventArgs e, int buffAmount, TargetType targetType, BuffAttackFieldCards buffAttackFieldCards)
@@ -468,7 +468,6 @@ public class EffectMethod
         {
             
             List<Card> cards = P1GetTargetCards(targetType);
-            Debug.Log(cards.Count);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
             if (cards.Count == 0 && randomValue == 0)
             {
@@ -490,7 +489,6 @@ public class EffectMethod
         for (int i = 0; i < destroyAmount; i++)
         {
             List<Card> cards = P2GetTargetCards(targetType);
-            Debug.Log(cards.Count);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
             if (cards.Count == 0 && randomValue == 0)
             {
@@ -523,19 +521,17 @@ public class EffectMethod
     public async Task P1ManaHeal(ApplyEffectEventArgs e, int healAmount, ManaHeal manaHeal)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaHeal.EffectOfEffect(e);
-        gameManager.P1_mana += healAmount;
-        gameManager.P1_manaText.text = gameManager.manaChange();
+        manaManager.P1ManaHeal(healAmount);
     }
 
     public async Task P2ManaHeal(ApplyEffectEventArgs e, int healAmount, ManaHeal manaHeal)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        ManaManager manaManager = manager.GetComponent<ManaManager>();
         await manaHeal.EffectOfEffect(e);
-        gameManager.P2_mana += healAmount;
-        gameManager.P2_manaText.text = gameManager.P2manaChange();
+        manaManager.P2ManaHeal(healAmount);
     }
 
     public async Task CancelNotAttacked(ApplyEffectEventArgs e, CancelNotAttacked cancelNotAttacked)
@@ -548,6 +544,7 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         GameObject cardObject = UnityEngine.Object.Instantiate(gameManager.cardPrefab);
         cardObject.GetComponent<Card>().P1SetUp(token);
         GameObject myAttackField = GameObject.Find("myAttackField");
@@ -555,14 +552,14 @@ public class EffectMethod
         if (token.cardType == CardType.Attack)
         {
             cardObject.transform.SetParent(myAttackField.transform, false);
-            GameManager.PAttackFields.Add(cardObject.GetComponent<Card>());
-            GameManager.PAllFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AttackFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
         else if (token.cardType == CardType.Defence)
         {
             cardObject.transform.SetParent(myDefenceField.transform, false);
-            GameManager.PDefenceFields.Add(cardObject.GetComponent<Card>());
-            GameManager.PAllFields.Add(cardObject.GetComponent<Card>());
+            cardManager.DefenceFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
         cardObject.transform.localScale = Vector3.one;
     }
@@ -571,21 +568,23 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         GameObject cardObject = UnityEngine.Object.Instantiate(gameManager.enemyCardPrefab);
         cardObject.GetComponent<Card>().P2SetUp(token);
+        cardObject.GetComponent<Card>().blindPanel.SetActive(false);
         GameObject enemyAttackField = GameObject.Find("enemyAttackField");
         GameObject enemyDefenceField = GameObject.Find("enemyDefenceField");
         if (token.cardType == CardType.Attack)
         {
             cardObject.transform.SetParent(enemyAttackField.transform, false);
-            EnemyAI.AttackFields.Add(cardObject.GetComponent<Card>());
-            EnemyAI.EAllFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AttackFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
         else if (token.cardType == CardType.Defence)
         {
             cardObject.transform.SetParent(enemyDefenceField.transform, false);
-            EnemyAI.DefenceFields.Add(cardObject.GetComponent<Card>());
-            EnemyAI.EAllFields.Add(cardObject.GetComponent<Card>());
+            cardManager.DefenceFields.Add(cardObject.GetComponent<Card>());
+            cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
         cardObject.transform.localScale = Vector3.one;
     }
@@ -594,9 +593,11 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
-        choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[GameManager.myDeckInf[gameManager.myDeckIndex]]);
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        uIManager.checkPanel.SetActive(true);
+        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
+        choiceCard.GetComponent<Card>().P1SetUp(gameManager.allCardInf.allList[CardManager.DeckInf[cardManager.DeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
         Transform under = parentTransform.Find("underButton");
@@ -611,9 +612,11 @@ public class EffectMethod
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.checkPanel.SetActive(true);
-        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, gameManager.checkPanel.transform, false);
-        choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[gameManager.enemyDeckInf[gameManager.enemyDeckIndex]]);
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        uIManager.checkPanel.SetActive(true);
+        choiceCard = UnityEngine.Object.Instantiate(gameManager.cardPrefab, uIManager.checkPanel.transform, false);
+        choiceCard.GetComponent<Card>().P2SetUp(gameManager.allCardInf.allList[CardManager.enemyDeckInf[cardManager.DeckIndex]]);
         Transform parentTransform = choiceCard.transform;
         Transform top = parentTransform.Find("topButton");
         Transform under = parentTransform.Find("underButton");
@@ -626,8 +629,8 @@ public class EffectMethod
     public void CancelCheckTopCard()
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-        Transform checkPanelTransform = gameManager.checkPanel.transform;
+        UIManager uIManager = manager.GetComponent<UIManager>();
+        Transform checkPanelTransform = uIManager.checkPanel.transform;
         int childCount = checkPanelTransform.childCount;
         Transform targetTransform = checkPanelTransform.GetChild(childCount - 1);
         GameObject target = targetTransform.gameObject;
@@ -636,9 +639,9 @@ public class EffectMethod
             UnityEngine.Object.Destroy(target);
         }
 
-        if (gameManager.checkPanel != null)
+        if (uIManager.checkPanel != null)
         {
-            gameManager.checkPanel.SetActive(false);
+            uIManager.checkPanel.SetActive(false);
         }
     }
 
@@ -659,7 +662,7 @@ public class EffectMethod
         }
     }
 
-    public async void P2AoeBuffCard(ApplyEffectEventArgs e, TargetType fieldType, TargetType buffType, int buffAmount, string target, AoebuffCard aoebuffCard)
+    public async Task P2AoeBuffCard(ApplyEffectEventArgs e, TargetType fieldType, TargetType buffType, int buffAmount, string target, AoebuffCard aoebuffCard)
     {
         // 効果を適用
         await aoebuffCard.EffectOfEffect(e);
@@ -680,22 +683,24 @@ public class EffectMethod
 
     private List<Card> P1GetTargetCards(TargetType fieldType)
     {
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         return fieldType switch
         {
-            TargetType.All => GameManager.PAllFields.ToList(),
-            TargetType.Attack => GameManager.PAttackFields,
-            TargetType.Defence => GameManager.PDefenceFields,
+            TargetType.All => cardManager.AllFields.ToList(),
+            TargetType.Attack => cardManager.AttackFields,
+            TargetType.Defence => cardManager.DefenceFields,
             _ => new List<Card>()
         };
     }
 
     private List<Card> P2GetTargetCards(TargetType fieldType)
     {
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         return fieldType switch
         {
-            TargetType.All => EnemyAI.EAllFields.ToList(),
-            TargetType.Attack => EnemyAI.AttackFields,
-            TargetType.Defence => EnemyAI.DefenceFields,
+            TargetType.All => cardManager.AllFields.ToList(),
+            TargetType.Attack => cardManager.AttackFields,
+            TargetType.Defence => cardManager.DefenceFields,
             _ => new List<Card>()
         };
     }
@@ -705,6 +710,7 @@ public class EffectMethod
         {
             case TargetType.All:
                 card.attack += buffAmount;
+                card.maxHp += buffAmount;
                 card.hp += buffAmount;
                 break;
             case TargetType.Attack:
@@ -718,6 +724,7 @@ public class EffectMethod
                 }
                 break;
             case TargetType.Defence:
+                card.maxHp += buffAmount;
                 card.hp += buffAmount;
                 break;
         }

@@ -14,7 +14,7 @@ public class InstantiateToken : EffectInf
     public List<EffectInf> additionalEffects;
     public List<ConditionEffectsInf> conditionOnAdditionalEffects;
     public bool ApplyToMyself;
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
         // Determine the method for instantiating tokens based on conditions
         Action<CardInf> instantiateTokenMethod = GetInstantiateTokenMethod(e.Card.CardOwner);
@@ -30,11 +30,10 @@ public class InstantiateToken : EffectInf
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
 
-        return Task.CompletedTask;
     }
 
     // Helper method to determine the appropriate token instantiation method

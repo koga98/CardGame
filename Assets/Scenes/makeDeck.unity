@@ -355,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4293f3f43e7a5524dbcb191b0ef09d9c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f7f681cd213d9a7488500ce745f2d4f8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2660,6 +2660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1432903468}
   - component: {fileID: 1432903467}
+  - component: {fileID: 1432903469}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -2682,6 +2683,7 @@ MonoBehaviour:
   deckInf: {fileID: 11400000, guid: 728d969ec762b9b439d6465a2ac85e98, type: 2}
   deckNumber: {fileID: 1154575179}
   cardPrehfab: {fileID: 1886205860272788798, guid: 636ed28648242f4428d3efe6aea49c45, type: 3}
+  LoadButton: {fileID: 2021904625}
   pageObject: []
   deckList: {fileID: 1830022316}
   cardOption: {fileID: 1673438923}
@@ -2714,6 +2716,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1432903469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432903466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77151f1d44efe824cb62534f7f5ae5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detailPanel: {fileID: 236144865}
+  messagePanel: {fileID: 0}
+  ChoicePanel: {fileID: 0}
+  ChoiceCardPlace: {fileID: 0}
+  gameSetPanel: {fileID: 0}
+  checkPanel: {fileID: 0}
+  messageTexts: {fileID: 0}
+  cardDetailText:
+  - {fileID: 467227079}
+  - {fileID: 910957262}
+  - {fileID: 579648386}
+  - {fileID: 1820049520}
+  - {fileID: 1352840230}
+  - {fileID: 1000891769}
+  gameSetText: {fileID: 0}
+  phazeOperateButtonText: {fileID: 0}
+  phazeOperateButton: {fileID: 0}
 --- !u!1 &1593548235
 GameObject:
   m_ObjectHideFlags: 0

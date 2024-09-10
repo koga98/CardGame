@@ -54,10 +54,11 @@ public class CannnotDraw : EffectInf
   {
     GameObject manager = GameObject.Find("GameManager");
     GameManager gameManager = manager.GetComponent<GameManager>();
+    EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
     async Task PlayAnimationOnLeader(Leader leader)
     {
-      GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, leader.gameObject.transform);
+      GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, leader.gameObject.transform);
       Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
       attackEffectAnimator.Play(animationClip.name);
       AudioManager.Instance.EffectSound(audioClip);

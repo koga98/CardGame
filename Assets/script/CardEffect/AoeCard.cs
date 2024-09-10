@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using GameNamespace;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.UI;
+using GameNamespace;
 
 [CreateAssetMenu(fileName = "New Draw Aoe", menuName = "Effect/Aoe")]
 public class AoeCard : EffectInf
@@ -33,7 +30,6 @@ public class AoeCard : EffectInf
         {
             await ApplyAdditionalEffects(e);
         }
-
     }
 
     private PlayerID GetOpponentPlayer(PlayerID player)
@@ -58,7 +54,6 @@ public class AoeCard : EffectInf
         return conditions.Count == 0 || conditions.All(condition => condition.ApplyEffect(e));
     }
 
-    // Helper method to apply additional effects
     private async Task ApplyAdditionalEffects(ApplyEffectEventArgs e)
     {
         foreach (var additionalEffect in additionalEffects)
@@ -66,16 +61,16 @@ public class AoeCard : EffectInf
             await additionalEffect.Apply(e);
         }
     }
+
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
         GameObject objectenemyAI = GameObject.Find("EnemyAI");
         EnemyAI enemyAI = objectenemyAI.GetComponent<EnemyAI>();
 
         Transform attackField, defenceField;
 
-        // プレイヤーと対象フィールドの選定
         if (e.Card.CardOwner == PlayerID.Player1)
         {
             attackField = ApplyToMyself ? GameObject.Find("myAttackField").transform : enemyAI.enemyAttackField.transform;
@@ -87,26 +82,28 @@ public class AoeCard : EffectInf
             defenceField = ApplyToMyself ? enemyAI.enemyDefenceField.transform : GameObject.Find("myDefenceField").transform;
         }
 
-        // 対象フィールドごとのエフェクト再生
         if (targetFieldType == TargetType.All || targetFieldType == TargetType.Attack)
         {
-            await PlayEffect(gameManager.aoeEffectPrefab, attackField);
+            await PlayEffect(effectAnimationManager.aoeEffectPrefab, attackField);
         }
 
         if (targetFieldType == TargetType.All || targetFieldType == TargetType.Defence)
         {
-            await PlayEffect(gameManager.aoeEffectPrefab, defenceField);
+            await PlayEffect(effectAnimationManager.aoeEffectPrefab, defenceField);
         }
     }
 
-    // エフェクト再生メソッド
     private async Task PlayEffect(GameObject effectPrefab, Transform field)
     {
         field.GetComponent<HorizontalLayoutGroup>().enabled = false;
+
         GameObject effectInstance = Instantiate(effectPrefab, field);
         Animator effectAnimator = effectInstance.GetComponent<Animator>();
+
         effectAnimator.Play(animationClip.name);
+
         AudioManager.Instance.EffectSound(audioClip);
+
         while (true)
         {
             AnimatorStateInfo stateInfo = effectAnimator.GetCurrentAnimatorStateInfo(0);
@@ -116,10 +113,11 @@ public class AoeCard : EffectInf
                 break;
             }
 
-            await Task.Delay(16); // 約1フレーム待機 (16ms)
+            await Task.Yield(); // フレーム待機
         }
 
         Destroy(effectInstance);
+
         field.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
 }

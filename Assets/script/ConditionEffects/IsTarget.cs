@@ -10,6 +10,7 @@ public class IsTarget : ConditionEffectsInf
     public CardType cardType;
     public override bool ApplyEffect(ApplyEffectEventArgs e)
     {
+        Debug.Log("起動");
         return conditionMethod.IsTarget(e,property,cardType);
     }
 }

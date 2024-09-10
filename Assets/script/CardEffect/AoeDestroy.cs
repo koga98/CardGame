@@ -59,7 +59,7 @@ public class AoeDestroy : EffectInf
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
         GameObject objectenemyAI = GameObject.Find("EnemyAI");
         EnemyAI enemyAI = objectenemyAI.GetComponent<EnemyAI>();
 
@@ -74,25 +74,25 @@ public class AoeDestroy : EffectInf
         {
             if (attackFieldTransform != null)
             {
-                await ApplyEffectAsync(gameManager.aoeEffectPrefab, attackFieldTransform);
+                await ApplyEffectAsync(effectAnimationManager.aoeEffectPrefab, attackFieldTransform);
             }
             if (defenceFieldTransform != null)
             {
-                await ApplyEffectAsync(gameManager.aoeEffectPrefab, defenceFieldTransform);
+                await ApplyEffectAsync(effectAnimationManager.aoeEffectPrefab, defenceFieldTransform);
             }
         }
         else if (targetFieldType == TargetType.Attack)
         {
             if (attackFieldTransform != null)
             {
-                await ApplyEffectAsync(gameManager.aoeEffectPrefab, attackFieldTransform);
+                await ApplyEffectAsync(effectAnimationManager.aoeEffectPrefab, attackFieldTransform);
             }
         }
         else if (targetFieldType == TargetType.Defence)
         {
             if (defenceFieldTransform != null)
             {
-                await ApplyEffectAsync(gameManager.aoeEffectPrefab, defenceFieldTransform);
+                await ApplyEffectAsync(effectAnimationManager.aoeEffectPrefab, defenceFieldTransform);
             }
         }
     }

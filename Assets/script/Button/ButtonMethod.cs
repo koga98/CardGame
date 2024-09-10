@@ -8,27 +8,23 @@ public class ButtonMethod : MonoBehaviour
     public void topButtonMethod()
     {
         AudioManager.Instance.ButtonSound();
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
         GameManager.completeButtonChoice = true;
     }
 
     public void underButtonMethod()
     {
         AudioManager.Instance.ButtonSound();
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-        GameManager.myDeckInf.Add(GameManager.myDeckInf[gameManager.myDeckIndex]);
-        GameManager.myDeckInf.RemoveAt(gameManager.myDeckIndex);
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        CardManager.DeckInf.Add(CardManager.DeckInf[cardManager.DeckIndex]);
+        CardManager.DeckInf.RemoveAt(cardManager.DeckIndex);
         GameManager.completeButtonChoice = true;
     }
 
     public void P2underButtonMethod()
     {
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.enemyDeckInf.Add(gameManager.enemyDeckInf[gameManager.enemyDeckIndex]);
-        gameManager.enemyDeckInf.RemoveAt(gameManager.enemyDeckIndex);
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        CardManager.enemyDeckInf.Add(CardManager.enemyDeckInf[cardManager.DeckIndex]);
+        CardManager.enemyDeckInf.RemoveAt(cardManager.DeckIndex);
         GameManager.completeButtonChoice = true;
     }
 
@@ -61,6 +57,14 @@ public class ButtonMethod : MonoBehaviour
             current = current.parent;
         }
         return null;
+    }
+
+    public void CancelChoice(){
+        GameObject manager = GameObject.Find("P1CardManager");
+        CardManager cardManager = manager.GetComponent<CardManager>();
+        CardDragAndDrop.OnCoroutine = false;
+        cardManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
+        cardManager.choiceCard.GetComponent<CardDragAndDrop>().cancelChoice = true;
     }
 
 

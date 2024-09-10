@@ -23,6 +23,11 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public GameObject attackPanel;
     public GameObject defencePanel;
     public GameObject blindPanel;
+    CardManager player1CardManager;
+    CardManager player2CardManager;
+    EffectManager effectManager;
+    UIManager uIManager;
+    AttackManager attackManager;
     public bool canAvoidAttack;
     public TextMeshProUGUI attackText;
     public TextMeshProUGUI amountText;
@@ -49,7 +54,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
     private bool attacked = false;
     public bool attackPre = false;
     private DeckMake deckMake;
-    public bool restrictionClick;
 
     public bool Attacked
     {
@@ -70,16 +74,19 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             manager = GameObject.Find("GameManager");
             gameManager = manager.GetComponent<GameManager>();
+            uIManager = manager.GetComponent<UIManager>();
+            attackManager = manager.GetComponent<AttackManager>();
+            effectManager = manager.GetComponent<EffectManager>();
         }
         else if (SceneManager.GetActiveScene().name == "makeDeck")
         {
             manager = GameObject.Find("GameObject");
+            uIManager = manager.GetComponent<UIManager>();
             deckMake = manager.GetComponent<DeckMake>();
         }
 
         canAvoidAttack = false;
         canAttackTarget = true;
-        restrictionClick = false;
         elapsedTurns = 0;
     }
 
@@ -116,6 +123,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
         cost = cardInf.cost;
         attackedList[0] = true;
         CardOwner = PlayerID.Player1;
+        if (SceneManager.GetActiveScene().name == "playGame")
+        {
+            player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        }
         if (inf.cardType == CardType.Spel)
         {
 
@@ -145,6 +156,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
         cost = cardInf.cost;
         attackedList[0] = true;
         CardOwner = PlayerID.Player2;
+        if (SceneManager.GetActiveScene().name == "playGame")
+        {
+            player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        }
         blindPanel.SetActive(true);
         if (inf.cardType == CardType.Spel)
         {
@@ -153,6 +168,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
             defencePanel.SetActive(false);
         }
     }
+
 
     public void reflectAmount(int amount)
     {
@@ -164,107 +180,93 @@ public class Card : MonoBehaviour, IPointerClickHandler
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.nowDestory = true;
-        if (GameManager.PAllFields.Contains(this))
+        if (CardOwner == PlayerID.Player1)
         {
-            GameManager.PAllFields.Remove(this);
-            if (this.inf.cardType == CardType.Defence)
-            {
-                GameManager.PDefenceFields.Remove(this);
-            }
-            else if (this.inf.cardType == CardType.Attack)
-            {
-                GameManager.PAttackFields.Remove(this);
-            }
+            await P1CardDestory();
         }
-        else if (EnemyAI.EAllFields.Contains(this))
+        else if (CardOwner == PlayerID.Player2)
         {
-            EnemyAI.EAllFields.Remove(this);
-            if (this.inf.cardType == CardType.Defence)
-            {
-                EnemyAI.DefenceFields.Remove(this);
-            }
-            else if (this.inf.cardType == CardType.Attack)
-            {
-                EnemyAI.AttackFields.Remove(this);
-            }
+            await P2CardDestory();
         }
-
-        if (CardManager.P1CardsWithEffectOnField.Contains(this))
-        {
-            CardManager.P1CardsWithEffectOnField.Remove(this);
-        }
-        else if (CardManager.P1SpelEffectAfterSomeTurn.Contains(this))
-        {
-            CardManager.P1SpelEffectAfterSomeTurn.Remove(this);
-        }
-        else if (CardManager.P1CannotAttackMyDefenceCard.Contains(this))
-        {
-            CardManager.P1CannotAttackMyDefenceCard.Remove(this);
-        }
-        else if (CardManager.P1CardsWithProtectEffectOnField.Contains(this))
-        {
-            CardManager.P1CardsWithProtectEffectOnField.Remove(this);
-        }
-        else if (GameManager.p1CannotDrawEffectList.Contains(this))
-        {
-            GameManager.p1CannotDrawEffectList.Remove(this);
-        }
-        else if (CardManager.P1CannotPlayDefenceCard.Contains(this))
-        {
-            CardManager.P1CannotPlayDefenceCard.Remove(this);
-        }
-
-        if (CardManager.P2CardsWithEffectOnField.Contains(this))
-        {
-            CardManager.P2CardsWithEffectOnField.Remove(this);
-        }
-        else if (CardManager.P2SpelEffectAfterSomeTurn.Contains(this))
-        {
-            CardManager.P2SpelEffectAfterSomeTurn.Remove(this);
-        }
-        else if (CardManager.P2CannotAttackMyDefenceCard.Contains(this))
-        {
-            CardManager.P2CannotAttackMyDefenceCard.Remove(this);
-        }
-        else if (CardManager.P2CardsWithProtectEffectOnField.Contains(this))
-        {
-            CardManager.P2CardsWithProtectEffectOnField.Remove(this);
-        }
-        else if (GameManager.p2CannotDrawEffectList.Contains(this))
-        {
-            GameManager.p2CannotDrawEffectList.Remove(this);
-        }
-        else if (CardManager.P2CannotPlayDefenceCard.Contains(this))
-        {
-            CardManager.P2CannotPlayDefenceCard.Remove(this);
-        }
-        if (inf.effectInfs != null)
-        {
-            for (int i = 0; i < inf.effectInfs.Count; i++)
-            {
-                foreach (EffectInf.CardTrigger cardTrigger in inf.effectInfs[i].triggers)
-                {
-                    if (cardTrigger == EffectInf.CardTrigger.AfterDie)
-                    {
-                        if (inf.effectInfs[i] is ICardEffect cardEffect)
-                        {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(this, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                            GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                    if (cardTrigger == EffectInf.CardTrigger.FromPlayToDie)
-                    {
-                        if (inf.effectInfs[i] is ICardEffect cardEffect)
-                        {
-                            await cardEffect.Apply(new ApplyEffectEventArgs(this, EnemyAI.EAllFields, EnemyAI.AttackFields, EnemyAI.DefenceFields,
-                            GameManager.PAllFields, GameManager.PAttackFields, GameManager.PDefenceFields));
-                        }
-                    }
-                }
-            }
-        }
+        await effectManager.EffectAfterDie(this);
         Destroy(this.gameObject);
         gameManager.nowDestory = false;
+    }
+
+    private async Task P1CardDestory()
+    {
+        if (player1CardManager.AllFields.Contains(this))
+        {
+            player1CardManager.AllFields.Remove(this);
+            if (this.inf.cardType == CardType.Defence)
+            {
+                player1CardManager.DefenceFields.Remove(this);
+            }
+            else if (this.inf.cardType == CardType.Attack)
+            {
+                player1CardManager.AttackFields.Remove(this);
+            }
+        }
+        var cardLists = new List<List<Card>>
+    {
+    player1CardManager.CardsWithEffectOnField,
+    player1CardManager.SpelEffectAfterSomeTurn,
+    player1CardManager.CannotAttackMyDefenceCard,
+    player1CardManager.CardsWithProtectEffectOnField,
+    player1CardManager.CannotPlayDefenceCard,
+    player1CardManager.EffectDuringAttacking
+    };
+        foreach (var list in cardLists)
+        {
+            if (list.Contains(this))
+            {
+                list.Remove(this);
+            }
+        }
+        if (player1CardManager.CannotDrawEffectList.Contains(this))
+        {
+            player1CardManager.CannotDrawEffectList.Remove(this);
+        }
+        await Task.Yield();
+
+    }
+
+    private async Task P2CardDestory()
+    {
+        if (player2CardManager.AllFields.Contains(this))
+        {
+            player2CardManager.AllFields.Remove(this);
+            if (this.inf.cardType == CardType.Defence)
+            {
+                player2CardManager.DefenceFields.Remove(this);
+            }
+            else if (this.inf.cardType == CardType.Attack)
+            {
+                player2CardManager.AttackFields.Remove(this);
+            }
+        }
+        var cardLists = new List<List<Card>>
+    {
+    player2CardManager.CardsWithEffectOnField,
+    player2CardManager.SpelEffectAfterSomeTurn,
+    player2CardManager.CannotAttackMyDefenceCard,
+    player2CardManager.CardsWithProtectEffectOnField,
+    player2CardManager.CannotPlayDefenceCard,
+    player2CardManager.EffectDuringAttacking
+    };
+        foreach (var list in cardLists)
+        {
+            if (list.Contains(this))
+            {
+                list.Remove(this);
+            }
+        }
+
+        if (player2CardManager.CannotDrawEffectList.Contains(this))
+        {
+            player2CardManager.CannotDrawEffectList.Remove(this);
+        }
+        await Task.Yield();
     }
 
     private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -287,32 +289,21 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            if (GameManager.defenceObject != null && !restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
+            if (GameManager.defenceObject != null && !gameManager.restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
             {
-                restrictionClick = true;
+                gameManager.restrictionClick = true;
                 StartCoroutine(OnPointerClickCoroutine());
+                
             }
             else
             {
-                if (SceneManager.GetActiveScene().name == "playGame")
+                if (SceneManager.GetActiveScene().name == "playGame" && !blindPanel.activeSelf)
                 {
-                    gameManager.detailPanel.SetActive(true);
-                    gameManager.cardDetailText[0].text = inf.cardName;
-                    gameManager.cardDetailText[1].text = inf.cost.ToString();
-                    gameManager.cardDetailText[2].text = inf.attack.ToString();
-                    gameManager.cardDetailText[3].text = inf.hp.ToString();
-                    gameManager.cardDetailText[4].text = inf.longText;
-                    gameManager.cardDetailText[5].text = inf.cardType.ToString();
+                    uIManager.DetailPanelActive(inf);
                 }
                 else if (SceneManager.GetActiveScene().name == "makeDeck")
                 {
-                    deckMake.detailPanel.SetActive(true);
-                    deckMake.DetailText[0].text = inf.cardName;
-                    deckMake.DetailText[1].text = inf.cost.ToString();
-                    deckMake.DetailText[2].text = inf.attack.ToString();
-                    deckMake.DetailText[3].text = inf.hp.ToString();
-                    deckMake.DetailText[4].text = inf.longText;
-                    deckMake.DetailText[5].text = inf.cardType.ToString();
+                    uIManager.DetailPanelActive(inf);
                 }
             }
         }
@@ -323,12 +314,9 @@ public class Card : MonoBehaviour, IPointerClickHandler
         // GameManagerを取得
         if (GameManager.defenceObject != null)
         {
-            GameObject manager = GameObject.Find("GameManager");
-            GameManager gameManager = manager.GetComponent<GameManager>();
-
             // 非同期メソッドを実行し、その完了を待つ
-            yield return gameManager.AttackCard().AsCoroutine();
-            restrictionClick = false;
+            yield return StartCoroutine(attackManager.AttackCardCoroutine());
         }
+        Debug.Log("発生2");
     }
 }

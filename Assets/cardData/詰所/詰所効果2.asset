@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae6f392bfb50a1f44bbd97d7b408d877, type: 3}
   m_Name: "\u8A70\u6240\u52B9\u679C2"
   m_EditorClassIdentifier: 
-  triggers: 0e000000
+  animationClip: {fileID: 0}
+  audioClip: {fileID: 0}
+  triggers: 0f000000
   tokeninf: {fileID: 11400000, guid: 4a386d2b47115a849a3d5787e5558d84, type: 2}
   conditionOnEffects: []
   additionalEffects: []
   conditionOnAdditionalEffects: []
   ApplyToMyself: 1
-  IsConditionClear: 0

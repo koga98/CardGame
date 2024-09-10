@@ -9,12 +9,12 @@ public class DeckMake : MonoBehaviour
     public AllCardInf deckInf;
     [SerializeField] private Text deckNumber;
     public GameObject cardPrehfab;
+    public GameObject LoadButton;
     public List<GameObject> pageObject;
     public Transform deckList;
     public Transform cardOption;
     public GameObject deckObject;
     public static int deckAmount;
-    Card saveCard;
     string filePath;
     public List<Card> cardLists;
     public GameObject nextButton;
@@ -29,6 +29,31 @@ public class DeckMake : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InitializeCards();
+        LoadCardData(DeckChiceButton.passNumber);
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (nowPage == 0)
+            preButton.SetActive(false);
+        
+        if(deckAmount != 40)
+        LoadButton.SetActive(false); 
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (detailPanel.activeSelf)
+            {
+                detailPanel.SetActive(false);
+            }
+        }
+    }
+
+    private void InitializeCards()
+    {
         cardLists = new List<Card>();
         //myObject
         for (int i = 0; i < allCardInfList.allList.Count; i++)
@@ -41,38 +66,26 @@ public class DeckMake : MonoBehaviour
             {
                 card.SetActive(false);
             }
-           
-        }
-        switch (DeckChiceButton.passNumber)
-        {
-            case 1:
-                filePath = Application.persistentDataPath + "/" + "SaveData.json1";
-                break;
-            case 2:
-                filePath = Application.persistentDataPath + "/" + "SaveData.json2";
-                break;
-            case 3:
-                filePath = Application.persistentDataPath + "/" + "SaveData.json3";
-                break;
-            case 4:
-                filePath = Application.persistentDataPath + "/" + "SaveData.json1";
-                break;
-        }
 
+        }
+    }
+
+    private void LoadCardData(int passNumber)
+    {
+        filePath = Application.persistentDataPath + "/SaveData.json" + passNumber;
         if (File.Exists(filePath))
         {
-            
             StreamReader streamReader;
             streamReader = new StreamReader(filePath);
             string data = streamReader.ReadToEnd();
             streamReader.Close();
             DeckDatabaseCollection collection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
             //ロードしたのが何番目のデータなのかを検知して
-            GameManager.myDeckInf = collection.cardDataLists[0].idLists;
+            CardManager.DeckInf = collection.cardDataLists[0].idLists;
             deckAmount = collection.cardDataLists[0].idLists.Count;
             deckNumber.text = deckAmount.ToString() + "/40";
 
-            foreach (int id in GameManager.myDeckInf)
+            foreach (int id in CardManager.DeckInf)
             {
                 if (counts.ContainsKey(id))
                 {
@@ -86,37 +99,10 @@ public class DeckMake : MonoBehaviour
             //copyCard
             foreach (KeyValuePair<int, int> entry in counts)
             {
-                GameObject saveData = Instantiate(cardPrehfab, deckList, false);
-                saveCard = saveData.GetComponent<Card>();
-                saveCard.P1SetUp(allCardInfList.allList[entry.Key]);
-                saveCard.GetComponent<ClickAdd>().myObject = pageObject[saveCard.inf.Id];
-                pageObject[saveCard.inf.Id].GetComponent<ClickAdd>().copyObject = saveData;
-                saveCard.GetComponent<ClickAdd>().copyObject = saveData;
-                saveCard.GetComponent<ClickAdd>().amount = entry.Value;
-                saveCard.reflectAmount(entry.Value);
-                saveData.transform.localScale = Vector3.one;
+                CreateCard(entry.Key, entry.Value);
             }
-        }
-
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (nowPage == 0)
-        {
-            preButton.SetActive(false);
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (detailPanel.activeSelf)
-            {
-                detailPanel.SetActive(false);
-            }
-
-        }
+        }else
+        deckAmount = 0;
     }
 
     public void DeckMakeMethod(int myButtonNumber)
@@ -141,13 +127,23 @@ public class DeckMake : MonoBehaviour
         SaveButton.deckDatabaseCollection.cardDataLists.Add(SaveButton.deckDatabase);
 
     }
+
+    private void CreateCard(int cardId, int count)
+    {
+        GameObject cardObj = Instantiate(cardPrehfab, deckList, false);
+        var card = cardObj.GetComponent<Card>();
+        card.P1SetUp(allCardInfList.allList[cardId]);
+        card.GetComponent<ClickAdd>().myObject = pageObject[card.inf.Id];
+        pageObject[card.inf.Id].GetComponent<ClickAdd>().copyObject = cardObj;
+        card.GetComponent<ClickAdd>().copyObject = cardObj;
+        card.GetComponent<ClickAdd>().amount = count;
+        card.reflectAmount(count);
+        cardObj.transform.localScale = Vector3.one;
+    }
     public void NextPage()
     {
         nowPage++;
-        for (int field = pageObject.Count - 1; field >= 0; field--)
-        {
-            pageObject[field].SetActive(false);
-        }
+        pageObject.ForEach(obj => obj.SetActive(false));
         pageObject.Clear();
         int tmp = nowPage * 8;
         for (int next = nowPage * 8; next < (tmp + 8); next++)
@@ -162,19 +158,14 @@ public class DeckMake : MonoBehaviour
             {
                 nextButton.SetActive(false);
             }
-
         }
         preButton.SetActive(true);
-
     }
 
     public void PrePage()
     {
         nowPage--;
-        for (int field = pageObject.Count - 1; field >= 0; field--)
-        {
-            pageObject[field].SetActive(false);
-        }
+        pageObject.ForEach(obj => obj.SetActive(false));
         pageObject.Clear();
         int tmp = nowPage * 8;
         for (int pre = nowPage * 8; pre < (tmp + 8); pre++)
@@ -184,6 +175,10 @@ public class DeckMake : MonoBehaviour
             pageObject.Add(objects[pre]);
         }
         nextButton.SetActive(true);
+    }
+
+    private void PageObjectActive(){
+        
     }
 
     List<GameObject> GetAllChildren()

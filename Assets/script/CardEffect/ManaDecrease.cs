@@ -16,9 +16,9 @@ public class ManaDecrease : EffectInf
     public bool ApplyToMyself;
     public bool IsConditionClear;
 
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
-        async void ApplyManaDecrease()
+        async Task ApplyManaDecrease()
         {
             if (e.Card.CardOwner == PlayerID.Player1)
             {
@@ -46,18 +46,17 @@ public class ManaDecrease : EffectInf
 
         if (AreConditionsMet(conditionOnEffects, e))
         {
-            ApplyManaDecrease();
+            await ApplyManaDecrease();
         }
 
         if (additionalEffects.Count > 0 && AreConditionsMet(conditionOnAdditionalEffects, e))
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
 
-        return Task.CompletedTask;
     }
 
     private bool AreConditionsMet(List<ConditionEffectsInf> conditions, ApplyEffectEventArgs e)
@@ -79,10 +78,11 @@ public class ManaDecrease : EffectInf
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
         async Task PlayAnimationOnLeader(Leader leader)
         {
-            GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, leader.gameObject.transform);
+            GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, leader.gameObject.transform);
             Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
             attackEffectAnimator.Play(animationClip.name);
             AudioManager.Instance.EffectSound(audioClip);

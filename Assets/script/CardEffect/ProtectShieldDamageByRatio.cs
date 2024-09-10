@@ -15,7 +15,7 @@ public class ProtectShieldDamageByRatio : EffectInf
     public List<ConditionEffectsInf> conditionOnAdditionalEffects;
     public bool ApplyToMyself;
 
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
         // Check if conditions are met for applying effects
         bool conditionsMet = AreConditionsMet(conditionOnEffects, e);
@@ -30,11 +30,10 @@ public class ProtectShieldDamageByRatio : EffectInf
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
 
-        return Task.CompletedTask;
     }
 
     // Helper method to check if all conditions are met
@@ -83,6 +82,7 @@ public class ProtectShieldDamageByRatio : EffectInf
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
         Leader leader = null;
 
@@ -97,7 +97,7 @@ public class ProtectShieldDamageByRatio : EffectInf
 
         if (leader != null)
         {
-            GameObject attackEffect = Instantiate(gameManager.animationPrefab, leader.gameObject.transform);
+            GameObject attackEffect = Instantiate(effectAnimationManager.animationPrefab, leader.gameObject.transform);
             Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
             attackEffectAnimator.Play(animationClip.name);
             AudioManager.Instance.EffectSound(audioClip);

@@ -42,10 +42,9 @@ public class CancelAttackBuff : EffectInf
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
-        GameObject objectenemyAI = GameObject.Find("EnemyAI");
-        EnemyAI enemyAI = objectenemyAI.GetComponent<EnemyAI>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
-        GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, e.Card.gameObject.transform);
+        GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, e.Card.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
         attackEffectAnimator.Play(animationClip.name);
 

@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     public List<AudioClip> cardClips;
     public AudioSource audioSource;
     public AudioSource SEaudioSource;
+     public AudioSource voiceSource;
     private string currentSceneName;
 
     private void Awake()
@@ -98,6 +99,16 @@ public class AudioManager : MonoBehaviour
         {
             SEaudioSource.clip = audioClip;
             SEaudioSource.Play();
+        }
+
+    }
+
+    public void voiceSound(AudioClip audioClip)
+    {
+        if (audioClip != null)
+        {
+            voiceSource.clip = audioClip;
+            voiceSource.Play();
         }
 
     }

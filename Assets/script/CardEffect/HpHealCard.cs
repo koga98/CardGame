@@ -46,15 +46,13 @@ public class HpHealCard : EffectInf
   public override async Task EffectOfEffect(ApplyEffectEventArgs e)
   {
     GameObject manager = GameObject.Find("GameManager");
-    GameManager gameManager = manager.GetComponent<GameManager>();
-    GameObject objectenemyAI = GameObject.Find("EnemyAI");
-    EnemyAI enemyAI = objectenemyAI.GetComponent<EnemyAI>();
+    EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
     GameObject attackEffect;
 
     if(e.ChoiceCard.gameObject.transform != null){
-      attackEffect= Instantiate(gameManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
+      attackEffect= Instantiate(effectAnimationManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
     }else{
-      attackEffect= Instantiate(gameManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
+      attackEffect= Instantiate(effectAnimationManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
     }
      
     Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();

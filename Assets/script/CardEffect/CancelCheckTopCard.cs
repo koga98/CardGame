@@ -10,7 +10,7 @@ public class CancelCheckTopCard : EffectInf
     public List<ConditionEffectsInf> conditionOnEffects;
     public List<EffectInf> additionalEffects;
     public List<ConditionEffectsInf> conditionOnAdditionalEffects;
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
         if (AreConditionsMet(conditionOnEffects, e))
         {
@@ -21,11 +21,9 @@ public class CancelCheckTopCard : EffectInf
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     private bool AreConditionsMet(List<ConditionEffectsInf> conditions, ApplyEffectEventArgs e)

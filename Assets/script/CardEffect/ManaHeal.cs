@@ -15,7 +15,7 @@ public class ManaHeal : EffectInf
     public List<ConditionEffectsInf> conditionOnAdditionalEffects;
     public bool ApplyToMyself;
     public bool IsConditionClear;
-    public override Task Apply(ApplyEffectEventArgs e)
+    public override async Task Apply(ApplyEffectEventArgs e)
     {
         // Apply the mana heal effect based on conditions
         if (AreConditionsMet(conditionOnEffects, e))
@@ -28,11 +28,10 @@ public class ManaHeal : EffectInf
         {
             foreach (var additionalEffect in additionalEffects)
             {
-                additionalEffect.Apply(e);
+                await additionalEffect.Apply(e);
             }
         }
 
-        return Task.CompletedTask;
     }
 
     // Helper method to check if all conditions are met
@@ -81,11 +80,12 @@ public class ManaHeal : EffectInf
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
         // アニメーション再生を共通化
         async Task PlayAnimationOnLeader(Leader leader)
         {
-            GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, leader.gameObject.transform);
+            GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, leader.gameObject.transform);
             Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
             attackEffectAnimator.Play(animationClip.name);
             AudioManager.Instance.EffectSound(audioClip);

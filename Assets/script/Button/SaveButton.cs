@@ -28,7 +28,7 @@ public class SaveButton : MonoBehaviour
             filePath=Application.persistentDataPath+"/" +"SaveData.json3";
             break;
             case 4:
-            filePath=Application.persistentDataPath+"/" +"SaveData.json1";
+            filePath=Application.persistentDataPath+"/" +"SaveData.json4";
             break;
         }
         deckDatabase = new DeckDatabase
@@ -55,7 +55,8 @@ public class SaveButton : MonoBehaviour
         AudioManager.Instance.ButtonSound();
         deckMake.DeckMakeMethod(myButtonNumber);
         Save();
-        LoadButton.SetActive(true);
+        if(DeckMake.deckAmount == 40)
+            LoadButton.SetActive(true);   
     }
 
     public void NextPageButton(){
@@ -105,7 +106,7 @@ public class SaveButton : MonoBehaviour
     }
 
     public void Load(){
-        if (File.Exists(filePath))
+        if (File.Exists(filePath) && DeckMake.deckAmount == 40)
         {
             StreamReader streamReader;
             streamReader = new StreamReader(filePath);
@@ -113,7 +114,7 @@ public class SaveButton : MonoBehaviour
             streamReader.Close();
             deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
             //ロードしたのが何番目のデータなのかを検知して
-            GameManager.myDeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
+            CardManager.DeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
             SceneManager.LoadScene("playGame");
         }
         

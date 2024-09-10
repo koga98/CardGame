@@ -58,9 +58,10 @@ public class ConditionEffects
 
     public bool P1NoCardOnField(TargetType targetType)
     {
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         if (targetType == TargetType.All)
         {
-            if (GameManager.PAllFields.Count == 0)
+            if (cardManager.AllFields.Count == 0)
             {
                 return true;
             }
@@ -68,7 +69,7 @@ public class ConditionEffects
         }
         else if (targetType == TargetType.Defence)
         {
-            if (GameManager.PDefenceFields.Count == 0)
+            if (cardManager.DefenceFields.Count == 0)
             {
                 return true;
             }
@@ -76,7 +77,7 @@ public class ConditionEffects
         }
         else
         {
-            if (GameManager.PAttackFields.Count == 0)
+            if (cardManager.AttackFields.Count == 0)
             {
                 return true;
             }
@@ -87,9 +88,10 @@ public class ConditionEffects
 
     public bool P2NoCardOnField(TargetType targetType)
     {
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         if (targetType == TargetType.All)
         {
-            if (EnemyAI.EAllFields.Count == 0)
+            if (cardManager.AllFields.Count == 0)
             {
                 return true;
             }
@@ -97,7 +99,7 @@ public class ConditionEffects
         }
         else if (targetType == TargetType.Defence)
         {
-            if (EnemyAI.DefenceFields.Count == 0)
+            if (cardManager.DefenceFields.Count == 0)
             {
                 return true;
             }
@@ -105,7 +107,7 @@ public class ConditionEffects
         }
         else
         {
-            if (EnemyAI.AttackFields.Count == 0)
+            if (cardManager.AttackFields.Count == 0)
             {
                 return true;
             }
@@ -115,9 +117,10 @@ public class ConditionEffects
 
     public bool P1SomeCardOnField(TargetType targetType,int some)
     {
+        CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         if (targetType == TargetType.All)
         {
-            if (GameManager.PAllFields.Count >= some)
+            if (cardManager.AllFields.Count >= some)
             {
                 return true;
             }
@@ -125,7 +128,7 @@ public class ConditionEffects
         }
         else if (targetType == TargetType.Defence)
         {
-            if (GameManager.PDefenceFields.Count  >= some)
+            if (cardManager.DefenceFields.Count  >= some)
             {
                 return true;
             }
@@ -133,7 +136,7 @@ public class ConditionEffects
         }
         else
         {
-            if (GameManager.PAttackFields.Count  >= some)
+            if (cardManager.AttackFields.Count  >= some)
             {
                 return true;
             }
@@ -143,9 +146,10 @@ public class ConditionEffects
     }
     public bool P2SomeCardOnField(TargetType targetType,int some)
     {
+        CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         if (targetType == TargetType.All)
         {
-            if (EnemyAI.EAllFields.Count >= some)
+            if (cardManager.AllFields.Count >= some)
             {
                 return true;
             }
@@ -153,7 +157,7 @@ public class ConditionEffects
         }
         else if (targetType == TargetType.Defence)
         {
-            if (EnemyAI.DefenceFields.Count >= some)
+            if (cardManager.DefenceFields.Count >= some)
             {
                 return true;
             }
@@ -161,73 +165,12 @@ public class ConditionEffects
         }
         else
         {
-            if (EnemyAI.AttackFields.Count >= some)
+            if (cardManager.AttackFields.Count >= some)
             {
                 return true;
             }
             return false;
         }
-    }
-
-    public bool P1JudgeCardIsOnDefenceField(ApplyEffectEventArgs e)
-    {
-        if (GameManager.PDefenceFields.Count == 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-
-    }
-
-    public bool P2JudgeCardIsOnDefenceField(ApplyEffectEventArgs e)
-    {
-        if (EnemyAI.DefenceFields.Count == 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-
-    }
-
-    public bool P1HasParticularCard(ApplyEffectEventArgs e, string cardName)
-    {
-        foreach (Card card in e.PCards)
-        {
-            if (card.inf.cardName == cardName)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public bool P2HasParticularCard(ApplyEffectEventArgs e, string cardName)
-    {
-        foreach (Card card in e.Cards)
-        {
-            if (card.inf.cardName == cardName)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public bool CanBeOnFieldByProtectShield(int conditionNumber)
-    {
-        manager = GameObject.Find("GameManager");
-        gameManager = manager.GetComponent<GameManager>();
-        if (gameManager.myLeader.GetComponent<Leader>().ProtectShield <= conditionNumber)
-        {
-            return false;
-        }
-        return true;
     }
 
     public bool ElapsedTurns(ApplyEffectEventArgs e, int waitThisTime)
@@ -278,7 +221,6 @@ public class ConditionEffects
         }
         else if (leader != null && card == null)
         {
-            
             if (property == "プロテクトバリア" && leader.ProtectShield > 0)
             {
                 return true;
@@ -294,13 +236,16 @@ public class ConditionEffects
 
     public bool IsDuringAttack(ApplyEffectEventArgs e)
     {
+
         if (e.Card.CardOwner == PlayerID.Player1)
         {
-            CardManager.P1EffectDuringAttacking.Add(e.Card);
+            CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+            cardManager.EffectDuringAttacking.Add(e.Card);
         }
         else
         {
-            CardManager.P2EffectDuringAttacking.Add(e.Card);
+            CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+            cardManager.EffectDuringAttacking.Add(e.Card);
         }
         return true;
 

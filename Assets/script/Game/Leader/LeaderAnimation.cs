@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class leaderAnimation : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
+public class leaderAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public Animator animator;
+    CardManager player2CardManager;
 
     Card card;
 
     void Start()
     {
         card = GetComponent<Card>();
+        player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
     }
 
     void Update()
@@ -24,23 +26,15 @@ public class leaderAnimation : MonoBehaviour, IPointerEnterHandler, IPointerDown
         {
             GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
             GameObject cradObject = GetCardObject(clickedObject);
+            if (player2CardManager.CardsWithProtectEffectOnField != null && player2CardManager.CardsWithProtectEffectOnField.Count != 0)
+                return;
+
             if (!animator.GetBool("extendLeader") && GameManager.attackObject != null)
             {
                 animator.SetBool("extendLeader", true);
-                Debug.Log(animator.GetBool("extendLeader"));
                 GameManager.defenceObject = cradObject;
-
             }
         }
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-    }
-    public void OnPointerUp(PointerEventData eventData)
-    {
-
-
     }
 
     public GameObject GetCardObject(GameObject clickedGameObject)

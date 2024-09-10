@@ -48,12 +48,12 @@ public class DestroyCard : EffectInf
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
         GameObject attackEffect;
         if(e.ChoiceCard != null){
-            attackEffect= Instantiate(gameManager.animationPrefab, e.ChoiceCard.gameObject.transform);
+            attackEffect= Instantiate(effectAnimationManager.animationPrefab, e.ChoiceCard.gameObject.transform);
         }else{
-            attackEffect= Instantiate(gameManager.animationPrefab, e.Card.gameObject.transform);
+            attackEffect= Instantiate(effectAnimationManager.animationPrefab, e.Card.gameObject.transform);
         }
          
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();

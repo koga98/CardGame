@@ -75,11 +75,10 @@ public class RandomDestroyCard : EffectInf, ICardEffect
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-        GameObject objectenemyAI = GameObject.Find("EnemyAI");
-        EnemyAI enemyAI = objectenemyAI.GetComponent<EnemyAI>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
+        EffectManager effectManager = manager.GetComponent<EffectManager>();
 
-        GameObject attackEffect = Instantiate(gameManager.animationPrefab, e.ChoiceCard.gameObject.transform);
+        GameObject attackEffect = Instantiate(effectAnimationManager.animationPrefab, e.ChoiceCard.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
         attackEffectAnimator.Play(animationClip.name);
 

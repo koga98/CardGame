@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class CardInf :ScriptableObject
 {
     public AnimationClip attackClip;
+    public AudioClip voice;
     public int Id;
     public int attack;
     public int hp;

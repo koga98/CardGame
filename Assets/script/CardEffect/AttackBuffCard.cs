@@ -18,6 +18,19 @@ public class AttackBuffCard : EffectInf, ICardEffect
     {
         if (ApplyConditionEffects(conditionOnEffects, e))
         {
+            if (triggers[0] == CardTrigger.OnDuringAttack)
+            {
+                if (e.Card.CardOwner == PlayerID.Player1)
+                {
+                    CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+                    cardManager.EffectDuringAttacking.Add(e.Card);
+                }
+                else if (e.Card.CardOwner == PlayerID.Player2)
+                {
+                    CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+                    cardManager.EffectDuringAttacking.Add(e.Card);
+                }
+            }
             await effectMethod.BuffMyCard(e, buffAmount, targetType, this);
         }
 
@@ -32,16 +45,17 @@ public class AttackBuffCard : EffectInf, ICardEffect
 
     private bool ApplyConditionEffects(List<ConditionEffectsInf> conditions, ApplyEffectEventArgs e)
     {
-        return conditions.Count == 0 || conditions.All(condition => condition.ApplyEffect(e));
+        IsConditionClear = conditions.Count == 0 || conditions.All(condition => condition.ApplyEffect(e));
+        return IsConditionClear;
     }
 
 
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
-        GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, e.Card.gameObject.transform);
+        GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, e.Card.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
         attackEffectAnimator.Play(animationClip.name);
 

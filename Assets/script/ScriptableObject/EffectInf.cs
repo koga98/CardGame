@@ -10,7 +10,7 @@ public abstract class EffectInf : ScriptableObject,ICardEffect
     public EffectMethod effectMethod = new EffectMethod();
     public AnimationClip animationClip;
     public AudioClip audioClip;
-    public abstract  Task Apply(ApplyEffectEventArgs e);
+    public abstract Task Apply(ApplyEffectEventArgs e);
     public abstract Task EffectOfEffect(ApplyEffectEventArgs e);
 
     public List<CardTrigger> triggers;

@@ -73,11 +73,12 @@ public class ShieldDamageCard : EffectInf, ICardEffect
     {
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
         // アニメーション再生を共通化
         async Task PlayAnimationOnLeader(Leader leader)
         {
-            GameObject attackEffect = Instantiate(gameManager.animationPrefab, leader.gameObject.transform);
+            GameObject attackEffect = Instantiate(effectAnimationManager.animationPrefab, leader.gameObject.transform);
             Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
             attackEffectAnimator.Play(animationClip.name);
             AudioManager.Instance.EffectSound(audioClip);

@@ -37,9 +37,9 @@ public class CancelNotAttacked : EffectInf
     public override async Task EffectOfEffect(ApplyEffectEventArgs e)
     {
         GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
+        EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
 
-        GameObject attackEffect = Instantiate(gameManager.buffEffectPrefab, e.Card.gameObject.transform);
+        GameObject attackEffect = Instantiate(effectAnimationManager.buffEffectPrefab, e.Card.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
         attackEffectAnimator.Play(animationClip.name);
 
