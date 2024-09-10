@@ -30,56 +30,6 @@ public class EnemyAI : MonoBehaviour
     {
     }
 
-<<<<<<< HEAD
-=======
-    public void Instantiate()
-    {
-        int ObjCount = enemyAttackField.transform.childCount;
-        for (int i = 0; i < ObjCount; i++)
-        {
-            Transform childTransform = enemyAttackField.transform.GetChild(i);
-            GameObject childObject = childTransform.gameObject;
-            Card childCard = childObject.GetComponent<Card>();
-            AttackFields.Add(childCard);
-            EAllFields.Add(childCard);
-        }
-        ObjCount = enemyDefenceField.transform.childCount;
-        for (int i = 0; i < ObjCount; i++)
-        {
-            Transform childTransform = enemyDefenceField.transform.GetChild(i);
-            GameObject childObject = childTransform.gameObject;
-            Card childCard = childObject.GetComponent<Card>();
-            DefenceFields.Add(childCard);
-            EAllFields.Add(childCard);
-        }
-
-        for (int i = 0; i < enemyHand.transform.childCount; i++)
-        {
-            Transform childTransform = enemyHand.transform.GetChild(i);
-            GameObject childObject = childTransform.gameObject;
-            Card childCard = childObject.GetComponent<Card>();
-            hands.Add(childCard);
-        }
-    }
-
-    public void drawCard(int k, CardInf enemyDeckInf, GameObject canvas, GameObject enemyCardPrefab, GameManager gameManager)
-    {
-        Debug.Log(CardManager.p2CannotDrawEffectList.Count);
-        if (CardManager.p2CannotDrawEffectList.Count == 0)
-        {
-            AudioManager.Instance.PlayDrawSound();
-            Transform hand = canvas.transform.Find("enemyHand ");
-            GameObject card = Instantiate(enemyCardPrefab);
-            card.transform.SetParent(hand);
-            card.GetComponent<Card>().P2SetUp(enemyDeckInf);
-            card.transform.localScale = Vector3.one;
-            hands.Add(card.GetComponent<Card>());
-            gameManager.enemyDeckIndex++;
-        }
-
-    }
-
->>>>>>> 6b680c9b2337113d24102b3cbe88d67012e86f91
     public async Task PlayCard(ManaManager manaManager)
     {
         continueMethod = true;
