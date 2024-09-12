@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationClip: {fileID: 7400000, guid: e12f6248b0b1ac74582779e565f76ae1, type: 2}
   audioClip: {fileID: 8300000, guid: 8a391703ee363ce48b40e8eb9ad7f08f, type: 3}
-  triggers: 0d000000
+  triggers: 0b000000
   conditionOnEffects:
   - {fileID: 11400000, guid: 85aeadc6174ea5a4e9acc46b598e096d, type: 2}
   additionalEffects: []

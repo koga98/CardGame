@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
 {
     public CardManager player1CardManager;
     public CardManager player2CardManager;
+    public EffectManager effectManager;
     public GameObject enemyAttackField;
     public GameObject enemyDefenceField;
     public AttackManager attackManager;
@@ -21,8 +22,8 @@ public class EnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CardManager p1Cardmanager = GameObject.Find("P1CardManager").GetComponent<CardManager>(); 
-        CardManager p2Cardmanager = GameObject.Find("P2CardManager").GetComponent<CardManager>(); 
+        CardManager p1Cardmanager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        CardManager p2Cardmanager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
     }
 
     // Update is called once per frame
@@ -42,7 +43,7 @@ public class EnemyAI : MonoBehaviour
                 {
                     if (manaManager.P2_mana >= hand.cost)
                     {
-                        await OnBeginDragEffect(hand);
+                        await effectManager.BeforeCardDrag(hand);
                         playCard = PlayCardSelecte(hand);
                     }
                 }
@@ -50,7 +51,7 @@ public class EnemyAI : MonoBehaviour
                 {
                     if (manaManager.P2_mana >= hand.cost && playCard.cost < hand.cost)
                     {
-                        await OnBeginDragEffect(hand);
+                        await effectManager.BeforeCardDrag(hand);
                         playCard = SetBetterCard(playCard, hand);
                     }
                 }
@@ -62,39 +63,6 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 continueMethod = false;
-            }
-        }
-    }
-    public async Task Attack()
-    {
-        await WaitUntilFalse(() => continueMethod);
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
-        gameManager.nowEnemyAttack = true;
-        var attackFieldsCopy = player2CardManager.AttackFields?.ToList() ?? new List<Card>();
-        var defenceFieldsCopy = player2CardManager.DefenceFields?.ToList() ?? new List<Card>();
-        IEnumerable<Card> allFields = attackFieldsCopy.Concat(defenceFieldsCopy);
-
-        // Convert the IEnumerable to a list for index-based access
-        var allFieldsList = allFields.ToList();
-        await AllCardAttackEnemy(allFieldsList,gameManager);
-        gameManager.nowEnemyAttack = false;
-    }
-
-    private async Task OnBeginDragEffect(Card hand)
-    {
-        foreach (var effect in hand.inf.effectInfs)
-        {
-            for (int i = 0; i < effect.triggers.Count; i++)
-            {
-                if (effect.triggers[i] == EffectInf.CardTrigger.OnBeginDrag)
-                {
-                    if (effect is ICardEffect cardEffect)
-                    {
-                        await cardEffect.Apply(new ApplyEffectEventArgs(hand, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields
-                        , player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-                    }
-                }
             }
         }
     }
@@ -139,15 +107,15 @@ public class EnemyAI : MonoBehaviour
         player2CardManager.Hands.Remove(playCard);
         if (playCard.inf.cardType == CardType.Attack)
         {
-            await AttackMethod(playCard);
+            await PlayAttackCard(playCard);
         }
         else if (playCard.inf.cardType == CardType.Defence)
         {
-            await DefenceMethod(playCard);
+            await PlayDefenceCard(playCard);
         }
         else if (playCard.inf.cardType == CardType.Spel)
         {
-            await SpelMethod(playCard);
+            await PlaySpelCard(playCard);
         }
         manaManager.P2_mana -= playCard.cost;
         AudioManager.Instance.PlayPlayCardSound();
@@ -157,39 +125,79 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private async Task AttackMethod(Card card)
+    private async Task PlayAttackCard(Card card)
     {
         card.transform.SetParent(enemyAttackField.transform, false);
+        foreach (var effect in card.inf.effectInfs)
+        {
+            if (card.inf is RandomCardInf randomCardInf)
+            {
+                await effectManager.PlayCardRandomEffect(randomCardInf, card);
+                break;
+            }
+            await ExecuteAllPlayCardEffect(card, effect);
+        }
         player2CardManager.AttackFields.Add(card);
         player2CardManager.AllFields.Add(card);
-        if (card.inf.effectInfs.Count != 0)
-        {
-            await ProcessCardEffects(card);
-        }
     }
 
-    private async Task SpelMethod(Card card)
+    private async Task PlaySpelCard(Card card)
     {
-        await ProcessCardEffects(card);
-        if (card.transform.parent == GameObject.Find("SpelPanel").transform)
+        foreach (var effect in card.inf.effectInfs)
         {
+            if (card.inf is RandomCardInf randomCardInf)
+            {
+                await effectManager.PlayCardRandomEffect(randomCardInf, card);
+                break;
+            }
+            await ExecuteAllPlayCardEffect(card, effect);
         }
-        else
-        {
+
+        if (card.transform.parent != GameObject.Find("SpelPanel").transform)
             Destroy(card.gameObject);
-        }
+
     }
 
-    private async Task DefenceMethod(Card card)
+    private async Task PlayDefenceCard(Card card)
     {
         card.transform.SetParent(enemyDefenceField.transform, false);
+        foreach (var effect in card.inf.effectInfs)
+        {
+            if (card.inf is RandomCardInf randomCardInf)
+            {
+                await effectManager.PlayCardRandomEffect(randomCardInf, card);
+                break;
+            }
+            await ExecuteAllPlayCardEffect(card, effect);
+        }
         player2CardManager.AllFields.Add(card);
         player2CardManager.DefenceFields.Add(card);
-        await ProcessCardEffects(card);
+    }
+
+    public async Task Attack()
+    {
+        await WaitUntilFalse(() => continueMethod);
+        GameObject manager = GameObject.Find("GameManager");
+        GameManager gameManager = manager.GetComponent<GameManager>();
+        gameManager.nowEnemyAttack = true;
+        var attackFieldsCopy = player2CardManager.AttackFields?.ToList() ?? new List<Card>();
+        var defenceFieldsCopy = player2CardManager.DefenceFields?.ToList() ?? new List<Card>();
+        IEnumerable<Card> allFields = attackFieldsCopy.Concat(defenceFieldsCopy);
+
+        // Convert the IEnumerable to a list for index-based access
+        var allFieldsList = allFields.ToList();
+        await AllCardAttackEnemy(allFieldsList, gameManager);
+        gameManager.nowEnemyAttack = false;
+    }
+
+    private async Task WaitUntilFalse(Func<bool> condition)
+    {
+        while (condition())
+            await Task.Yield(); // 次のフレームまで待機
 
     }
 
-    private async Task AllCardAttackEnemy(List<Card> allFieldsList,GameManager gameManager)
+    private async Task AllCardAttackEnemy(List<Card> allFieldsList, GameManager gameManager)
     {
         for (int i = 0; i < allFieldsList.Count; i++)
         {
@@ -197,6 +205,8 @@ public class EnemyAI : MonoBehaviour
 
             if (!filed.Attacked)
             {
+                if (filed.attack == 0)
+                    continue;
                 GameManager.attackObject = filed.gameObject;
                 GameManager.defenceObject = SelectDefenceObject(filed, player1CardManager.AttackFields, player1CardManager.DefenceFields);
 
@@ -204,26 +214,15 @@ public class EnemyAI : MonoBehaviour
                 if (filed.inf.attackClip != null)
                 {
                     if (isLeader)
-                    {
                         await attackManager.AttackLeader();
-                    }
+
                     else
-                    {
                         await attackManager.AttackCard();
-                    }
+
                 }
             }
         }
     }
-
-    private async Task WaitUntilFalse(Func<bool> condition)
-{
-    // conditionがfalseになるまでループ
-    while (condition())
-    {
-        await Task.Yield(); // 次のフレームまで待機
-    }
-}
 
     // Helper method to select the appropriate defence object
     private GameObject SelectDefenceObject(Card filed, List<Card> pAttackCard, List<Card> pDefenceCard)
@@ -234,19 +233,15 @@ public class EnemyAI : MonoBehaviour
         GameObject defenceObject = null;
         isLeader = true; // Default to leader
 
-        if (count == 0 && defenceCount == 0)
-        {
+        if (count == 0 && defenceCount == 0 || leader.GetComponent<Leader>().Hp < filed.attack)
             return leader;
-        }
 
         if (player1CardManager.CardsWithProtectEffectOnField.Count > 0)
         {
             foreach (Card target in player1CardManager.CardsWithProtectEffectOnField)
             {
                 if (defenceObject == null || defenceObject.GetComponent<Card>().attack < target.attack)
-                {
                     defenceObject = target.gameObject;
-                }
             }
             isLeader = false;
         }
@@ -256,9 +251,7 @@ public class EnemyAI : MonoBehaviour
             defenceObject = FindBestTarget(pDefenceCard, filed) ?? defenceObject;
         }
         if (defenceObject != null)
-        {
             isLeader = false;
-        }
 
         return defenceObject ?? leader;
     }
@@ -266,112 +259,82 @@ public class EnemyAI : MonoBehaviour
     private GameObject FindBestTarget(List<Card> cards, Card filed)
     {
         GameObject bestTarget = null;
+        int score = 0;
         for (int i = 0; i < cards.Count; i++)
         {
             Card childCard = cards[i];
             if (player1CardManager.CannotAttackMyDefenceCard.Count != 0 && childCard.inf.cardType == CardType.Defence)
-            {
                 continue;
-            }
-            if (childCard.attack < filed.hp && childCard.canAttackTarget)
+
+            int newScore = 0;
+            if (childCard.attack > filed.attack + 300 && childCard.hp <= filed.attack)
+                newScore = (bestTarget == null) ? 70 : 90;
+            else if (childCard.attack < filed.hp && childCard.canAttackTarget)
+                newScore = (bestTarget == null) ? 50 : 60;
+            else if (childCard.attack > filed.attack && childCard.hp <= filed.attack)
+                newScore = (bestTarget == null) ? 30 : 40;
+
+            if (newScore > score)
             {
-                if (bestTarget == null || bestTarget.GetComponent<Card>().attack < childCard.attack)
-                {
-                    bestTarget = childCard.gameObject;
-                }
+                score = newScore;
+                bestTarget = childCard.gameObject;
             }
         }
-
         return bestTarget;
     }
 
-    private async Task ProcessCardEffects(Card card)
+    private async Task ExecuteAllPlayCardEffect(Card card, EffectInf effect)
     {
-        // ランダム効果カードの特別な処理
-        if (card.inf is RandomCardInf randomCardInf)
-        {
-            int randomValue = UnityEngine.Random.Range(0, randomCardInf.effectInfs.Count);
-            await randomCardInf.effectInfs[randomValue].Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-            return; // これ以上の効果は処理しない
-        }
+        foreach (var trigger in effect.triggers)
+            await ExecuteEachPlayCardEffect(card, effect, trigger);
+    }
 
-        if (card.inf.effectInfs[0].triggers[0] == EffectInf.CardTrigger.OnPlay)
+    private async Task ExecuteEachPlayCardEffect(Card card, EffectInf effect, EffectInf.CardTrigger trigger)
+    {
+        switch (trigger)
         {
-            if (player1CardManager.AllFields.Count != 0)
-            {
-                int random = UnityEngine.Random.Range(0, player1CardManager.AllFields.Count);
-                if (card.inf.effectInfs[0] is ICardEffect onPlay)
+            case EffectInf.CardTrigger.ButtonOperetion:
+                AIButtonOperetion();
+                break;
+            case EffectInf.CardTrigger.OnPlay:
+                if (player1CardManager.AllFields.Count != 0)
                 {
-                    await onPlay.Apply(new ApplyEffectEventArgs(player1CardManager.AllFields[random], player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                        player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields, player1CardManager.AllFields[random]));
+                    int random = UnityEngine.Random.Range(0, player1CardManager.AllFields.Count);
+                    await effectManager.PlayCardChoiceEffect(effect, player1CardManager.AllFields[random]);
                 }
-            }
-        }
+                break;
 
-        foreach (var effect in card.inf.effectInfs)
+            case EffectInf.CardTrigger.SpelEffectSomeTurn:
+                PlayCardEffectSpelNeedsSomeTurn(card);
+                break;
+
+            case EffectInf.CardTrigger.AfterPlay:
+            case EffectInf.CardTrigger.ProtectShieldDecrease:
+                await effectManager.AIPlayCardEffect(card, effect);
+                break;
+
+            case EffectInf.CardTrigger.OnFieldOnAfterPlay:
+                player2CardManager.CardsWithEffectOnField.Add(card);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void AIButtonOperetion()
+    {
+        int randomValue = UnityEngine.Random.Range(0, 2);
+        if (randomValue == 0)
         {
-            foreach (var trigger in effect.triggers)
-            {
-                switch (trigger)
-                {
-                    case EffectInf.CardTrigger.ButtonOperetion:
-                        //これも選択するものを決める
-                        if (effect is CheckTopCard buttonEffect)
-                        {
-                            GameObject manager = GameObject.Find("GameManager");
-                            GameManager gameManager = manager.GetComponent<GameManager>();
-                            int randomValue = UnityEngine.Random.Range(0, 2);
-                            if (randomValue == 0)
-                            {
-                                CardManager.enemyDeckInf.Add(CardManager.enemyDeckInf[player2CardManager.DeckIndex]);
-                                CardManager.enemyDeckInf.RemoveAt(player2CardManager.DeckIndex);
-                            }
-
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.SpelEffectSomeTurn:
-                        player2CardManager.SpelEffectAfterSomeTurn.Add(card);
-                        card.transform.SetParent(GameObject.Find("SpelPanel").transform, false);
-                        break;
-
-                    case EffectInf.CardTrigger.AfterPlay:
-                        if (effect is ICardEffect afterPlayEffect)
-                        {
-                            await afterPlayEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.FromPlayToDie:
-                        if (effect is ICardEffect fromPlayToDieEffect)
-                        {
-                            await fromPlayToDieEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.OnFieldOnAfterPlay:
-                        if (effect is ICardEffect onFieldEffect)
-                        {
-                            player2CardManager.CardsWithEffectOnField.Add(card);
-                        }
-                        break;
-
-                    case EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease:
-                        if (effect is ICardEffect afterPlayAndProtectShieldDecrease)
-                        {
-                            await afterPlayAndProtectShieldDecrease.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-                            player2CardManager.CardsWithEffectOnField.Add(card);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
+            CardManager.enemyDeckInf.Add(CardManager.enemyDeckInf[player2CardManager.DeckIndex]);
+            CardManager.enemyDeckInf.RemoveAt(player2CardManager.DeckIndex);
         }
+    }
+
+    private void PlayCardEffectSpelNeedsSomeTurn(Card card)
+    {
+        player2CardManager.SpelEffectAfterSomeTurn.Add(card);
+        card.transform.SetParent(GameObject.Find("SpelPanel").transform, false);
     }
 }

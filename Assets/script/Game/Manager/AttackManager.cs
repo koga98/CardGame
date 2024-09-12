@@ -50,29 +50,36 @@ public class AttackManager : MonoBehaviour
             UpdateAttackCount(attackCard);
             effectAnimationManager.ResetAnimations(cardAnimation, enemyCardAnimation);
 
-            await effectManager.AttackingEffectDealAsync(attackCard, defenceCard);
+            await effectManager.EffectWhenAttackingCard(attackCard, defenceCard);
             if (attackCard.inf.attackClip != null)
-            {
-                await effectAnimationManager.EffectDuringBattle(defenceCard, attackCard);
-            }
+                await effectAnimationManager.AnimationDuringBattle(defenceCard, attackCard);
 
             if (defenceCard.inf.attackClip != null)
-            {
-                await effectAnimationManager.EffectDuringBattle(attackCard, defenceCard);
-            }
+                await effectAnimationManager.AnimationDuringBattle(attackCard, defenceCard);
 
-            await CalculateDamageAsync(attackCard, defenceCard);
-            await effectManager.EffectDuringBattleEndDeal();
+            await CalculateDamage(attackCard, defenceCard);
+            await effectManager.AttackEndEffect();
 
             // 必要に応じてカードの破壊処理などを追加
             // 攻撃後に攻撃オブジェクトをリセット
             ResetStatus(attackCard);
             gameManager.isDealing = false;
         }
-        else
+    }
+
+    private async Task CalculateDamage(Card attackCard, Card defenceCard)
+    {
+        if (!attackCard.canAvoidAttack)
         {
-            Debug.Log("attackCardなし");
+            await utilMethod.DamageMethod(attackCard, defenceCard.attack);
         }
+
+        if (!defenceCard.canAvoidAttack)
+        {
+            await utilMethod.DamageMethod(defenceCard, attackCard.attack);
+        }
+        attackCard.canAvoidAttack = false;
+        defenceCard.canAvoidAttack = false;
     }
 
     public async Task AttackLeader()
@@ -84,38 +91,27 @@ public class AttackManager : MonoBehaviour
         CardAnimation cardAnimation = null;
 
         if (GameManager.attackObject.tag == "Enemy")
-        {
             enemyCardAnimation = GameManager.attackObject.GetComponent<EnemyCardAnimation>();
-        }
+        
         else if (GameManager.attackObject.tag == "Card")
-        {
             cardAnimation = GameManager.attackObject.GetComponent<CardAnimation>();
-        }
-
+        
         if (attackCard != null && leader != null)
         {
             UpdateAttackCount(attackCard);
+            effectAnimationManager.ResetAnimations(cardAnimation, enemyCardAnimation, anim);
             if (attackCard.inf.effectInfs != null)
-            {
-                await effectManager.EffectWhenAttackingAsync(attackCard);
-            }
+                await effectManager.EffectWhenAttackingLeader(attackCard);
+            
             if (attackCard.inf.attackClip != null)
-            {
-                await effectAnimationManager.EffectDuringAttackingLeader(attackCard, leader);
-            }
+                await effectAnimationManager.AnimationDuringAttackingLeader(attackCard, leader);
 
             LeaderDamageCalculate(leader, attackCard);
-            await effectManager.EffectDuringBattleEndDeal();
-            await effectManager.OnProtectShieldChangedAsync(leader.playerType);
+            await effectManager.AttackEndEffect();
+            await effectManager.OnProtectShieldChanged(leader.playerType);
             // 必要に応じてカードの破壊処理などを追加
-            attackCard.attackPre = false;
-            effectAnimationManager.ResetAnimations(cardAnimation, enemyCardAnimation, anim);
-            GameManager.attackObject = null;
-            GameManager.defenceObject = null;
-        }
-        else
-        {
-            Debug.Log("attackCardなし");
+            
+            ResetStatus(attackCard);
         }
     }
 
@@ -131,10 +127,6 @@ public class AttackManager : MonoBehaviour
             leader.Hp -= attackCard.attack;
             leader.healthText.text = leader.Hp.ToString();
         }
-
-        if (leader.Hp <= 0)
-        {
-        }
     }
 
     private void ResetStatus(Card attackCard)
@@ -143,21 +135,6 @@ public class AttackManager : MonoBehaviour
         GameManager.attackObject = null;
         GameManager.defenceObject = null;
         gameManager.restrictionClick = false;
-    }
-
-    private async Task CalculateDamageAsync(Card attackCard, Card defenceCard)
-    {
-        if (!attackCard.canAvoidAttack)
-        {
-            await utilMethod.DamageMethod(attackCard, defenceCard.attack);
-        }
-
-        if (!defenceCard.canAvoidAttack)
-        {
-            await utilMethod.DamageMethod(defenceCard, attackCard.attack);
-        }
-        attackCard.canAvoidAttack = false;
-        defenceCard.canAvoidAttack = false;
     }
 
     private void UpdateAttackCount(Card attackCard)

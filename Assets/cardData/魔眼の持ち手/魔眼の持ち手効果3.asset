@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: "\u9B54\u773C\u306E\u6301\u3061\u624B\u52B9\u679C3"
   m_EditorClassIdentifier: 
   animationClip: {fileID: 7400000, guid: 8263958c6c7226c4ab55eaed9bee8904, type: 2}
-  triggers: 14000000
+  audioClip: {fileID: 0}
+  triggers: 0e000000
   conditionOnEffects:
   - {fileID: 11400000, guid: 1243a8a5007098e4ca20b9366cfedcf8, type: 2}
   additionalEffects: []

@@ -1,14 +1,34 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ButtonMethod : MonoBehaviour
+public class PlayGameButton : MonoBehaviour
 {
+    public GameManager gameManager;
+    public UIManager uIManager;
     public void topButtonMethod()
     {
         AudioManager.Instance.ButtonSound();
         GameManager.completeButtonChoice = true;
+    }
+
+    public async void nextPlay()
+    {
+        
+        AudioManager.Instance.TurnEndButtonSound();
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay)
+        {
+            gameManager.AttackPhaze();
+        }
+        else if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
+        {
+            uIManager.phazeOperateButton.SetActive(false);
+            await WaitUntilFalse(() => gameManager.isDealing);
+            await gameManager.TurnEndPhaze();
+        }
     }
 
     public void underButtonMethod()
@@ -66,6 +86,15 @@ public class ButtonMethod : MonoBehaviour
         cardManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
         cardManager.choiceCard.GetComponent<CardDragAndDrop>().cancelChoice = true;
     }
+
+     public async Task WaitUntilFalse(Func<bool> condition)
+    {
+        while (condition())
+        {
+            await Task.Yield();
+        }
+    }
+
 
 
 }

@@ -41,15 +41,19 @@ public class TitleButtonMethod : MonoBehaviour
                         using (StreamReader streamReader = new StreamReader(filePath))
                         {
                             string data = streamReader.ReadToEnd();
-                            DeckDatabaseCollection deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
 
-                            // ロードしたのが何番目のデータなのかを検知して
-                            if (deckDatabaseCollection.cardDataLists[0].idLists.Count == 40)
+                            if (!string.IsNullOrEmpty(data))
                             {
-                                GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
-                                newButton.GetComponentInChildren<Text>().text = "デッキ" + i.ToString();
-                                newButton.GetComponent<TitleButtonMethod>().buttonNumber = i;
+                                DeckDatabaseCollection deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
+                                if (deckDatabaseCollection.cardDataLists[0].idLists.Count == 40)
+                                {
+                                    GameObject newButton = Instantiate(buttonPrefab, buttonParent.transform);
+                                    newButton.GetComponentInChildren<Text>().text = "デッキ" + i.ToString();
+                                    newButton.GetComponent<TitleButtonMethod>().buttonNumber = i;
+                                }
                             }
+                            // ロードしたのが何番目のデータなのかを検知して
+
                         }
                     }
                     catch (System.Exception e)

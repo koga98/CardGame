@@ -111,8 +111,9 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            if (GameManager.defenceObject != null)
+            if (GameManager.defenceObject != null && !gameManager.restrictionClick)
             {
+                gameManager.restrictionClick = true;
                 StartCoroutine(attackManager.AttackLeaderCoroutine());
             }
 

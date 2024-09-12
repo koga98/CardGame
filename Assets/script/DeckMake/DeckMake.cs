@@ -9,7 +9,6 @@ public class DeckMake : MonoBehaviour
     public AllCardInf deckInf;
     [SerializeField] private Text deckNumber;
     public GameObject cardPrehfab;
-    public GameObject LoadButton;
     public List<GameObject> pageObject;
     public Transform deckList;
     public Transform cardOption;
@@ -23,8 +22,6 @@ public class DeckMake : MonoBehaviour
     private int nowPage = 0;
     [SerializeField] private AllCardInf allCardInfList;
     public GameObject detailPanel;
-    public List<Text> DetailText;
-    public GameObject confirmPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -39,9 +36,7 @@ public class DeckMake : MonoBehaviour
     {
         if (nowPage == 0)
             preButton.SetActive(false);
-        
-        if(deckAmount != 40)
-        LoadButton.SetActive(false); 
+
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -81,28 +76,33 @@ public class DeckMake : MonoBehaviour
             streamReader.Close();
             DeckDatabaseCollection collection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
             //ロードしたのが何番目のデータなのかを検知して
-            CardManager.DeckInf = collection.cardDataLists[0].idLists;
-            deckAmount = collection.cardDataLists[0].idLists.Count;
-            deckNumber.text = deckAmount.ToString() + "/40";
+            if (collection != null)
+            {
+                CardManager.DeckInf = collection.cardDataLists[0].idLists;
+                deckAmount = collection.cardDataLists[0].idLists.Count;
+                deckNumber.text = deckAmount.ToString() + "/40";
 
-            foreach (int id in CardManager.DeckInf)
-            {
-                if (counts.ContainsKey(id))
+                foreach (int id in CardManager.DeckInf)
                 {
-                    counts[id]++;
+                    if (counts.ContainsKey(id))
+                    {
+                        counts[id]++;
+                    }
+                    else
+                    {
+                        counts[id] = 1;
+                    }
                 }
-                else
+                //copyCard
+                foreach (KeyValuePair<int, int> entry in counts)
                 {
-                    counts[id] = 1;
+                    CreateCard(entry.Key, entry.Value);
                 }
             }
-            //copyCard
-            foreach (KeyValuePair<int, int> entry in counts)
-            {
-                CreateCard(entry.Key, entry.Value);
-            }
-        }else
-        deckAmount = 0;
+
+        }
+        else
+            deckAmount = 0;
     }
 
     public void DeckMakeMethod(int myButtonNumber)
@@ -177,8 +177,9 @@ public class DeckMake : MonoBehaviour
         nextButton.SetActive(true);
     }
 
-    private void PageObjectActive(){
-        
+    private void PageObjectActive()
+    {
+
     }
 
     List<GameObject> GetAllChildren()

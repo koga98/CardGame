@@ -24,21 +24,14 @@ public abstract class EffectInf : ScriptableObject,ICardEffect
         OnAttack,
         OnDuringAttack,
         EndAttack,
-        OnAttackLeader,
-        OnAttackProtectShield,
         OnBeginDrag,
         OnDefence,
         OnFieldOnAfterPlay,
-        AfterPlayAndProtectShieldDecrease,
-        OnHand,
+        ProtectShieldDecrease,
         OnEnemyTurnEnd,
-        OnEnemyOnPlay,
         OnEnemyTurnStart,
-        OnEnemyAttack,
-        FromPlayToDie,
         SpelEffectSomeTurn,
         ButtonOperetion,
-        None,
         StopButtonOperetion
     } 
 

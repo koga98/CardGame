@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class EffectMethod 
+public class EffectMethod
 {
     private GameObject choiceCard;
     UtilMethod utilMethod = new UtilMethod();
@@ -186,12 +186,13 @@ public class EffectMethod
 
     public async Task HealCard(ApplyEffectEventArgs e, int healAmount, HpHealCard hpHealCard, string target = null)
     {
-        if (string.IsNullOrEmpty(target))
+        if (!string.IsNullOrEmpty(target))
         {
             foreach (Card card in e.PCards)
             {
                 if (card.inf.name == target)
                 {
+                    Debug.Log(card.inf.name);
                     e.ChoiceCard = card;
                     if (healAmount == 0)
                     {
@@ -205,21 +206,24 @@ public class EffectMethod
                         card.healthText.text = card.hp.ToString();
                         await hpHealCard.EffectOfEffect(e);
                     }
-
                 }
             }
             return;
         }
-        if (healAmount == 0)
+        else
         {
-            e.Card.hp = e.Card.inf.hp;
+            if (healAmount == 0)
+            {
+                e.Card.hp = e.Card.inf.hp;
+                e.Card.healthText.text = e.Card.hp.ToString();
+                await hpHealCard.EffectOfEffect(e);
+                return;
+            }
+            e.Card.hp += healAmount;
             e.Card.healthText.text = e.Card.hp.ToString();
             await hpHealCard.EffectOfEffect(e);
-            return;
         }
-        e.Card.hp += healAmount;
-        e.Card.healthText.text = e.Card.hp.ToString();
-        await hpHealCard.EffectOfEffect(e);
+
     }
 
     public async Task P1DamageShield(ApplyEffectEventArgs e, int damageAmount, ShieldDamageCard shieldDamageCard)
@@ -366,7 +370,7 @@ public class EffectMethod
         ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
         manaManager.P2MaxManaIncrease(increaseAmount);
-        
+
     }
 
     public async Task P1ShieldDamageCut(ApplyEffectEventArgs e, double damageCut, ProtectShieldDamageCut protectShieldDamageCut)

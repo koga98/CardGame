@@ -156,7 +156,7 @@ public class ManaManager : MonoBehaviour
             GameObject cardObject = card.gameObject;
             CardDragAndDrop dragCard = cardObject.GetComponent<CardDragAndDrop>();
             dragCard.canDrag = IsPlayableCard(card);
-            yield return StartCoroutine(effectManager.OnBeginDragEffect(card).AsCoroutine());
+            yield return StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
             // カードのActivePanelの状態をcanDragプロパティに基づいて設定
             card.ActivePanel.SetActive(dragCard.canDrag);
         }

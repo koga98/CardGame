@@ -38,7 +38,7 @@ public class EffectAnimationManager : MonoBehaviour
         await WaitForAnimationToEndAsync(attackEffectAnimator, leader.shieldClip.name, attackEffect);
         if (!gameManager.nowEnemyAttack)
         {
-            await effectManager.OnProtectShieldChangedAsync(leader.playerType);
+            await effectManager.OnProtectShieldChanged(leader.playerType);
         }
     }
     private void ReverseAnim(GameObject attackEffect)
@@ -49,7 +49,7 @@ public class EffectAnimationManager : MonoBehaviour
         transform.localScale = localScale;
     }
 
-    public async Task EffectDuringAttackingLeader(Card attackCard, Leader leader)
+    public async Task AnimationDuringAttackingLeader(Card attackCard, Leader leader)
     {
         GameObject attackEffect = Instantiate(animationPrefab, leader.gameObject.transform);
         Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();
@@ -61,7 +61,7 @@ public class EffectAnimationManager : MonoBehaviour
         Destroy(attackEffect);
     }
 
-    public async Task EffectDuringBattle(Card effectTargetCard, Card triggerCard)
+    public async Task AnimationDuringBattle(Card effectTargetCard, Card triggerCard)
     {
         GameObject triggerCardEffect = Instantiate(animationPrefab, effectTargetCard.gameObject.transform);
         Animator triggerCardEffectAnimator = triggerCardEffect.GetComponent<Animator>();
@@ -69,6 +69,19 @@ public class EffectAnimationManager : MonoBehaviour
         AudioManager.Instance.PlayBattleSound();
 
         await WaitForAnimationToEndAsync(triggerCardEffectAnimator, triggerCard.inf.attackClip.name, triggerCardEffect);
+    }
+    private async Task WaitForAnimationToEndAsync(Animator animator, string animationName, GameObject effect)
+    {
+        while (true)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.IsName(animationName) && stateInfo.normalizedTime >= 1.0f)
+            {
+                break;
+            }
+            await Task.Yield(); // 次のフレームまで待機
+        }
+        Destroy(effect);
     }
 
     public void ResetAnimations(CardAnimation cardAnimation, EnemyCardAnimation enemyCardAnimation, leaderAnimation anim = null)
@@ -87,17 +100,5 @@ public class EffectAnimationManager : MonoBehaviour
         }
     }
 
-    private async Task WaitForAnimationToEndAsync(Animator animator, string animationName, GameObject effect)
-    {
-        while (true)
-        {
-            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.IsName(animationName) && stateInfo.normalizedTime >= 1.0f)
-            {
-                break;
-            }
-            await Task.Yield(); // 次のフレームまで待機
-        }
-        Destroy(effect);
-    }
+    
 }

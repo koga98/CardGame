@@ -23,12 +23,14 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public GameObject attackPanel;
     public GameObject defencePanel;
     public GameObject blindPanel;
+    GameObject manager;
+    GameManager gameManager;
     CardManager player1CardManager;
     CardManager player2CardManager;
     EffectManager effectManager;
     UIManager uIManager;
+    DekeMakeUIManager dekeMakeUIManager;
     AttackManager attackManager;
-    public bool canAvoidAttack;
     public TextMeshProUGUI attackText;
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI healthText;
@@ -38,22 +40,16 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public Sprite sprite;
     public int elapsedTurns;
     public PlayerID CardOwner;
-    GameObject manager;
-    GameManager gameManager;
-    //攻撃対象になるかを決めるためのもの
-    public bool canAttackTarget = true;
-    public bool effectApplied = false;
-    public event Action<List<Card>> OnMultipleCardEffect;
     public CardInf inf;
     public int attack;
     public int hp;
     public int maxHp;
     public int cost;
-    //過去形のattackedです
-    public ObservableCollection<bool> attackedList;
+    public bool canAttackTarget = true;
+    public bool canAvoidAttack;
     private bool attacked = false;
     public bool attackPre = false;
-    private DeckMake deckMake;
+    public ObservableCollection<bool> attackedList;
 
     public bool Attacked
     {
@@ -68,9 +64,23 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    private void OnChangeAttacked()
+    {
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack && CardOwner == PlayerID.Player1)
+        {
+            ActivePanel.SetActive(!attacked);
+        }
+    }
+
     void Start()
     {
-        if (SceneManager.GetActiveScene().name == "playGame")
+        InitializeManagers(SceneManager.GetActiveScene().name);
+        InitializeVariables();
+    }
+
+    private void InitializeManagers(string sceneName)
+    {
+        if (sceneName == "playGame")
         {
             manager = GameObject.Find("GameManager");
             gameManager = manager.GetComponent<GameManager>();
@@ -78,13 +88,15 @@ public class Card : MonoBehaviour, IPointerClickHandler
             attackManager = manager.GetComponent<AttackManager>();
             effectManager = manager.GetComponent<EffectManager>();
         }
-        else if (SceneManager.GetActiveScene().name == "makeDeck")
+        else if (sceneName == "makeDeck")
         {
             manager = GameObject.Find("GameObject");
-            uIManager = manager.GetComponent<UIManager>();
-            deckMake = manager.GetComponent<DeckMake>();
+            dekeMakeUIManager = manager.GetComponent<DekeMakeUIManager>();
         }
+    }
 
+    private void InitializeVariables()
+    {
         canAvoidAttack = false;
         canAttackTarget = true;
         elapsedTurns = 0;
@@ -92,16 +104,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     void Update()
     {
-
         if (maxHp < hp)
         {
             hp = maxHp;
         }
-    }
-
-    public void MultipleCardEffect(List<Card> cards)
-    {
-        OnMultipleCardEffect?.Invoke(cards);
     }
 
     public void P1SetUp(CardInf cardInf)
@@ -169,6 +175,13 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
     }
 
+     private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (attackedList.Count > 0)
+        {
+            Attacked = attackedList[attackedList.Count - 1];
+        }
+    }
 
     public void reflectAmount(int amount)
     {
@@ -188,7 +201,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             await P2CardDestory();
         }
-        Debug.Log("終わり");
         await effectManager.EffectAfterDie(this);
         Destroy(this.gameObject);
         gameManager.nowDestory = false;
@@ -227,6 +239,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         if (player1CardManager.CannotDrawEffectList.Contains(this))
         {
             player1CardManager.CannotDrawEffectList.Remove(this);
+            player2CardManager.CannotDrawEffectList.Remove(this);
         }
         await Task.Yield();
 
@@ -265,25 +278,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
         if (player2CardManager.CannotDrawEffectList.Contains(this))
         {
+            player1CardManager.CannotDrawEffectList.Remove(this);
             player2CardManager.CannotDrawEffectList.Remove(this);
         }
         await Task.Yield();
-    }
-
-    private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (attackedList.Count > 0)
-        {
-            Attacked = attackedList[attackedList.Count - 1];
-        }
-    }
-
-    private void OnChangeAttacked()
-    {
-        if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack && CardOwner == PlayerID.Player1)
-        {
-            ActivePanel.SetActive(!attacked);
-        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -293,20 +291,17 @@ public class Card : MonoBehaviour, IPointerClickHandler
             if (GameManager.defenceObject != null && !gameManager.restrictionClick && !gameManager.nowDestory && !gameManager.isDealing && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
             {
                 gameManager.restrictionClick = true;
-                Debug.Log("発生1");
                 StartCoroutine(OnPointerClickCoroutine());
-                
             }
             else
             {
-
                 if (SceneManager.GetActiveScene().name == "playGame")
                 {
                     uIManager.DetailPanelActive(inf);
                 }
                 else if (SceneManager.GetActiveScene().name == "makeDeck")
                 {
-                    uIManager.DetailPanelActive(inf);
+                    dekeMakeUIManager.DetailPanelActive(inf);
                 }
             }
         }
@@ -320,6 +315,5 @@ public class Card : MonoBehaviour, IPointerClickHandler
             // 非同期メソッドを実行し、その完了を待つ
             yield return StartCoroutine(attackManager.AttackCardCoroutine());
         }
-        Debug.Log("発生2");
     }
 }

@@ -49,10 +49,10 @@ public class HpHealCard : EffectInf
     EffectAnimationManager effectAnimationManager = manager.GetComponent<EffectAnimationManager>();
     GameObject attackEffect;
 
-    if(e.ChoiceCard.gameObject.transform != null){
+    if(e.ChoiceCard != null){
       attackEffect= Instantiate(effectAnimationManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
     }else{
-      attackEffect= Instantiate(effectAnimationManager.buffEffectPrefab, e.ChoiceCard.gameObject.transform);
+      attackEffect= Instantiate(effectAnimationManager.buffEffectPrefab, e.Card.gameObject.transform);
     }
      
     Animator attackEffectAnimator = attackEffect.GetComponent<Animator>();

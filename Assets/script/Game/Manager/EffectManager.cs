@@ -25,65 +25,39 @@ public class EffectManager : MonoBehaviour
 
     }
 
-    public async Task EffectDuringBattleEndDeal()
+    public async Task AttackEndEffect()
     {
-        await ProcessEffectEndAsync(player1CardManager.EffectDuringAttacking);
-        await ProcessEffectEndAsync(player2CardManager.EffectDuringAttacking);
+        await ExecuteAttackEndEffect(player1CardManager.EffectDuringAttacking);
+        await ExecuteAttackEndEffect(player2CardManager.EffectDuringAttacking);
     }
 
-    private async Task ProcessEffectEndAsync(List<Card> effectList)
+    private async Task ExecuteAttackEndEffect(List<Card> effectList)
     {
         if (effectList.Count == 0 || effectList[0] == null) return;
-
         var currentCard = effectList[0];
-
-        foreach (var effectInf in currentCard.inf.effectInfs)
-        {
-            foreach (EffectInf.CardTrigger cardTrigger in effectInf.triggers)
-            {
-                if (cardTrigger == EffectInf.CardTrigger.EndAttack && effectInf is ICardEffect cardEffect)
-                {
-                    await CoroutineTaskAdapterAsync(cardEffect, currentCard);
-                }
-            }
-        }
-
+        await ExecuteEffects(currentCard, EffectInf.CardTrigger.EndAttack);
         effectList[0] = null;
     }
 
     public async Task EffectAfterDie(Card card)
     {
-        var attackValidTriggers = new List<EffectInf.CardTrigger>
-    {
-        EffectInf.CardTrigger.AfterDie,
-        EffectInf.CardTrigger.FromPlayToDie
-    };
-
-        await ApplyCardEffectsAsync(card, attackValidTriggers, async (cardEffect) =>
-        {
-            await CoroutineTaskAdapterAsync(cardEffect, card);
-        });
-
+        await ExecuteEffects(card, EffectInf.CardTrigger.AfterDie);
     }
 
-    public async Task OnProtectShieldChangedAsync(PlayerType playerType)
+    public async Task OnProtectShieldChanged(PlayerType playerType)
     {
         if (playerType == PlayerType.Player1)
-        {
-            await ProtectShieldEffectAsync(player1CardManager.CardsWithEffectOnField);
-        }
+            await ProtectShieldDecreaseEffect(player1CardManager.CardsWithEffectOnField);
+
         else
-        {
-            await ProtectShieldEffectAsync(player2CardManager.CardsWithEffectOnField);
-        }
+            await ProtectShieldDecreaseEffect(player2CardManager.CardsWithEffectOnField);
     }
 
-    private async Task ProtectShieldEffectAsync(List<Card> effectList)
+    private async Task ProtectShieldDecreaseEffect(List<Card> effectList)
     {
         for (int i = effectList.Count - 1; i >= 0; i--)
         {
             var card = effectList[i];
-
             for (int j = card.inf.effectInfs.Count - 1; j >= 0; j--)
             {
                 var effectInf = card.inf.effectInfs[j];
@@ -91,47 +65,21 @@ public class EffectManager : MonoBehaviour
                 for (int k = effectInf.triggers.Count - 1; k >= 0; k--)
                 {
                     var cardTrigger = effectInf.triggers[k];
-
-                    if (cardTrigger == EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease)
-                    {
-                        if (effectInf is ICardEffect cardEffect)
-                        {
-                            await CoroutineTaskAdapterAsync(cardEffect, card);
-                        }
-                    }
+                    if (cardTrigger == EffectInf.CardTrigger.ProtectShieldDecrease)
+                        await ApplyEffect(effectInf, card);
                 }
             }
         }
     }
 
-    public async Task OnBeginDragEffect(Card card)
+    public async Task BeforeCardDrag(Card card)
     {
-        var validTriggers = new List<EffectInf.CardTrigger>
-    {
-        EffectInf.CardTrigger.OnBeginDrag,
-    };
-
-        await ApplyCardEffectsAsync(card, validTriggers, async (cardEffect) =>
-        {
-            await cardEffect.Apply(new ApplyEffectEventArgs(
-                card,
-                player2CardManager.AllFields,
-                player2CardManager.AttackFields,
-                player2CardManager.DefenceFields,
-                player1CardManager.AllFields,
-                player1CardManager.AttackFields,
-                player1CardManager.DefenceFields));
-        });
+        await ExecuteEffects(card, EffectInf.CardTrigger.OnBeginDrag);
     }
 
-    public IEnumerator HandleButtonOperation(Card card, EffectInf effect)
+    public IEnumerator PlayCardButtonEffect(Card card, EffectInf effect)
     {
-        if (effect is ICardEffect buttonEffect)
-        {
-            yield return StartCoroutine(ApplyEffectCoroutine(buttonEffect,
-                new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields)));
-        }
+        yield return StartCoroutine(ApplyEffect(effect, card).AsCoroutine());
         CardDragAndDrop.OnButtonCoroutine = true;
         StartCoroutine(WaitForButtonCoroutine(card));
     }
@@ -148,158 +96,159 @@ public class EffectManager : MonoBehaviour
                 for (int i = 0; i < effect.triggers.Count; i++)
                 {
                     if (effect.triggers[i] == EffectInf.CardTrigger.StopButtonOperetion)
-                    {
-                        if (effect is ICardEffect cardEffect)
-                        {
-                            // 非同期処理を待機するためにコルーチンに変更
-                            yield return ApplyEffectAsync(cardEffect, card);
-                        }
-                    }
+                        yield return StartCoroutine(ApplyEffect(effect, card).AsCoroutine());
                 }
             }
 
             GameManager.completeButtonChoice = false;
-
-            if (card.inf.cardType == CardType.Spel)
-            {
-                Destroy(card.gameObject);
-            }
         }
     }
 
-    public IEnumerator HandleRandomCardEffect(RandomCardInf randomCardInf, Card card)
+    public async Task PlayCardRandomEffect(RandomCardInf randomCardInf, Card card)
     {
         int randomValue = UnityEngine.Random.Range(0, randomCardInf.effectInfs.Count);
-        yield return StartCoroutine(ApplyEffectCoroutine(randomCardInf.effectInfs[randomValue],
-            new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-            player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields)));
-        Destroy(card.gameObject);
+        Debug.Log("発動");
+        await ApplyEffect(randomCardInf.effectInfs[randomValue], card);
     }
 
-    public IEnumerator HandleEffect(Card card, EffectInf effect)
+    public IEnumerator PlayCardChoiceEffect(Card clickedObjectCard)
     {
-        if (effect is ICardEffect specificEffect)
-        {
-            yield return StartCoroutine(ApplyEffectCoroutine(specificEffect,
-                new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields)));
-        }
+        yield return StartCoroutine(ApplyEffect(player1CardManager.choiceCard.GetComponent<Card>().inf.effectInfs[0], clickedObjectCard, clickedObjectCard).AsCoroutine());
+    }
 
-        if (effect.triggers.Contains(EffectInf.CardTrigger.OnFieldOnAfterPlay) ||
-            effect.triggers.Contains(EffectInf.CardTrigger.AfterPlayAndProtectShieldDecrease))
-        {
+    public async Task PlayCardChoiceEffect(EffectInf effect, Card clickedObjectCard)
+    {
+        await ApplyEffect(effect, clickedObjectCard, clickedObjectCard);
+    }
+
+    public IEnumerator PlayCardEffect(Card card, EffectInf effect)
+    {
+        yield return StartCoroutine(ApplyEffect(effect, card).AsCoroutine());
+
+        if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player1)
             player1CardManager.CardsWithEffectOnField.Add(card);
-        }
+        else if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player2)
+            player2CardManager.CardsWithEffectOnField.Add(card);
+    }
+    public async Task AIPlayCardEffect(Card card, EffectInf effect)
+    {
+        await ApplyEffect(effect, card);
+        if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player1)
+            player1CardManager.CardsWithEffectOnField.Add(card);
+        else if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player2)
+            player2CardManager.CardsWithEffectOnField.Add(card);
     }
 
-    private async Task CoroutineTaskAdapterAsync(ICardEffect cardEffect, Card card)
+    public async Task EffectWhenAttackingLeader(Card attackCard)
     {
-        Task applyEffectTask = cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields
-            , player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-        await applyEffectTask;
+        await ExecuteEffects(attackCard, EffectInf.CardTrigger.OnAttack, EffectInf.CardTrigger.OnDuringAttack);
     }
 
-    public async Task EffectWhenAttackingAsync(Card attackCard)
+    public async Task EffectWhenAttackingCard(Card attackCard, Card defenceCard)
     {
-        var validTriggers = new List<EffectInf.CardTrigger>
-    {
-        EffectInf.CardTrigger.OnAttack,
-        EffectInf.CardTrigger.OnDuringAttack,
-        EffectInf.CardTrigger.OnAttackLeader
-    };
-
-        await ApplyCardEffectsAsync(attackCard, validTriggers, async (cardEffect) =>
-        {
-            await cardEffect.Apply(new ApplyEffectEventArgs(
-                attackCard,
-                player2CardManager.AllFields,
-                player2CardManager.AttackFields,
-                player2CardManager.DefenceFields,
-                player1CardManager.AllFields,
-                player1CardManager.AttackFields,
-                player1CardManager.DefenceFields));
-        });
-    }
-
-    public async Task AttackingEffectDealAsync(Card attackCard, Card defenceCard)
-    {
-        var attackValidTriggers = new List<EffectInf.CardTrigger>
-    {
-        EffectInf.CardTrigger.OnAttack,
-        EffectInf.CardTrigger.OnDuringAttack
-    };
-
-        await ApplyCardEffectsAsync(attackCard, attackValidTriggers, async (cardEffect) =>
-        {
-            await CoroutineTaskAdapterAsync(cardEffect, attackCard);
-        });
-
-        var defenceValidTriggers = new List<EffectInf.CardTrigger>
-    {
-        EffectInf.CardTrigger.OnDefence
-    };
-
-        await ApplyCardEffectsAsync(defenceCard, defenceValidTriggers, async (cardEffect) =>
-        {
-            await CoroutineTaskAdapterAsync(cardEffect, defenceCard);
-        });
+        await ExecuteEffects(attackCard, EffectInf.CardTrigger.OnAttack, EffectInf.CardTrigger.OnDuringAttack);
+        await ExecuteEffects(defenceCard, EffectInf.CardTrigger.OnDefence);
     }
 
     public async Task EffectWhenCollectionChanged(List<Card> CardsWithEffectOnField, NotifyCollectionChangedEventArgs e)
     {
-        if (CardsWithEffectOnField.Count != 0)
+        if (CardsWithEffectOnField.Count == 0) return;
+
+        Card card = (Card)e.NewItems[0];
+        var applyEffectArgs = GetAllFields(card);
+
+        foreach (var effectCard in CardsWithEffectOnField)
         {
-            Card card = (Card)e.NewItems[0];
-            foreach (var effectCard in CardsWithEffectOnField)
+            foreach (var effect in effectCard.inf.effectInfs)
             {
-                foreach (var effect in effectCard.inf.effectInfs)
+                if (effect.triggers.Contains(EffectInf.CardTrigger.OnFieldOnAfterPlay) && effect is ICardEffect cardEffect)
+                await cardEffect.Apply(applyEffectArgs);
+            }
+        }
+    }
+
+    public async Task TurnStartEffect(bool p1_turn)
+    {
+        if (p1_turn)
+        {
+            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnStart);
+            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnStart);
+        }
+        else
+        {
+            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnStart);
+            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnStart);
+        }
+    }
+
+    public async Task TurnEndEffect(bool p1_turn)
+    {
+        if (p1_turn)
+        {
+            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnEnd);
+            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnEnd);
+            await TriggerEffectsAsync(player2CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
+        }
+        else
+        {
+            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnEnd);
+            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnEnd);
+            await TriggerEffectsAsync(player1CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
+        }
+    }
+
+    public async Task TriggerEffectsAsync(List<Card> cards, EffectInf.CardTrigger trigger)
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            var card = cards[i];
+            for (int j = 0; j < card.inf.effectInfs.Count; j++)
+            {
+                var effect = card.inf.effectInfs[j];
+                if (effect.triggers.Contains(trigger) && effect is ICardEffect cardEffect)
                 {
-                    for (int i = 0; i < effect.triggers.Count; i++)
-                    {
-                        if (effect.triggers[i] == EffectInf.CardTrigger.OnFieldOnAfterPlay)
-                        {
-                            if (effect is ICardEffect cardEffect)
-                            {
-                                await cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
-                                player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-                            }
-                        }
-                    }
+                    await cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields, player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
                 }
             }
         }
     }
-    public IEnumerator ApplyEffectCoroutine(ICardEffect cardEffect, ApplyEffectEventArgs args)
-    {
-        Task applyEffectTask = cardEffect.Apply(args);
-        // Task の完了を待機
-        yield return new WaitUntil(() => applyEffectTask.IsCompleted);
-    }
 
-    private IEnumerator ApplyEffectAsync(ICardEffect cardEffect, Card card)
+    private async Task ApplyEffect(EffectInf effect, Card card, Card clickedObjectCard)
     {
-        Task applyEffectTask = cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields
-            , player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
-        yield return new WaitUntil(() => applyEffectTask.IsCompleted);
-    }
-
-    private async Task ApplyCardEffectsAsync(Card card, IEnumerable<EffectInf.CardTrigger> validTriggers, Func<ICardEffect, Task> effectAction)
-    {
-        if (card.inf.effectInfs != null)
+        if (effect is ICardEffect cardEffect)
         {
-            foreach (var effectInf in card.inf.effectInfs)
+            Task task = cardEffect.Apply(GetAllFields(card, clickedObjectCard));
+            await task;
+        }
+    }
+
+    private async Task ApplyEffect(EffectInf effect, Card card)
+    {
+        if (effect is ICardEffect cardEffect)
+        {
+            Task task = cardEffect.Apply(GetAllFields(card));
+            await task;
+        }
+    }
+
+    private async Task ExecuteEffects(Card card, params EffectInf.CardTrigger[] triggers)
+    {
+        foreach (var effectInf in card.inf.effectInfs)
+        {
+            foreach (var trigger in triggers)
             {
-                foreach (EffectInf.CardTrigger cardTrigger in effectInf.triggers)
+                if (effectInf.triggers.Contains(trigger) && effectInf is ICardEffect cardEffect)
                 {
-                    if (validTriggers.Contains(cardTrigger))
-                    {
-                        if (effectInf is ICardEffect cardEffect)
-                        {
-                            await effectAction(cardEffect);
-                        }
-                    }
+                    await cardEffect.Apply(GetAllFields(card));
                 }
             }
         }
+    }
+
+    private ApplyEffectEventArgs GetAllFields(Card card, Card clickedObjectCard = null)
+    {
+        return new ApplyEffectEventArgs(
+            card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields,
+            player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields, clickedObjectCard);
     }
 }

@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 110776291}
   - component: {fileID: 110776290}
   m_Layer: 5
-  m_Name: CardPanel
+  m_Name: ChoiceCardPlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1306,7 +1306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1315,10 +1315,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1326,7 +1326,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: "\u30AD\u30E3\u30F3\u30BB\u30EB"
 --- !u!222 &510971867
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1387,6 +1387,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda514764419b1a4ca7d200d510766b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  uIManager: {fileID: 0}
 --- !u!114 &524352766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1707,6 +1709,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player1CardManager: {fileID: 1354726386}
   player2CardManager: {fileID: 1223515575}
+  effectManager: {fileID: 1835211707}
   enemyAttackField: {fileID: 1940095692}
   enemyDefenceField: {fileID: 1580719891}
   attackManager: {fileID: 1835211703}
@@ -2840,6 +2843,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda514764419b1a4ca7d200d510766b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  uIManager: {fileID: 0}
 --- !u!114 &1312226918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2986,6 +2991,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda514764419b1a4ca7d200d510766b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 0}
+  uIManager: {fileID: 0}
 --- !u!114 &1341997627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3229,6 +3236,7 @@ GameObject:
   - component: {fileID: 1529897120}
   - component: {fileID: 1529897119}
   - component: {fileID: 1529897118}
+  - component: {fileID: 1529897121}
   m_Layer: 5
   m_Name: PhazeNextButton
   m_TagString: Untagged
@@ -3300,8 +3308,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1835211702}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1529897121}
+        m_TargetAssemblyTypeName: ButtonMethod, Assembly-CSharp
         m_MethodName: nextPlay
         m_Mode: 1
         m_Arguments:
@@ -3350,6 +3358,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1529897116}
   m_CullTransparentMesh: 1
+--- !u!114 &1529897121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1529897116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bda514764419b1a4ca7d200d510766b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 1835211702}
+  uIManager: {fileID: 1835211705}
 --- !u!1 &1573396494
 GameObject:
   m_ObjectHideFlags: 0
@@ -3751,6 +3773,7 @@ MonoBehaviour:
   player1CardManager: {fileID: 1354726386}
   player2CardManager: {fileID: 1223515575}
   manaManager: {fileID: 1835211706}
+  effectManager: {fileID: 1835211707}
   uIManager: {fileID: 1835211705}
   leaderPrefab: {fileID: 1564859748892802202, guid: 182c43d47a9d86749995b604bf8d3bdb, type: 3}
   enemyLeaderPrefab: {fileID: 7447574546681705576, guid: fddfaad7e2d0f29438402cae422a836e, type: 3}
@@ -4252,7 +4275,7 @@ GameObject:
   - component: {fileID: 1933961739}
   - component: {fileID: 1933961738}
   m_Layer: 5
-  m_Name: ChoicePosition
+  m_Name: ChoicePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
