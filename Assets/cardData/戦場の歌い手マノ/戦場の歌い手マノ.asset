@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "\u6226\u5834\u306E\u6B4C\u3044\u624B\u30DE\u30CE"
   m_EditorClassIdentifier: 
   attackClip: {fileID: 7400000, guid: a720c2c9ee6c74e4cb36f9ec77a48f16, type: 2}
+  voice: {fileID: 0}
   Id: 20
   attack: 50
   hp: 100
@@ -23,3 +24,5 @@ MonoBehaviour:
   cardSprite: {fileID: 21300000, guid: baad8f56dc712bd4ea8ca933b52c0217, type: 3}
   effectInfs:
   - {fileID: 11400000, guid: c7e9c22d561b1e84ebbe3e6cd48d9d06, type: 2}
+  - {fileID: 11400000, guid: caca9cc55716703459a5f2bc6227ca26, type: 2}
+  - {fileID: 11400000, guid: b180142f7cc066347a40df5ede89f2da, type: 2}

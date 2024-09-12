@@ -118,7 +118,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
             if (clickedObject.tag == "Card")
                 yield break;
-            
+
             else
                 OnButtonCoroutine = false;
         }
@@ -263,7 +263,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 HandlePlayGame(eventData);
             else if (currentSceneName.Equals("makeDeck"))
                 HandleDekeMake(eventData);
-            uIManager.detailPanel.SetActive(false);
         }
     }
 
@@ -298,7 +297,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         gameManager.isDealing = true;
         AudioManager.Instance.PlayPlayCardSound();
-        if(player2CardManager.AllFields.Count != 0 )
+        if (player2CardManager.AllFields.Count != 0)
             yield return StartCoroutine(ExecuteChoiceCardEffect(card));
         if (!cancelChoice)
         {
@@ -330,7 +329,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             OnCoroutine = false;
         else
             OnCoroutine = true;
-        
+
         yield return new WaitUntil(() => completeChoice);
         if (OnCoroutine)
         {
@@ -350,6 +349,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private void ChangePlayCardTransform()
     {
+        uIManager.DetailPanelActive(card.inf);
         if (card.inf.cardType == CardType.Defence)
             StartCoroutine(PlayDefenceCard());
         else if (card.inf.cardType == CardType.Attack)
@@ -362,6 +362,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         if (clickedObject.transform.parent != uIManager.ChoiceCardPlace.transform)
             transform.SetParent(myDefenceField.transform, false);
         yield return StartCoroutine(ProcessPlayCardEffectsCoroutine(card));
+        uIManager.DetailPanelInactive();
     }
 
     private IEnumerator PlayAttackCard()
@@ -370,42 +371,41 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             transform.SetParent(myAttackField.transform, false);
         if (card.inf.effectInfs.Count != 0)
             yield return StartCoroutine(ProcessPlayCardEffectsCoroutine(card));
+        uIManager.DetailPanelInactive();
     }
     private IEnumerator PlaySpelCard()
     {
+        uIManager.temporarySpelPanel.SetActive(true);
+        card.transform.SetParent(uIManager.temporarySpelPanel.transform, false);
         yield return StartCoroutine(ProcessPlayCardEffectsCoroutine(card));
-        if(spelPanel.childCount > 1)
-            Destroy(spelPanel.GetChild(0).gameObject);
-        
+        if (card.transform.parent != GameObject.Find("SpelPanel").transform)
+            yield return StartCoroutine(card.DestoryThis().AsCoroutine());
+        uIManager.DetailPanelInactive();
+        uIManager.temporarySpelPanel.SetActive(false);
     }
 
     private IEnumerator ProcessPlayCardEffectsCoroutine(Card card)
     {
-        if (card.inf.cardType == CardType.Spel)
-            MoveCardToSpelPanel(card);
-
         AudioManager.Instance.voiceSound(card.inf.voice);
 
         if (card.inf is RandomCardInf randomCardInf)
         {
             yield return StartCoroutine(effectManager.PlayCardRandomEffect(randomCardInf, card).AsCoroutine());
+            gameManager.isDealing = false;
+            uIManager.DetailPanelInactive();
+            uIManager.temporarySpelPanel.SetActive(false);
             yield break;
         }
 
         foreach (var effect in card.inf.effectInfs)
             yield return StartCoroutine(ExecuteAllPlayCardEffect(card, effect));
     }
-    //スペルが効果起動時に画面から消すため
-    private void MoveCardToSpelPanel(Card card)
-    {
-        card.transform.SetParent(spelPanel, false);
-    }
 
     private IEnumerator ExecuteAllPlayCardEffect(Card card, EffectInf effect)
     {
         foreach (var trigger in effect.triggers)
             yield return StartCoroutine(ExecuteEachPlayCardEffect(card, effect, trigger));
-        
+
     }
 
     private IEnumerator ExecuteEachPlayCardEffect(Card card, EffectInf effect, EffectInf.CardTrigger trigger)
@@ -435,10 +435,16 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         gameManager.isDealing = false;
     }
 
-     private void PlayCardEffectSpelNeedsSomeTurn(Card card)
+    private void PlayCardEffectSpelNeedsSomeTurn(Card card)
     {
         player1CardManager.SpelEffectAfterSomeTurn.Add(card);
         MoveCardToSpelPanel(card);
+    }
+
+    //スペルが効果起動時に画面から消すため
+    private void MoveCardToSpelPanel(Card card)
+    {
+        card.transform.SetParent(spelPanel, false);
     }
 
     private void AddCardOnFields()

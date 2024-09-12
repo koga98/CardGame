@@ -19,5 +19,5 @@ MonoBehaviour:
   conditionOnEffects: []
   additionalEffects: []
   conditionOnAdditionalEffects: []
-  ApplyToMyself: 0
+  ApplyToMyself: 1
   IsConditionClear: 0

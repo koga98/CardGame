@@ -154,7 +154,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         if (card.transform.parent != GameObject.Find("SpelPanel").transform)
-            Destroy(card.gameObject);
+            await card.DestoryThis();
 
     }
 

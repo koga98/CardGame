@@ -236,11 +236,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
                 list.Remove(this);
             }
         }
-        if (player1CardManager.CannotDrawEffectList.Contains(this))
-        {
-            player1CardManager.CannotDrawEffectList.Remove(this);
-            player2CardManager.CannotDrawEffectList.Remove(this);
-        }
         await Task.Yield();
 
     }
@@ -274,12 +269,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
             {
                 list.Remove(this);
             }
-        }
-
-        if (player2CardManager.CannotDrawEffectList.Contains(this))
-        {
-            player1CardManager.CannotDrawEffectList.Remove(this);
-            player2CardManager.CannotDrawEffectList.Remove(this);
         }
         await Task.Yield();
     }

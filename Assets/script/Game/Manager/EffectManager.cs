@@ -107,7 +107,6 @@ public class EffectManager : MonoBehaviour
     public async Task PlayCardRandomEffect(RandomCardInf randomCardInf, Card card)
     {
         int randomValue = UnityEngine.Random.Range(0, randomCardInf.effectInfs.Count);
-        Debug.Log("発動");
         await ApplyEffect(randomCardInf.effectInfs[randomValue], card);
     }
 

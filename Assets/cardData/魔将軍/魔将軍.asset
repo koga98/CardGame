@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: "\u9B54\u5C06\u8ECD"
   m_EditorClassIdentifier: 
   attackClip: {fileID: 7400000, guid: a68b82faac6ecde44aaa33e454986d5a, type: 2}
+  voice: {fileID: 0}
   Id: 35
   attack: 1000
   hp: 1000
@@ -25,3 +26,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9984f1f0f961b1d4b939700faa597901, type: 2}
   - {fileID: 11400000, guid: b742869c68a263d45bb4473db1afc0ed, type: 2}
   - {fileID: 11400000, guid: 579b34f148d24a24aa7e519180060517, type: 2}
+  - {fileID: 11400000, guid: 7dae805c0d5849b4f90c94d0e9f4d5a1, type: 2}

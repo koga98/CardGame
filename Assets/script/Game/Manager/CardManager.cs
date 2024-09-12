@@ -61,6 +61,12 @@ public class CardManager : MonoBehaviour
         }
     }
 
+    private void Test(){
+        for(int i = 0; i < 40;i++){
+            enemyDeckInf.Add(36);
+        }
+    }
+
     private void EnemyDeckCreate()
     {
         int x = allCardInf.allList.Count;  // 1からxまでの数

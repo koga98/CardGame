@@ -9,14 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae6f392bfb50a1f44bbd97d7b408d877, type: 3}
-  m_Name: "\u8A70\u6240\u52B9\u679C2"
+  m_Script: {fileID: 11500000, guid: ad62ee6db89a31746ad629d3749d5ed2, type: 3}
+  m_Name: "\u6226\u5834\u306E\u6B4C\u3044\u624B\u30DE\u30CE\u52B9\u679C2"
   m_EditorClassIdentifier: 
-  animationClip: {fileID: 0}
-  audioClip: {fileID: 0}
-  triggers: 0c000000
-  tokeninf: {fileID: 11400000, guid: 4a386d2b47115a849a3d5787e5558d84, type: 2}
+  animationClip: {fileID: 7400000, guid: 58ba6246458a93f4aa7accd1d3545109, type: 2}
+  audioClip: {fileID: 8300000, guid: 4d45367af375f6344ac0a330e2759f51, type: 3}
+  triggers: 02000000
   conditionOnEffects: []
   additionalEffects: []
   conditionOnAdditionalEffects: []
-  ApplyToMyself: 1
+  IsConditionClear: 0
