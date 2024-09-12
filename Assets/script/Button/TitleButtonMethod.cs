@@ -132,4 +132,15 @@ public class TitleButtonMethod : MonoBehaviour
         AudioManager.Instance.ButtonSound();
         SceneManager.LoadScene("ChoiceDeckNumber");
     }
+
+    public void EndGame()
+    {
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
+
+    }
 }
