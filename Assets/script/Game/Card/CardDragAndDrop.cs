@@ -375,13 +375,11 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     }
     private IEnumerator PlaySpelCard()
     {
-        uIManager.temporarySpelPanel.SetActive(true);
         card.transform.SetParent(uIManager.temporarySpelPanel.transform, false);
         yield return StartCoroutine(ProcessPlayCardEffectsCoroutine(card));
         if (card.transform.parent != GameObject.Find("SpelPanel").transform)
             yield return StartCoroutine(card.DestoryThis().AsCoroutine());
         uIManager.DetailPanelInactive();
-        uIManager.temporarySpelPanel.SetActive(false);
     }
 
     private IEnumerator ProcessPlayCardEffectsCoroutine(Card card)
@@ -392,8 +390,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         {
             yield return StartCoroutine(effectManager.PlayCardRandomEffect(randomCardInf, card).AsCoroutine());
             gameManager.isDealing = false;
-            uIManager.DetailPanelInactive();
-            uIManager.temporarySpelPanel.SetActive(false);
             yield break;
         }
 
