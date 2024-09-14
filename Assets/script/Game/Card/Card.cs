@@ -23,6 +23,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public GameObject attackPanel;
     public GameObject defencePanel;
     public GameObject blindPanel;
+    public GameObject shiledIcon;
     GameObject manager;
     GameManager gameManager;
     CardManager player1CardManager;
@@ -41,6 +42,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public int elapsedTurns;
     public PlayerID CardOwner;
     public CardInf inf;
+    public Color baseColor;
     public int attack;
     public int hp;
     public int maxHp;
@@ -108,6 +110,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             hp = maxHp;
         }
+
     }
 
     public void P1SetUp(CardInf cardInf)
@@ -135,12 +138,11 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
         if (inf.cardType == CardType.Spel)
         {
-
             backColor.color = Color.blue;
-
             attackPanel.SetActive(false);
             defencePanel.SetActive(false);
         }
+        baseColor = backColor.color;
     }
 
     public void P2SetUp(CardInf cardInf)
@@ -173,6 +175,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
             attackPanel.SetActive(false);
             defencePanel.SetActive(false);
         }
+        baseColor = backColor.color;
     }
 
      private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)

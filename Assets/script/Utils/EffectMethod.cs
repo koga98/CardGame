@@ -108,6 +108,7 @@ public class EffectMethod
     {
         CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         cardManager.CardsWithProtectEffectOnField.Add(e.Card);
+        e.Card.shiledIcon.SetActive(true);
         await cannotAttackOtherCard.EffectOfEffect(e);
     }
 
@@ -115,6 +116,7 @@ public class EffectMethod
     {
         CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         cardManager.CardsWithProtectEffectOnField.Add(e.Card);
+        e.Card.shiledIcon.SetActive(true);
         await cannotAttackOtherCard.EffectOfEffect(e);
     }
 

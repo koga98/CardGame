@@ -3137,7 +3137,6 @@ MonoBehaviour:
   deckInf: {fileID: 11400000, guid: 728d969ec762b9b439d6465a2ac85e98, type: 2}
   deckNumber: {fileID: 1154575179}
   cardPrehfab: {fileID: 1886205860272788798, guid: 636ed28648242f4428d3efe6aea49c45, type: 3}
-  LoadButton: {fileID: 2021904625}
   pageObject: []
   deckList: {fileID: 1830022316}
   cardOption: {fileID: 1673438923}
@@ -4137,7 +4136,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 3
+  m_ChildAlignment: 5
   m_Spacing: 30
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0

@@ -17,6 +17,8 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     GameManager gameManager;
     ManaManager manaManager;
     UIManager uIManager;
+    DeckMake deckMake;
+    public ClickAdd clickAdd;
     public CardManager player1CardManager;
     public CardManager player2CardManager;
     public GameObject myHand;
@@ -55,7 +57,8 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
             player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
             spelPanel = GameObject.Find("SpelPanel").transform;
-        }
+        }else if(SceneManager.GetActiveScene().name == "makeDeck")
+            deckMake = GameObject.Find("GameObject").GetComponent<DeckMake>();
     }
 
     private void InitializeVariables()
@@ -81,6 +84,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 touchPosition = Input.mousePosition;
                 if (direction != Vector3.zero)
                     MoveCards(direction);
+                
             }
         }
     }

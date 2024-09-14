@@ -22,6 +22,8 @@ public class DeckMake : MonoBehaviour
     private int nowPage = 0;
     [SerializeField] private AllCardInf allCardInfList;
     public GameObject detailPanel;
+    public int minId = 1000;
+    public int maxId = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -138,6 +140,10 @@ public class DeckMake : MonoBehaviour
         card.GetComponent<ClickAdd>().copyObject = cardObj;
         card.GetComponent<ClickAdd>().amount = count;
         card.reflectAmount(count);
+        if (count == 3)
+        {
+            card.GetComponent<ClickAdd>().myObject.GetComponent<Card>().backColor.color = Color.black;
+        }
         cardObj.transform.localScale = Vector3.one;
     }
     public void NextPage()
@@ -152,6 +158,10 @@ public class DeckMake : MonoBehaviour
             {
                 List<GameObject> objects = GetAllChildrenOption();
                 objects[next].SetActive(true);
+                if (objects[next].GetComponent<ClickAdd>().amount == 3)
+                {
+                    objects[next].GetComponent<Card>().backColor.color = Color.black;
+                }
                 pageObject.Add(objects[next]);
             }
             else
@@ -172,16 +182,14 @@ public class DeckMake : MonoBehaviour
         {
             List<GameObject> objects = GetAllChildrenOption();
             objects[pre].SetActive(true);
+            if (objects[pre].GetComponent<ClickAdd>().amount == 3)
+            {
+                objects[pre].GetComponent<Card>().backColor.color = Color.black;
+            }
             pageObject.Add(objects[pre]);
         }
         nextButton.SetActive(true);
     }
-
-    private void PageObjectActive()
-    {
-
-    }
-
     List<GameObject> GetAllChildren()
     {
         List<GameObject> children = new List<GameObject>();
@@ -208,16 +216,18 @@ public class DeckMake : MonoBehaviour
         return children;
     }
 
-    List<GameObject> SortChildren()
+    public void GetCardIdBothSide()
     {
-        List<GameObject> children = new List<GameObject>();
-
-        // 親オブジェクトのTransformコンポーネントを使用して子オブジェクトを取得
         foreach (Transform child in deckList)
         {
-            children.Add(child.gameObject);
+            if (86.0 <= child.position.x && child.position.x <= 248.0)
+            {
+                minId = child.gameObject.GetComponent<Card>().inf.Id;
+            }
+            else if (1711.0 <= child.position.x && child.position.x <= 1874.0)
+            {
+                maxId = child.gameObject.GetComponent<Card>().inf.Id;
+            }
         }
-        children.Sort((card1, card2) => card1.GetComponent<Card>().inf.Id.CompareTo(card2.GetComponent<Card>().inf.Id));
-        return children;
     }
 }
