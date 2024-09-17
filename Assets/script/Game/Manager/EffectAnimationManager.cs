@@ -87,17 +87,14 @@ public class EffectAnimationManager : MonoBehaviour
     public void ResetAnimations(CardAnimation cardAnimation, EnemyCardAnimation enemyCardAnimation, leaderAnimation anim = null)
     {
         if (anim != null)
-        {
             anim.animator.SetBool("extendLeader", false);
-        }
+        
         if (enemyCardAnimation != null)
-        {
             enemyCardAnimation.animator.SetBool("extendEnemy", false);
-        }
+        
         if (cardAnimation != null)
-        {
             cardAnimation.animator.SetBool("extendMy", false);
-        }
+        
     }
 
     

@@ -22,8 +22,7 @@ public class EnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CardManager p1Cardmanager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-        CardManager p2Cardmanager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+
     }
 
     // Update is called once per frame
@@ -201,12 +200,21 @@ public class EnemyAI : MonoBehaviour
     {
         for (int i = 0; i < allFieldsList.Count; i++)
         {
+            if (gameManager.isGameOver)
+                return;
+            
             Card filed = allFieldsList[i];
+
+            if (filed == null || filed.gameObject == null)
+            {
+                continue;
+            }
 
             if (!filed.Attacked)
             {
                 if (filed.attack == 0)
                     continue;
+
                 GameManager.attackObject = filed.gameObject;
                 GameManager.defenceObject = SelectDefenceObject(filed, player1CardManager.AttackFields, player1CardManager.DefenceFields);
 
@@ -218,13 +226,11 @@ public class EnemyAI : MonoBehaviour
 
                     else
                         await attackManager.AttackCard();
-
                 }
             }
         }
     }
 
-    // Helper method to select the appropriate defence object
     private GameObject SelectDefenceObject(Card filed, List<Card> pAttackCard, List<Card> pDefenceCard)
     {
         int count = pAttackCard.Count;

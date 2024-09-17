@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class ManaManager : MonoBehaviour
 {
-    CardManager player1CardManager;
-    CardManager player2CardManager;
+    public CardManager player1CardManager;
+    public CardManager player2CardManager;
     public EffectManager effectManager;
     private int p1_mana;
     private int p2_mana;
@@ -26,8 +26,13 @@ public class ManaManager : MonoBehaviour
             if (p1_mana != value)
             {
                 p1_mana = value;
-                P1_manaText.text = manaChange();
+                if (P1_mana > P1MaxMana)
+                {
+                    p1_mana = P1MaxMana;                      
+                }
                 StartCoroutine(OnP1ManaChanged());
+                P1_manaText.text = manaChange();
+
             }
         }
     }
@@ -39,8 +44,11 @@ public class ManaManager : MonoBehaviour
         {
             if (p1MaxMana != value)
             {
-                p1MaxMana = value;
-                P1_manaText.text = manaChange();
+                if (value <= 1000)
+                {
+                    p1MaxMana = value;
+                    P1_manaText.text = manaChange();
+                }
             }
         }
 
@@ -54,6 +62,10 @@ public class ManaManager : MonoBehaviour
             if (p2_mana != value)
             {
                 p2_mana = value;
+                if (P2_mana > P2MaxMana)
+                {
+                    p2_mana = P2MaxMana;
+                }
                 P2_manaText.text = P2manaChange();
             }
         }
@@ -66,8 +78,12 @@ public class ManaManager : MonoBehaviour
         {
             if (p2MaxMana != value)
             {
-                p2MaxMana = value;
-                P2_manaText.text = P2manaChange();
+                if (value <= 1000)
+                {
+                    p2MaxMana = value;
+                    P2_manaText.text = P2manaChange();
+                }
+
             }
         }
     }
@@ -75,22 +91,22 @@ public class ManaManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        InitializeVariables();
+    }
+    private void InitializeVariables()
+    {
         P1_mana = 0;
         P2_mana = 0;
         P1MaxMana = P1_mana;
         P2MaxMana = P2_mana;
-        player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-        player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        P1_manaText.text = manaChange();
+        P2_manaText.text = P2manaChange();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (P1_mana > P1MaxMana)
-        {
-            P1_mana = P1MaxMana;
-            P1_manaText.text = manaChange();
-        }
+
     }
 
     public void P1TurnStart()
@@ -98,7 +114,7 @@ public class ManaManager : MonoBehaviour
         P1MaxMana += 100;
         P1_mana = P1MaxMana;
         P1_manaText.text = manaChange();
-        
+
         if (player1CardManager.AllFields != null)
         {
             foreach (Card card in player1CardManager.AllFields)
@@ -115,7 +131,7 @@ public class ManaManager : MonoBehaviour
     {
         P2MaxMana += 100;
         P2_mana = P2MaxMana;
-        
+
         if (player2CardManager.AllFields != null)
         {
             foreach (Card card in player2CardManager.AllFields)
@@ -180,34 +196,40 @@ public class ManaManager : MonoBehaviour
         }
         return isPlayable;
     }
-    public void P1MaxManaIncrease(int increaseAmount){
+    public void P1MaxManaIncrease(int increaseAmount)
+    {
         P1MaxMana += increaseAmount;
     }
-    public void P2MaxManaIncrease(int increaseAmount){
+    public void P2MaxManaIncrease(int increaseAmount)
+    {
         P2MaxMana += increaseAmount;
     }
 
-    public void P1ManaHeal(int healAmount){
+    public void P1ManaHeal(int healAmount)
+    {
         P1_mana += healAmount;
         P1_manaText.text = manaChange();
     }
 
-    public void P2ManaHeal(int healAmount){
+    public void P2ManaHeal(int healAmount)
+    {
         P2_mana += healAmount;
         P2_manaText.text = P2manaChange();
     }
 
-    public void P1ManaDecrease(int decreaseAmount){
+    public void P1ManaDecrease(int decreaseAmount)
+    {
         if (decreaseAmount == 1)
-        P1_mana /= 2;
+            P1_mana /= 2;
         else
-        P1_mana -= decreaseAmount;
+            P1_mana -= decreaseAmount;
     }
 
-    public void P2ManaDecrease(int decreaseAmount){
+    public void P2ManaDecrease(int decreaseAmount)
+    {
         if (decreaseAmount == 1)
-        P2_mana /= 2;
+            P2_mana /= 2;
         else
-        P2_mana -= decreaseAmount;
+            P2_mana -= decreaseAmount;
     }
 }

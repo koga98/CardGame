@@ -12,6 +12,7 @@ public class CardManager : MonoBehaviour
     public EffectManager effectManager;
     private System.Random rng = new System.Random();
     public AllCardInf allCardInf;
+    public EnemyDeckInf enemyDeck;
     public Transform hand;
     public GameObject choiceCard;
     public GameObject cardPrefab;
@@ -47,6 +48,7 @@ public class CardManager : MonoBehaviour
         CannotDrawEffectList = new List<bool>();
         AllFields = new ObservableCollection<Card>();
         AllFields.CollectionChanged += CollectionChanged;
+        if(Owner == PlayerType.Player2)
         EnemyDeckCreate();
         Shuffle(DeckInf);
         Shuffle(enemyDeckInf);
@@ -61,13 +63,11 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    private void Test(){
-        for(int i = 0; i < 40;i++){
-            enemyDeckInf.Add(36);
-        }
+    private void EnemyDeckCreate(){
+        enemyDeckInf = enemyDeck.enemyDeckInf;
     }
 
-    private void EnemyDeckCreate()
+    private void EnemyDeckRandomCreate()
     {
         int x = allCardInf.allList.Count;  // 1からxまでの数
         int maxCount = 40;  // 合計で40回数をAddする

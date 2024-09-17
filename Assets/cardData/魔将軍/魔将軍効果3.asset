@@ -15,7 +15,7 @@ MonoBehaviour:
   animationClip: {fileID: 7400000, guid: 5c35e3e3c3200b549aa40aa54ce6a3c1, type: 2}
   audioClip: {fileID: 8300000, guid: e58883e120d2d6b439a8a92919bdcf9c, type: 3}
   triggers: 02000000
-  damageAmount: 400
+  damageAmount: 200
   conditionOnEffects: []
   additionalEffects: []
   conditionOnAdditionalEffects: []

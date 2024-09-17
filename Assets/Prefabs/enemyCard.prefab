@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 5156994033894417984}
   - component: {fileID: 6011750179134366493}
   - component: {fileID: 8969939803173318288}
-  - component: {fileID: 529471185858645098}
   - component: {fileID: 6123460690677972972}
   - component: {fileID: -1933396350296453858}
   m_Layer: 5
@@ -182,7 +181,7 @@ MonoBehaviour:
   attackPanel: {fileID: 8340779345110962966}
   defencePanel: {fileID: 1990801131631832213}
   blindPanel: {fileID: 478137071761250097}
-  shiledIcon: {fileID: 0}
+  shiledIcon: {fileID: 4018825630649081262}
   attackText: {fileID: 3391889925069487945}
   amountText: {fileID: 4372625950981842442}
   healthText: {fileID: 3094922154843390513}
@@ -215,42 +214,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultParent: {fileID: 0}
   canvas: {fileID: 0}
-  clickAdd: {fileID: 0}
   player1CardManager: {fileID: 0}
   player2CardManager: {fileID: 0}
   myHand: {fileID: 0}
   myAttackField: {fileID: 0}
   myDefenceField: {fileID: 0}
-  deckList: {fileID: 0}
   spelPanel: {fileID: 0}
-  cardOption: {fileID: 0}
   clickedObject: {fileID: 0}
   completeChoice: 0
   cancelChoice: 0
   canDrag: 1
---- !u!114 &529471185858645098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575106873050178216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0fdf5f1362933e459d3c500ae2340fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  deckList: {fileID: 0}
-  cardOption: {fileID: 0}
-  copyObject: {fileID: 0}
-  myObject: {fileID: 0}
-  horizontalLayoutGroup: {fileID: 0}
-  pad: 0
-  amount: 0
-  isAdd: 0
-  onCard: 0
-  siblingIndex: 0
-  deckNumber: {fileID: 0}
 --- !u!95 &6123460690677972972
 Animator:
   serializedVersion: 5

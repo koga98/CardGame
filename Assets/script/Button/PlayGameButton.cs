@@ -17,7 +17,8 @@ public class PlayGameButton : MonoBehaviour
 
     public async void nextPlay()
     {
-        
+        if(gameManager.isGameOver)
+        return;
         AudioManager.Instance.TurnEndButtonSound();
         if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay)
         {
@@ -94,7 +95,5 @@ public class PlayGameButton : MonoBehaviour
             await Task.Yield();
         }
     }
-
-
 
 }

@@ -1,15 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using System;
-using GameNamespace;
 using System.Threading.Tasks;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,6 +33,7 @@ public class GameManager : MonoBehaviour
     public bool nowDestory = false;
     public bool restrictionClick;
     public bool nowEnemyAttack;
+    public bool isGameOver;
 
     public enum TurnStatus
     {
@@ -66,6 +58,7 @@ public class GameManager : MonoBehaviour
     {
         nowEnemyAttack = false;
         restrictionClick = false;
+        isGameOver = false;
         p1_turnElapsed = 0;
         p2_turnElapsed = 0;
         finishEnemyTurn = true;
@@ -94,9 +87,13 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        ManageEachTurns();
-        if (Input.GetMouseButtonDown(0))
-            uIManager.DetailPanelInactive();
+        if (!isGameOver)
+        {
+            ManageEachTurns();
+            if (Input.GetMouseButtonDown(0))
+                uIManager.DetailPanelInactive();
+        }
+
     }
 
     private void ManageEachTurns()
@@ -151,6 +148,8 @@ public class GameManager : MonoBehaviour
     {
         turnStatus = TurnStatus.OnAttack;
         uIManager.ChangePhazeOperateButtonText("ターンエンド");
+        foreach (Card hands in player1CardManager.Hands)
+            hands.ActivePanel.SetActive(false);
         foreach (Card card in player1CardManager.AllFields)
             card.ActivePanel.SetActive(!card.Attacked);
     }
@@ -190,6 +189,8 @@ public class GameManager : MonoBehaviour
         await enemyAI.PlayCard(manaManager);
         turnStatus = TurnStatus.OnEnemyAttack;
         await enemyAI.Attack();
+        if(isGameOver)
+            return;
         turnStatus = TurnStatus.OnEnemyTurnEnd;
         await EnemyTurnEndPhaze();
     }

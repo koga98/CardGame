@@ -65,14 +65,4 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
         }
         return null;
     }
-
-    public void CannotOperate()
-    {
-        animator.SetBool("canOperate", false);
-    }
-
-    public void CanOperate()
-    {
-        animator.SetBool("canOperate", true);
-    }
 }

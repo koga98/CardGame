@@ -212,20 +212,11 @@ public class EffectManager : MonoBehaviour
         }
     }
 
-    private async Task ApplyEffect(EffectInf effect, Card card, Card clickedObjectCard)
+    private async Task ApplyEffect(EffectInf effect, Card card, Card clickedObjectCard = null)
     {
         if (effect is ICardEffect cardEffect)
         {
             Task task = cardEffect.Apply(GetAllFields(card, clickedObjectCard));
-            await task;
-        }
-    }
-
-    private async Task ApplyEffect(EffectInf effect, Card card)
-    {
-        if (effect is ICardEffect cardEffect)
-        {
-            Task task = cardEffect.Apply(GetAllFields(card));
             await task;
         }
     }

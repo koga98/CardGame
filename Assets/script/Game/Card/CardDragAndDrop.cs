@@ -1,32 +1,23 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using GameNamespace;
-using System.Threading.Tasks;
 
 public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
-    Vector3 touchPosition;
     public Transform defaultParent;
     public GameObject canvas;
     EffectManager effectManager;
     GameManager gameManager;
     ManaManager manaManager;
     UIManager uIManager;
-    DeckMake deckMake;
-    public ClickAdd clickAdd;
     public CardManager player1CardManager;
     public CardManager player2CardManager;
     public GameObject myHand;
     public GameObject myAttackField;
     public GameObject myDefenceField;
-    public Transform deckList;
     public Transform spelPanel;
-    public Transform cardOption;
     Card card;
     [SerializeField] GameObject clickedObject;
     public bool completeChoice = false;
@@ -34,8 +25,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     public static bool OnCoroutine = false;
     public static bool OnButtonCoroutine = false;
     public bool canDrag = false;
-
-    float defaultZPosition = 0;
     string currentSceneName;
 
     int siblingIndex = 0;
@@ -47,18 +36,14 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     }
     private void InitializeManagers()
     {
-        if (SceneManager.GetActiveScene().name == "playGame")
-        {
-            GameObject manager = GameObject.Find("GameManager");
-            gameManager = manager.GetComponent<GameManager>();
-            manaManager = manager.GetComponent<ManaManager>();
-            effectManager = manager.GetComponent<EffectManager>();
-            uIManager = manager.GetComponent<UIManager>();
-            player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-            player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
-            spelPanel = GameObject.Find("SpelPanel").transform;
-        }else if(SceneManager.GetActiveScene().name == "makeDeck")
-            deckMake = GameObject.Find("GameObject").GetComponent<DeckMake>();
+        GameObject manager = GameObject.Find("GameManager");
+        gameManager = manager.GetComponent<GameManager>();
+        manaManager = manager.GetComponent<ManaManager>();
+        effectManager = manager.GetComponent<EffectManager>();
+        uIManager = manager.GetComponent<UIManager>();
+        player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        spelPanel = GameObject.Find("SpelPanel").transform;
     }
 
     private void InitializeVariables()
@@ -73,25 +58,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     void Update()
     {
-        if (SceneManager.GetActiveScene().name == "makeDeck" && gameObject.transform.position.y > 310)
-        {
-            if (Input.GetMouseButtonDown(0))
-                touchPosition = Input.mousePosition;
 
-            if (Input.GetMouseButton(0))
-            {
-                Vector3 direction = Input.mousePosition - touchPosition;
-                touchPosition = Input.mousePosition;
-                if (direction != Vector3.zero)
-                    MoveCards(direction);
-                
-            }
-        }
-    }
-
-    private void MoveCards(Vector3 direction)
-    {
-        gameObject.transform.localPosition += new Vector3(direction.x * 0.9f, 0, 0);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -144,17 +111,19 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
         // プレイシーンとターンステータスのチェック
-        if (SceneManager.GetActiveScene().name != "playGame" || GameManager.turnStatus != GameManager.TurnStatus.OnPlay || clickedObject.tag == "Enemy" || gameManager.isPlayerTurnProcessing)
+        if (SceneManager.GetActiveScene().name == "playGame")
         {
-            canDrag = false;
-            return;
+            if (GameManager.turnStatus != GameManager.TurnStatus.OnPlay || clickedObject.tag == "Enemy" || gameManager.isPlayerTurnProcessing)
+            {
+                canDrag = false;
+                return;
+            }
+
+            InitializeSceneObjects();
+            StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
+            if (clickedObject == null || !CanDragCard(clickedObject, eventData))
+                return;
         }
-
-        InitializeSceneObjects();
-        StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
-        if (clickedObject == null || !CanDragCard(clickedObject, eventData))
-            return;
-
         StartDrag();
     }
 
@@ -167,11 +136,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             myHand = GameObject.Find("myHand");
             myAttackField = GameObject.Find("myAttackField");
             myDefenceField = GameObject.Find("myDefenceField");
-        }
-        else if (currentSceneName.Equals("makeDeck"))
-        {
-            deckList = GameObject.Find("deckPanel").transform;
-            cardOption = GameObject.Find("allCards").transform;
         }
     }
     private bool CanDragCard(GameObject cardObject, PointerEventData eventData)
@@ -231,7 +195,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         RectTransform rectTransform = GetComponent<RectTransform>();
         Vector3 worldPosition = rectTransform.TransformPoint(rectTransform.rect.center);
-        worldPosition.z = defaultZPosition;
+        worldPosition.z = 0;
         siblingIndex = transform.GetSiblingIndex();
         canvas = GameObject.Find("Canvas");
         defaultParent = canvas.transform;
@@ -240,44 +204,36 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (SceneManager.GetActiveScene().name == "playGame" && GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
         {
-            Vector3 newPos;
-            RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            (RectTransform)transform.parent, // 親のRectTransform
-            eventData.position, // ドラッグ中のスクリーン座標
-            eventData.pressEventCamera, // イベントを処理するカメラ
-            out newPos); // ワールド座標を取得
-
-            // Z軸の値を維持または設定する
-            newPos.z = transform.position.z;
-
-            // 新しい位置を設定
-            transform.position = newPos;
+            DragCard(eventData);
         }
         else if (!canDrag || clickedObject.tag == "Enemy")
             return;
     }
 
+    private void DragCard(PointerEventData eventData)
+    {
+        Vector3 newPos;
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(
+        (RectTransform)transform.parent, // 親のRectTransform
+        eventData.position, // ドラッグ中のスクリーン座標
+        eventData.pressEventCamera, // イベントを処理するカメラ
+        out newPos); // ワールド座標を取得
+
+        // Z軸の値を維持または設定する
+        newPos.z = transform.position.z;
+
+        // 新しい位置を設定
+        transform.position = newPos;
+    }
+
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (SceneManager.GetActiveScene().name == "playGame" && GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
         {
             if (currentSceneName.Equals("playGame"))
                 HandlePlayGame(eventData);
-            else if (currentSceneName.Equals("makeDeck"))
-                HandleDekeMake(eventData);
-        }
-    }
-
-    private void HandleDekeMake(PointerEventData eventData)
-    {
-        if (eventData.position.y > 310)
-            transform.SetParent(deckList, false);
-        else
-        {
-            transform.SetParent(cardOption, false);
-            transform.SetSiblingIndex(siblingIndex);
         }
     }
 
@@ -459,6 +415,5 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             player1CardManager.AttackFields.Add(card);
             player1CardManager.AllFields.Add(card);
         }
-
     }
 }

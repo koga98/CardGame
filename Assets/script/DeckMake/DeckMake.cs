@@ -24,13 +24,29 @@ public class DeckMake : MonoBehaviour
     public GameObject detailPanel;
     public int minId = 1000;
     public int maxId = 0;
+    public bool restrictMoveCards = false;
+    private const int CardsPerPage = 8;
+    int maxPage = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        maxPage = allCardInfList.allList.Count / CardsPerPage;
+        maxPage += allCardInfList.allList.Count % CardsPerPage == 0 ? 0 : 1;
+        UpdatePrePageButtonState();
+        UpdateNextPageButtonState();
         InitializeCards();
         LoadCardData(DeckChiceButton.passNumber);
+    }
 
+    private void UpdatePrePageButtonState()
+    {
+        preButton.SetActive(nowPage > 0);
+    }
+
+    private void UpdateNextPageButtonState()
+    {
+        preButton.SetActive(nowPage < maxPage);
     }
 
     // Update is called once per frame
@@ -43,9 +59,7 @@ public class DeckMake : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             if (detailPanel.activeSelf)
-            {
                 detailPanel.SetActive(false);
-            }
         }
     }
 
@@ -60,9 +74,7 @@ public class DeckMake : MonoBehaviour
             card.transform.localScale = Vector3.one;
             pageObject.Add(card);
             if (i > 7)
-            {
                 card.SetActive(false);
-            }
 
         }
     }
@@ -87,13 +99,9 @@ public class DeckMake : MonoBehaviour
                 foreach (int id in CardManager.DeckInf)
                 {
                     if (counts.ContainsKey(id))
-                    {
                         counts[id]++;
-                    }
                     else
-                    {
                         counts[id] = 1;
-                    }
                 }
                 //copyCard
                 foreach (KeyValuePair<int, int> entry in counts)
@@ -101,7 +109,6 @@ public class DeckMake : MonoBehaviour
                     CreateCard(entry.Key, entry.Value);
                 }
             }
-
         }
         else
             deckAmount = 0;
@@ -127,7 +134,6 @@ public class DeckMake : MonoBehaviour
             count++;
         }
         SaveButton.deckDatabaseCollection.cardDataLists.Add(SaveButton.deckDatabase);
-
     }
 
     private void CreateCard(int cardId, int count)
@@ -137,59 +143,54 @@ public class DeckMake : MonoBehaviour
         card.P1SetUp(allCardInfList.allList[cardId]);
         card.GetComponent<ClickAdd>().myObject = pageObject[card.inf.Id];
         pageObject[card.inf.Id].GetComponent<ClickAdd>().copyObject = cardObj;
+        cardObj.GetComponent<ClickAdd>().copyObject = cardObj;
         card.GetComponent<ClickAdd>().copyObject = cardObj;
         card.GetComponent<ClickAdd>().amount = count;
         card.reflectAmount(count);
         if (count == 3)
-        {
             card.GetComponent<ClickAdd>().myObject.GetComponent<Card>().backColor.color = Color.black;
-        }
         cardObj.transform.localScale = Vector3.one;
     }
     public void NextPage()
     {
-        nowPage++;
-        pageObject.ForEach(obj => obj.SetActive(false));
-        pageObject.Clear();
-        int tmp = nowPage * 8;
-        for (int next = nowPage * 8; next < (tmp + 8); next++)
-        {
-            if (allCardInfList.allList.Count > next)
-            {
-                List<GameObject> objects = GetAllChildrenOption();
-                objects[next].SetActive(true);
-                if (objects[next].GetComponent<ClickAdd>().amount == 3)
-                {
-                    objects[next].GetComponent<Card>().backColor.color = Color.black;
-                }
-                pageObject.Add(objects[next]);
-            }
-            else
-            {
-                nextButton.SetActive(false);
-            }
-        }
-        preButton.SetActive(true);
+        ChangePage(1);
     }
 
     public void PrePage()
     {
-        nowPage--;
+        ChangePage(-1);
+    }
+
+    private void ChangePage(int direction)
+    {
+        nowPage += direction;
         pageObject.ForEach(obj => obj.SetActive(false));
         pageObject.Clear();
-        int tmp = nowPage * 8;
-        for (int pre = nowPage * 8; pre < (tmp + 8); pre++)
-        {
-            List<GameObject> objects = GetAllChildrenOption();
-            objects[pre].SetActive(true);
-            if (objects[pre].GetComponent<ClickAdd>().amount == 3)
-            {
-                objects[pre].GetComponent<Card>().backColor.color = Color.black;
-            }
-            pageObject.Add(objects[pre]);
-        }
         nextButton.SetActive(true);
+
+        int startIdx = nowPage * CardsPerPage;
+        for (int i = startIdx; i < startIdx + CardsPerPage; i++)
+        {
+            if (i < allCardInfList.allList.Count)
+            {
+                List<GameObject> objects = GetAllChildrenOption();
+                objects[i].SetActive(true);
+                if (objects[i].GetComponent<ClickAdd>().amount == 3)
+                {
+                    objects[i].GetComponent<Card>().backColor.color = Color.black;
+                }
+                pageObject.Add(objects[i]);
+            }
+            else
+            {
+                nextButton.SetActive(false);
+                break;
+            }
+        }
+        UpdatePrePageButtonState();
+        UpdateNextPageButtonState();
     }
+
     List<GameObject> GetAllChildren()
     {
         List<GameObject> children = new List<GameObject>();
@@ -218,6 +219,8 @@ public class DeckMake : MonoBehaviour
 
     public void GetCardIdBothSide()
     {
+        int nowMinId = minId;
+        int nowMaxId = maxId;
         foreach (Transform child in deckList)
         {
             if (86.0 <= child.position.x && child.position.x <= 248.0)
@@ -228,6 +231,40 @@ public class DeckMake : MonoBehaviour
             {
                 maxId = child.gameObject.GetComponent<Card>().inf.Id;
             }
+
+            minId = (minId == nowMinId) ? deckList.GetChild(0).gameObject.GetComponent<Card>().inf.Id : minId;
+            maxId = (maxId == nowMaxId) ? deckList.GetChild(deckList.childCount - 1).gameObject.GetComponent<Card>().inf.Id : maxId;
         }
+    }
+
+    public int GetNumberofLeftOverCards()
+    {
+        int number = 0;
+        foreach (Transform child in deckList)
+        {
+            if (-40 >= child.position.x)
+            {
+                number++;
+            }
+        }
+        return number;
+    }
+
+    public int GetNumberofRightOverCards()
+    {
+        int number = 0;
+        foreach (Transform child in deckList)
+        {
+            if (2000 <= child.position.x)
+            {
+                number++;
+            }
+        }
+        return number;
+    }
+
+    public bool LayOutRight()
+    {
+        return GetNumberofLeftOverCards() > GetNumberofRightOverCards() && deckList.childCount > 11;
     }
 }

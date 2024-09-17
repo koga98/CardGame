@@ -123,6 +123,7 @@ public class Leader : MonoBehaviour, IPointerClickHandler
     private void GameOver()
     {
         uIManager.gameSetPanel.SetActive(true);
+        gameManager.isGameOver = true;
         if (playerType == PlayerType.Player1)
         {
             uIManager.ChangeGameSetText("You Lose");

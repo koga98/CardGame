@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: "\u672A\u6765\u8996"
   m_EditorClassIdentifier: 
   attackClip: {fileID: 0}
+  voice: {fileID: 0}
   Id: 23
   attack: 0
-  hp: 1
+  hp: 0
   cost: 50
   cardType: 2
   cardName: "\u672A\u6765\u8996"

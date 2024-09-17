@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: "\u53E4\u4EE3\u5175\u5668"
   m_EditorClassIdentifier: 
   attackClip: {fileID: 7400000, guid: e12f6248b0b1ac74582779e565f76ae1, type: 2}
+  voice: {fileID: 0}
   Id: 11
   attack: 400
   hp: 500
   cost: 550
   cardType: 1
   cardName: "\u53E4\u4EE3\u5175\u5668"
-  longText: "\u3053\u306E\u30AB\u30FC\u30C9\u3092\u5834\u306B\u51FA\u3057\u305F\u3068\u304D\u3001\u30AB\u30FC\u30C9\u30922\u679A\u5F15\u304F\u3002\u76F8\u624B\u306F\u3053\u306E\u30AB\u30FC\u30C9\u4EE5\u5916\u3092\u653B\u6483\u3067\u304D\u306A\u3044\u3002"
+  longText: "\u3053\u306E\u30AB\u30FC\u30C9\u3092\u5834\u306B\u51FA\u3057\u305F\u3068\u304D\u3001\u30AB\u30FC\u30C9\u30922\u679A\u5F15\u304F\u3002\n\u76F8\u624B\u306F\u3053\u306E\u30AB\u30FC\u30C9\u4EE5\u5916\u3092\u653B\u6483\u3067\u304D\u306A\u3044\u3002"
   cardSprite: {fileID: 21300000, guid: b0bc56b0ef46c6841b3c49c1d821c2a1, type: 3}
   effectInfs:
   - {fileID: 11400000, guid: 40d66e14fe07529459ccc6b971256aba, type: 2}

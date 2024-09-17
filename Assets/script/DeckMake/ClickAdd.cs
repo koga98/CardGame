@@ -7,39 +7,29 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 public class ClickAdd : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public Transform deckList;
-    public Transform cardOption;
-    private string currentSceneName;
     private DeckMake deckMake;
-    private GameObject prefab;
+    public GameObject prefab;
     public GameObject copyObject;
     public GameObject myObject;
     public HorizontalLayoutGroup horizontalLayoutGroup;
-    public int pad; 
-
+    public int paddingLeft;
     public int amount = 0;
     [SerializeField] private bool isAdd = false;
     [SerializeField] private bool onCard = false;
-    public int siblingIndex = 0;
-    
-
     [SerializeField] private Text deckNumber;
 
     void Start()
     {
+        InitializeVariables();
+    }
 
-        currentSceneName = SceneManager.GetActiveScene().name;
-        if (currentSceneName.Equals("makeDeck"))
-        {
-            prefab = Resources.Load<GameObject>("cardDesign");
-            deckList = GameObject.Find("deckPanel").transform;
-            cardOption = GameObject.Find("allCards").transform;
-            deckNumber = GameObject.Find("DeckNumber").GetComponent<Text>();
-            horizontalLayoutGroup = deckList.GetComponent<HorizontalLayoutGroup>();
-            pad = horizontalLayoutGroup.padding.left;
-            deckMake = GameObject.Find("GameObject").GetComponent<DeckMake>();
-        }
-
+    private void InitializeVariables()
+    {
+        deckMake = GameObject.Find("GameObject").GetComponent<DeckMake>();
+        prefab = Resources.Load<GameObject>("DeckMakeCard");
+        deckNumber = GameObject.Find("DeckNumber").GetComponent<Text>();
+        horizontalLayoutGroup = deckMake.deckList.GetComponent<HorizontalLayoutGroup>();
+        paddingLeft = horizontalLayoutGroup.padding.left;
     }
 
     // Update is called once per frame
@@ -58,107 +48,132 @@ public class ClickAdd : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             if (copyObject == null)
             {
-                AddToDeckList();
+                AddToDeckList(gameObject);
             }
             else if (copyObject.GetComponent<ClickAdd>().amount <= 2)
             {
-                MaxAddToDeckList();
-
+                MaxAddToDeckList(gameObject);
             }
-            siblingIndex = deckList.childCount - 1;
-            deckNumber.text = DeckMake.deckAmount + "/40";
         }
         if (isAdd == false && onCard == true)
         {
             if (amount == 1)
             {
-                Destroy(copyObject);
+                DestroyDeckListCard(copyObject);
             }
             else if (amount >= 2)
             {
-                RemoveFromDeckList();
+                RemoveFromDeckList(gameObject, myObject);
 
             }
-            siblingIndex = deckList.childCount - 1;
-            DeckMake.deckAmount--;
-            deckNumber.text = (DeckMake.deckAmount) + "/40";
         }
     }
 
-    private void AddToDeckList()
+    public void AddToDeckList(GameObject baseObject)
     {
         copyObject = Instantiate(prefab);
-        copyObject.GetComponent<ClickAdd>().myObject = gameObject;
+        copyObject.GetComponent<ClickAdd>().myObject = baseObject;
         copyObject.GetComponent<ClickAdd>().copyObject = copyObject;
         Card copy = copyObject.GetComponent<Card>();
-        copy.P1SetUp(gameObject.GetComponent<Card>().inf);
-        copyObject.transform.SetParent(deckList,false);
+        copy.P1SetUp(baseObject.GetComponent<Card>().inf);
+        copyObject.transform.SetParent(deckMake.deckList, false);
         copy.reflectAmount(copyObject.GetComponent<ClickAdd>().amount + 1);
         copyObject.GetComponent<ClickAdd>().amount++;
-         if (deckList.childCount > 12)
-        {
-            if (copy.inf.Id > deckMake.maxId)
-            {
-                int kae = deckList.childCount -11;
-                int temp = pad - 170 * kae;
-                horizontalLayoutGroup.padding = new RectOffset(temp,0,0,0);
-            }else if (copy.inf.Id < deckMake.minId) {
-                horizontalLayoutGroup.padding = new RectOffset(pad,0,0,0);
-            }
-        }
+        baseObject.GetComponent<ClickAdd>().amount = copyObject.GetComponent<ClickAdd>().amount;
+        ArrangeLayout(copy);
         SortChildren();
-        
+
         DeckMake.deckAmount++;
+        UpdateDeckNumber();
     }
 
-    private void MaxAddToDeckList()
+    public void MaxAddToDeckList(GameObject baseObject)
     {
         Card copy = copyObject.GetComponent<Card>();
+        copyObject.GetComponent<ClickAdd>().myObject = baseObject;
         copy.reflectAmount(copyObject.GetComponent<ClickAdd>().amount + 1);
         copyObject.GetComponent<ClickAdd>().amount++;
+        baseObject.GetComponent<ClickAdd>().amount = copyObject.GetComponent<ClickAdd>().amount;
+        ArrangeLayout(copy);
         DeckMake.deckAmount++;
-        Debug.Log(copyObject.GetComponent<ClickAdd>().amount);
+        UpdateDeckNumber();
         if (copyObject.GetComponent<ClickAdd>().amount >= 3)
         {
-            gameObject.GetComponent<Card>().backColor.color = Color.black;
+            baseObject.GetComponent<Card>().backColor.color = Color.black;
         }
     }
 
-    private void RemoveFromDeckList()
+    public void RemoveFromDeckList(GameObject decklistCard, GameObject cardOptionCard)
     {
-        if (amount == 3)
+        if (decklistCard.GetComponent<ClickAdd>().amount == 3)
         {
-            myObject.GetComponent<Card>().backColor.color = myObject.GetComponent<Card>().baseColor;
+            cardOptionCard.GetComponent<Card>().backColor.color = cardOptionCard.GetComponent<Card>().baseColor;
         }
-        amount--;
-        gameObject.GetComponent<Card>().reflectAmount(amount);
+        decklistCard.GetComponent<ClickAdd>().amount--;
+        cardOptionCard.GetComponent<ClickAdd>().amount = decklistCard.GetComponent<ClickAdd>().amount;
+        decklistCard.GetComponent<Card>().reflectAmount(decklistCard.GetComponent<ClickAdd>().amount);
+        DeckMake.deckAmount--;
+        UpdateDeckNumber();
+    }
+
+    public void DestroyDeckListCard(GameObject destroyCard)
+    {
+        if (deckMake.LayOutRight())
+        {
+            horizontalLayoutGroup.childAlignment = TextAnchor.MiddleRight;
+            horizontalLayoutGroup.padding = new RectOffset(paddingLeft - 165 * deckMake.GetNumberofLeftOverCards(), 0, 0, 0);
+        }
+        else
+        {
+            horizontalLayoutGroup.childAlignment = TextAnchor.MiddleLeft;
+            horizontalLayoutGroup.padding = new RectOffset(paddingLeft, 0, 0, 0);
+        }
+        Destroy(destroyCard);
+        DeckMake.deckAmount--;
+        UpdateDeckNumber();
+    }
+    private void UpdateDeckNumber()
+    {
+        deckNumber.text = DeckMake.deckAmount + "/40";
+    }
+
+    private void ArrangeLayout(Card card)
+    {
+        if (deckMake.deckList.childCount > 12)
+        {
+            if (card.inf.Id > deckMake.maxId)
+            {
+                int arrangeCount = deckMake.deckList.childCount - 11;
+                int result = paddingLeft - 170 * arrangeCount;
+                horizontalLayoutGroup.padding = new RectOffset(result, 0, 0, 0);
+                horizontalLayoutGroup.childAlignment = TextAnchor.MiddleRight;
+            }
+            else if (card.inf.Id < deckMake.minId)
+            {
+                horizontalLayoutGroup.padding = new RectOffset(paddingLeft, 0, 0, 0);
+                horizontalLayoutGroup.childAlignment = TextAnchor.MiddleLeft;
+            }
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (currentSceneName.Equals("makeDeck"))
+        if (eventData.pointerCurrentRaycast.gameObject.tag == "Card" && transform.parent == deckMake.cardOption)
         {
-            if (eventData.pointerCurrentRaycast.gameObject.tag == "Card" && transform.parent == cardOption)
-            {
-                isAdd = true;
-                onCard = true;
-            }
-            if (eventData.pointerCurrentRaycast.gameObject.tag == "Card" && transform.parent == deckList)
-            {
-                isAdd = false;
-                onCard = true;
-            }
+            isAdd = true;
+            onCard = true;
         }
-
+        if (eventData.pointerCurrentRaycast.gameObject.tag == "Card" && transform.parent == deckMake.deckList)
+        {
+            isAdd = false;
+            onCard = true;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (currentSceneName.Equals("makeDeck"))
-        {
-            isAdd = false;
-            onCard = false;
-        }
+        isAdd = false;
+        onCard = false;
     }
 
     public GameObject GetCardObject(GameObject clickedGameObject)
@@ -180,7 +195,7 @@ public class ClickAdd : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         List<Transform> children = new List<Transform>();
 
         // 親オブジェクトのTransformコンポーネントを使用して子オブジェクトを取得
-        foreach (Transform child in deckList)
+        foreach (Transform child in deckMake.deckList)
         {
             children.Add(child);
         }
@@ -192,5 +207,5 @@ public class ClickAdd : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
 
     }
-    
+
 }

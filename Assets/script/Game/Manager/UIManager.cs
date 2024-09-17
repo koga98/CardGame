@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GameNamespace;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public GameObject HpPanel;
+    public GameObject AttackPanel;
     public GameObject detailPanel;
     public GameObject messagePanel;
     public GameObject ChoicePanel;
@@ -46,7 +49,7 @@ public class UIManager : MonoBehaviour
         cardDetailText[2].text = inf.attack.ToString();
         cardDetailText[3].text = inf.hp.ToString();
         cardDetailText[4].text = inf.longText;
-        cardDetailText[5].text = inf.cardType.ToString();
+        cardDetailText[5].text = (inf.cardType == CardType.Defence) ? "後衛": (inf.cardType == CardType.Attack) ? "前衛":"スペル";
     }
 
     public void ChangeMessageTexts(string text)

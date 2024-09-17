@@ -94,6 +94,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shieldDamageCutAmount: 0
+  effectManager: {fileID: 0}
+  effectAnimationManager: {fileID: 0}
+  attackManager: {fileID: 0}
   shieldClip: {fileID: 7400000, guid: 23e8996f128598d428f83d329dbf1c19, type: 2}
   playerType: 0
   sprite: {fileID: 0}
@@ -378,7 +381,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.0000021457672, y: 20.900002}
+  m_AnchoredPosition: {x: -0.0000021457672, y: 23.5}
   m_SizeDelta: {x: 159.49, y: 41.699997}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4222311606085231910
@@ -402,7 +405,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -412,7 +415,7 @@ MonoBehaviour:
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 35
-    m_FontStyle: 0
+    m_FontStyle: 2
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 40

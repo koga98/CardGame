@@ -59,7 +59,6 @@ public class SaveButton : MonoBehaviour
         deckMake.DeckMakeMethod(myButtonNumber);
         Save();
         dekeMakeUIManager.SaveButtonUIAction();
-
     }
 
     public void NextPageButton()
@@ -107,17 +106,24 @@ public class SaveButton : MonoBehaviour
 
     private void Save()
     {
-        //textSaveDataの変数名とその内容をjsonファイルに合うようなstringに変更する
-        string json = JsonUtility.ToJson(deckDatabaseCollection);
-        //引数にアクセスするようなStremWriterをインスタンス化する
-        StreamWriter streamWriter = new StreamWriter(filePath);
-        //
-        streamWriter.Write(json);
-        streamWriter.Flush();
-        streamWriter.Close();
+        try
+        {
+            string json = JsonUtility.ToJson(deckDatabaseCollection);
+            using (StreamWriter streamWriter = new StreamWriter(filePath))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"Failed to save data: {e.Message}");
+        }
     }
 
-    public void ContinueButton(){
+    public void ContinueButton()
+    {
         dekeMakeUIManager.Continue();
     }
 
@@ -125,14 +131,18 @@ public class SaveButton : MonoBehaviour
     {
         if (File.Exists(filePath) && DeckMake.deckAmount == 40)
         {
-            StreamReader streamReader;
-            streamReader = new StreamReader(filePath);
+            StreamReader streamReader = new StreamReader(filePath);
             string data = streamReader.ReadToEnd();
             streamReader.Close();
             deckDatabaseCollection = JsonUtility.FromJson<DeckDatabaseCollection>(data);
-            //ロードしたのが何番目のデータなのかを検知して
-            CardManager.DeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
-            SceneManager.LoadScene("playGame");
+
+            if (deckDatabaseCollection != null && deckDatabaseCollection.cardDataLists.Count > 0)
+            {
+                CardManager.DeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
+                SceneManager.LoadScene("playGame");
+            }
+            else
+                Debug.LogError("Failed to load deck data.");
         }
     }
 }

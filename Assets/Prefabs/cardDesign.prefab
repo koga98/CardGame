@@ -25,17 +25,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 368155400252103300}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7243895101780430953}
+  m_Father: {fileID: 652183772819765492}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 29.18, y: -25.61}
-  m_SizeDelta: {x: 58.37, y: 51.21}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4178794665586707738
 CanvasRenderer:
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -430,7 +430,6 @@ GameObject:
   - component: {fileID: 1603151677327012720}
   - component: {fileID: 6546027336215702243}
   - component: {fileID: 5720859276048757896}
-  - component: {fileID: 7197742018591549553}
   - component: {fileID: 3652263558379464078}
   m_Layer: 5
   m_Name: cardDesign
@@ -455,13 +454,13 @@ RectTransform:
   - {fileID: 5676125416083832977}
   - {fileID: 2595319874829264471}
   - {fileID: 6717095043830122067}
-  - {fileID: 6621552260883443822}
   - {fileID: 3348121581096013618}
   - {fileID: 7746669496657745085}
   - {fileID: 3976149996759254265}
   - {fileID: 8686993596774721626}
   - {fileID: 6692445956898930909}
   - {fileID: 3826035633366347879}
+  - {fileID: 652183772819765492}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -490,7 +489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.291, g: 0.291, b: 0.291, a: 0}
+  m_Color: {r: 0.21807075, g: 1, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -534,6 +533,7 @@ MonoBehaviour:
   elapsedTurns: 0
   CardOwner: 0
   inf: {fileID: 0}
+  baseColor: {r: 0, g: 0, b: 0, a: 0}
   attack: 0
   hp: 0
   maxHp: 0
@@ -555,15 +555,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultParent: {fileID: 0}
   canvas: {fileID: 0}
-  clickAdd: {fileID: 0}
   player1CardManager: {fileID: 0}
   player2CardManager: {fileID: 0}
   myHand: {fileID: 0}
   myAttackField: {fileID: 0}
   myDefenceField: {fileID: 0}
-  deckList: {fileID: 0}
   spelPanel: {fileID: 0}
-  cardOption: {fileID: 0}
   clickedObject: {fileID: 0}
   completeChoice: 0
   cancelChoice: 0
@@ -581,29 +578,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 3652263558379464078}
---- !u!114 &7197742018591549553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1886205860272788798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0fdf5f1362933e459d3c500ae2340fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  deckList: {fileID: 0}
-  cardOption: {fileID: 0}
-  copyObject: {fileID: 0}
-  myObject: {fileID: 0}
-  horizontalLayoutGroup: {fileID: 0}
-  pad: 0
-  amount: 0
-  isAdd: 0
-  onCard: 0
-  siblingIndex: 0
-  deckNumber: {fileID: 0}
 --- !u!95 &3652263558379464078
 Animator:
   serializedVersion: 5
@@ -1197,7 +1171,83 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.53394943, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.48748046, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &4764433897577545163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 652183772819765492}
+  - component: {fileID: 3224820611609649972}
+  - component: {fileID: 5375234778425970610}
+  m_Layer: 5
+  m_Name: CostPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &652183772819765492
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764433897577545163}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6621552260883443822}
+  m_Father: {fileID: 7243895101780430953}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -37.083, y: 70.525}
+  m_SizeDelta: {x: -74.166, y: -134.41}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3224820611609649972
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764433897577545163}
+  m_CullTransparentMesh: 1
+--- !u!114 &5375234778425970610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4764433897577545163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 1, b: 0.011367798, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

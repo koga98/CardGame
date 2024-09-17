@@ -115,43 +115,25 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     public void P1SetUp(CardInf cardInf)
     {
-        attackedList = new ObservableCollection<bool>
-        {
-            true
-        };
-        attackedList.CollectionChanged += OnAttackedListChanged;
-        inf = cardInf;
-        attackText.text = cardInf.attack.ToString();
-        healthText.text = cardInf.hp.ToString();
-        costText.text = cardInf.cost.ToString();
-        cardImage.sprite = cardInf.cardSprite;
-        sprite = cardInf.cardSprite;
-        attack = cardInf.attack;
-        hp = cardInf.hp;
-        maxHp = cardInf.hp;
-        cost = cardInf.cost;
-        attackedList[0] = true;
-        CardOwner = PlayerID.Player1;
-        if (SceneManager.GetActiveScene().name == "playGame")
-        {
-            player1CardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-        }
-        if (inf.cardType == CardType.Spel)
-        {
-            backColor.color = Color.blue;
-            attackPanel.SetActive(false);
-            defencePanel.SetActive(false);
-        }
-        baseColor = backColor.color;
+        CardManager cardManager = null;
+        if(GameObject.Find("P1CardManager") != null)
+            cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
+        SetUp(cardInf, PlayerID.Player1,cardManager);
     }
 
     public void P2SetUp(CardInf cardInf)
     {
-        attackedList = new ObservableCollection<bool>
-        {
-            true
-        };
+        CardManager cardManager = null;
+        if(GameObject.Find("P2CardManager") != null)
+            cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+        SetUp(cardInf, PlayerID.Player2, cardManager);
+    }
+
+    public void SetUp(CardInf cardInf, PlayerID owner, CardManager cardManager = null)
+    {
+        attackedList = new ObservableCollection<bool> { true };
         attackedList.CollectionChanged += OnAttackedListChanged;
+
         inf = cardInf;
         attackText.text = cardInf.attack.ToString();
         healthText.text = cardInf.hp.ToString();
@@ -163,22 +145,36 @@ public class Card : MonoBehaviour, IPointerClickHandler
         maxHp = cardInf.hp;
         cost = cardInf.cost;
         attackedList[0] = true;
-        CardOwner = PlayerID.Player2;
+        CardOwner = owner;
+
         if (SceneManager.GetActiveScene().name == "playGame")
         {
-            player2CardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
+            if (CardOwner == PlayerID.Player1)
+                player1CardManager = cardManager;
+            else
+                player2CardManager = cardManager;
         }
-        blindPanel.SetActive(true);
+
+        if (CardOwner == PlayerID.Player2)
+        {
+            blindPanel.SetActive(true);
+        }
+
         if (inf.cardType == CardType.Spel)
         {
             backColor.color = Color.blue;
             attackPanel.SetActive(false);
             defencePanel.SetActive(false);
         }
+        else if (inf.cardType == CardType.Attack)
+        {
+            backColor.color = Color.HSVToRGB(0.83f, 1.0f, 1.0f);
+        }
+
         baseColor = backColor.color;
     }
 
-     private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void OnAttackedListChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         if (attackedList.Count > 0)
         {
@@ -198,40 +194,41 @@ public class Card : MonoBehaviour, IPointerClickHandler
         gameManager.nowDestory = true;
         if (CardOwner == PlayerID.Player1)
         {
-            await P1CardDestory();
+            await DestroyCard(player1CardManager);
         }
         else if (CardOwner == PlayerID.Player2)
         {
-            await P2CardDestory();
+            await DestroyCard(player2CardManager);
         }
         await effectManager.EffectAfterDie(this);
         Destroy(this.gameObject);
         gameManager.nowDestory = false;
     }
 
-    private async Task P1CardDestory()
+    private async Task DestroyCard(CardManager cardManager)
     {
-        if (player1CardManager.AllFields.Contains(this))
+        if (cardManager.AllFields.Contains(this))
         {
-            player1CardManager.AllFields.Remove(this);
+            cardManager.AllFields.Remove(this);
             if (this.inf.cardType == CardType.Defence)
             {
-                player1CardManager.DefenceFields.Remove(this);
+                cardManager.DefenceFields.Remove(this);
             }
             else if (this.inf.cardType == CardType.Attack)
             {
-                player1CardManager.AttackFields.Remove(this);
+                cardManager.AttackFields.Remove(this);
             }
         }
-        var cardLists = new List<List<Card>>
-    {
-    player1CardManager.CardsWithEffectOnField,
-    player1CardManager.SpelEffectAfterSomeTurn,
-    player1CardManager.CannotAttackMyDefenceCard,
-    player1CardManager.CardsWithProtectEffectOnField,
-    player1CardManager.CannotPlayDefenceCard,
-    player1CardManager.EffectDuringAttacking
+
+        var cardLists = new List<List<Card>> {
+        cardManager.CardsWithEffectOnField,
+        cardManager.SpelEffectAfterSomeTurn,
+        cardManager.CannotAttackMyDefenceCard,
+        cardManager.CardsWithProtectEffectOnField,
+        cardManager.CannotPlayDefenceCard,
+        cardManager.EffectDuringAttacking
     };
+
         foreach (var list in cardLists)
         {
             if (list.Contains(this))
@@ -239,40 +236,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
                 list.Remove(this);
             }
         }
-        await Task.Yield();
 
-    }
-
-    private async Task P2CardDestory()
-    {
-        if (player2CardManager.AllFields.Contains(this))
-        {
-            player2CardManager.AllFields.Remove(this);
-            if (this.inf.cardType == CardType.Defence)
-            {
-                player2CardManager.DefenceFields.Remove(this);
-            }
-            else if (this.inf.cardType == CardType.Attack)
-            {
-                player2CardManager.AttackFields.Remove(this);
-            }
-        }
-        var cardLists = new List<List<Card>>
-    {
-    player2CardManager.CardsWithEffectOnField,
-    player2CardManager.SpelEffectAfterSomeTurn,
-    player2CardManager.CannotAttackMyDefenceCard,
-    player2CardManager.CardsWithProtectEffectOnField,
-    player2CardManager.CannotPlayDefenceCard,
-    player2CardManager.EffectDuringAttacking
-    };
-        foreach (var list in cardLists)
-        {
-            if (list.Contains(this))
-            {
-                list.Remove(this);
-            }
-        }
         await Task.Yield();
     }
 
@@ -288,13 +252,10 @@ public class Card : MonoBehaviour, IPointerClickHandler
             else
             {
                 if (SceneManager.GetActiveScene().name == "playGame")
-                {
                     uIManager.DetailPanelActive(inf);
-                }
+
                 else if (SceneManager.GetActiveScene().name == "makeDeck")
-                {
                     dekeMakeUIManager.DetailPanelActive(inf);
-                }
             }
         }
     }
