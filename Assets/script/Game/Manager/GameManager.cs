@@ -79,9 +79,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HideMessagePanelAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);  // 指定した秒数（3秒）待機
-        uIManager.messagePanel.SetActive(false); // パネルを非表示にする
-        Debug.Log("通貨");
+        yield return new WaitForSeconds(delay);  
+        uIManager.messagePanel.SetActive(false); 
     }
 
     private void LeaderSetUp()
