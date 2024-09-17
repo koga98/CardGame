@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -17.87355, y: -12.331146}
-  m_SizeDelta: {x: 35.7471, y: 24.6623}
+  m_AnchoredPosition: {x: -22.1956, y: -15.4047}
+  m_SizeDelta: {x: 44.3913, y: 37.4495}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6928977885489885465
 CanvasRenderer:
@@ -68,14 +68,14 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0.00061794126, z: 0, w: -13.075021}
+  m_margin: {x: 0, y: 0.00061794126, z: 0, w: 0.5086584}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -508,17 +508,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0fdf5f1362933e459d3c500ae2340fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckList: {fileID: 0}
-  cardOption: {fileID: 0}
   prefab: {fileID: 0}
   copyObject: {fileID: 0}
   myObject: {fileID: 0}
   horizontalLayoutGroup: {fileID: 0}
-  pad: 0
+  paddingLeft: 0
   amount: 0
   isAdd: 0
   onCard: 0
-  siblingIndex: 0
   deckNumber: {fileID: 0}
 --- !u!95 &2048687869562967121
 Animator:
@@ -554,10 +551,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickAdd: {fileID: 6814199487524398239}
-  clickedObject: {fileID: 0}
   canvas: {fileID: 0}
   defaultParent: {fileID: 0}
   canDrag: 0
+  horizontalLayoutGroup: {fileID: 0}
 --- !u!1 &1604213105185024542
 GameObject:
   m_ObjectHideFlags: 0

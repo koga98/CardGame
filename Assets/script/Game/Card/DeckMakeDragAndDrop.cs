@@ -74,6 +74,11 @@ public class DeckMakeDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandle
 
         originalCard.GetComponent<Card>().P1SetUp(gameObject.GetComponent<Card>().inf);
         originalCard.transform.SetSiblingIndex(siblingIndex);
+        if(parentTransform == deckMake.deckList){
+            originalCard.GetComponent<Card>().reflectAmount(originalCard.GetComponent<ClickAdd>().amount);
+            gameObject.GetComponent<Card>().amountText.text = "";
+        }
+            
         deckMake.restrictMoveCards = true;
     }
 
