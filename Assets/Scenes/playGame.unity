@@ -695,7 +695,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -807.99994, y: 39}
+  m_AnchoredPosition: {x: -797.99994, y: 113}
   m_SizeDelta: {x: -1763.1901, y: -903.22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176932799
@@ -3899,6 +3899,7 @@ MonoBehaviour:
   nowDestory: 0
   restrictionClick: 0
   nowEnemyAttack: 0
+  isGameOver: 0
 --- !u!114 &1835211703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4409,7 +4410,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -798.99994, y: 367}
+  m_AnchoredPosition: {x: -798.99994, y: 115}
   m_SizeDelta: {x: -1763.19, y: -903.22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1933961738

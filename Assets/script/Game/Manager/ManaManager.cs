@@ -28,12 +28,11 @@ public class ManaManager : MonoBehaviour
                 p1_mana = value;
                 if (P1_mana > P1MaxMana)
                 {
-                    p1_mana = P1MaxMana;                      
+                    p1_mana = P1MaxMana;
                 }
-                StartCoroutine(OnP1ManaChanged());
-                P1_manaText.text = manaChange();
-
             }
+            StartCoroutine(OnP1ManaChanged());
+            P1_manaText.text = manaChange();
         }
     }
 

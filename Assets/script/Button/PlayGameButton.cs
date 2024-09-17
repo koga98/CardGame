@@ -22,7 +22,10 @@ public class PlayGameButton : MonoBehaviour
         AudioManager.Instance.TurnEndButtonSound();
         if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay)
         {
+            uIManager.phazeOperateButton.SetActive(false);
+            await WaitUntilFalse(() => gameManager.isDealing);
             gameManager.AttackPhaze();
+            uIManager.phazeOperateButton.SetActive(true);
         }
         else if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
         {

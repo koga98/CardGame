@@ -31,7 +31,7 @@ public class TitleButtonMethod : MonoBehaviour
                 buttonParent.SetActive(true);
             }
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 1; i < 5; i++)
             {
                 string filePath = Application.persistentDataPath + "/" + "SaveData.json" + i.ToString();
                 if (File.Exists(filePath))
