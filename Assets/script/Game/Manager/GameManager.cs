@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Threading.Tasks;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -50,8 +51,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         InitializeGameSettings();
-        DecideTurnOrder();
         LeaderSetUp();
+        DecideTurnOrder();
     }
 
     private void InitializeGameSettings()
@@ -70,6 +71,17 @@ public class GameManager : MonoBehaviour
         System.Random random = new System.Random();
         bool isP1First = random.Next(2) == 0;
         p1_turn = isP1First;
+        string turnOrder = p1_turn ? "あなたは先攻" : "あなたは後攻";
+        uIManager.messagePanel.SetActive(true);
+        uIManager.ChangeMessageTexts(turnOrder);
+        StartCoroutine(HideMessagePanelAfterDelay(2.0f));
+    }
+
+    private IEnumerator HideMessagePanelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);  // 指定した秒数（3秒）待機
+        uIManager.messagePanel.SetActive(false); // パネルを非表示にする
+        Debug.Log("通貨");
     }
 
     private void LeaderSetUp()
@@ -116,6 +128,7 @@ public class GameManager : MonoBehaviour
 
     async void StartPlayerTurn()
     {
+        await WaitNextPanel(() => uIManager.messagePanel.activeSelf);
         await SetUpYourTurn();
         isPlayerTurnProcessing = false;
     }
@@ -170,6 +183,7 @@ public class GameManager : MonoBehaviour
 
     async void StartEnemyTurn()
     {
+        await WaitNextPanel(() => uIManager.messagePanel.activeSelf);
         await WaitEnemyTurn();
     }
 
@@ -189,7 +203,7 @@ public class GameManager : MonoBehaviour
         await enemyAI.PlayCard(manaManager);
         turnStatus = TurnStatus.OnEnemyAttack;
         await enemyAI.Attack();
-        if(isGameOver)
+        if (isGameOver)
             return;
         turnStatus = TurnStatus.OnEnemyTurnEnd;
         await EnemyTurnEndPhaze();
@@ -211,6 +225,12 @@ public class GameManager : MonoBehaviour
     private async Task WaitUntilFinishEnemyTurn(Func<bool> condition)
     {
         while (!condition())
+            await Task.Yield();
+    }
+
+    private async Task WaitNextPanel(Func<bool> condition)
+    {
+        while (condition())
             await Task.Yield();
     }
 
