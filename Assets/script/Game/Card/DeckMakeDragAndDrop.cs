@@ -67,7 +67,7 @@ public class DeckMakeDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandle
         siblingIndex = transform.GetSiblingIndex();
         Transform parentTransform = gameObject.transform.parent == deckMake.deckList ? deckMake.deckList : deckMake.cardOption;
 
-        originalCard = Instantiate(clickAdd.prefab, parentTransform, false);
+        originalCard = Instantiate(deckMake.cardPrehfab, parentTransform, false);
         originalCard.GetComponent<ClickAdd>().amount = clickAdd.amount;
         originalCard.GetComponent<ClickAdd>().copyObject = clickAdd.copyObject;
         originalCard.GetComponent<ClickAdd>().myObject = clickAdd.myObject;

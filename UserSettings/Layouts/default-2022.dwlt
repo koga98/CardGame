@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 989
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Hierarchy
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 86
+  controlID: 38
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ProjectBrowser
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -120,14 +120,14 @@ MonoBehaviour:
     y: 635
     width: 1467
     height: 304
-  m_MinSize: {x: 231, y: 271}
-  m_MaxSize: {x: 10001, y: 10021}
-  m_ActualView: {fileID: 14}
+  m_MinSize: {x: 101, y: 121}
+  m_MaxSize: {x: 4001, y: 4021}
+  m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 14}
   - {fileID: 19}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -529,7 +529,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets
+    - Assets/Scenes
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -537,16 +537,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets
+  - Assets/Scenes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: "C:\\Users\\\u5CF6\u8C37\u88D5\u8CB4\\\u30AC\u30C1\u30EA\u30D5\u30A1\u30AF\u30BF\u30EA\u30F3\u30B0"
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: ae670000
-    m_LastClickedID: 26542
-    m_ExpandedIDs: 00000000ae670000b0670000b267000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 89}
+    m_SelectedIDs: e8670000
+    m_LastClickedID: 26600
+    m_ExpandedIDs: 00000000b0670000b2670000b467000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -574,7 +574,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000ae670000b0670000b2670000
+    m_ExpandedIDs: 00000000b0670000b2670000b4670000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -599,8 +599,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: 38680000
+    m_LastClickedInstanceID: 26680
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000076c0000098c70000946a00004a880000668800001e880000508500005a9e00008e6a0000aa6a0000ac6a0000966c0000467a000080730000cc950000d6640000ce950000f2be000000000000
     m_RenameOverlay:
@@ -716,21 +716,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 4413f8ff403bf8ff3c88f8ff94d4f8ffaed5f8ffd0f8f8ffbef9f8ffd616f9ffa03bf9ff3461f9ff94d1f9fff218faff8468faff888ffaffe4c8faff44f7faff16fafaff64fbfaffa8fbfaff0cccfbff1a0afcffb070fcff0828fdffee48fdff3c69fdfffeb1fdff78d1fdfffceffdff4a0efeff762dfefffc4bfeffb0dcfeff9eddfeff3edefeffdc72ffffc0bdffffa8dbffff3af8ffff1afbfffff4ffffff5e6900009c6a0000046e0000306f0000426f00002471000062720000607700008c7800009e780000be8500005c890000428b00006e8c0000808c0000c0970000ec980000fe980000e09a00000c9c00001e9c0000fc9d0000289f00003a9f00001ca1000048a200005aa2000038a4000064a5000076a5000058a7000084a8000096a8000098ad0000c4ae0000d6ae0000b4b00000e0b10000f2b10000d0b30000fcb400000eb50000b4bf000070c800009cc900000ace000036cf0000c0ea0000e6ed000006f1000044f2000028f400004af700008cfd0000ae000100da010100ec0101000e0a01002e0d01009c0f0100da100100d218010094240100302a01006e2b0100522d0100
+      m_ExpandedIDs: a8c8fcffecc8fcff30c9fcffcec9fcff26cafcff0cd3fcffa244ffffc244ffffd244ffffe644fffffa44ffff2c45ffffc6d9ffff0adaffff3af0ffff7cf0ffff7cf2ffff92f2ffff9cf2ffffb6f2ffff1cfbffffde720000f6720000007300001473000020730000da750000e2750000ea7500002c760000387600004c7600006076000082760000a2760000aa760000b2760000ea760000fa760000067700001a770000267700004a7700005277000062770000767700008277000040b2000058b2000062b2000076b2000082b20000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Button (Legacy)
+        m_OriginalName: Button (Legacy)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: 45698
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 4}
       m_SearchString: 
@@ -1109,9 +1109,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -562.79614, y: 628.4282, z: -8.233349}
+    m_Target: {x: 942.00793, y: 603.722, z: -5.027488}
     speed: 2
-    m_Value: {x: -562.79614, y: 628.4282, z: -8.233349}
+    m_Value: {x: 963.3916, y: 613.32086, z: -5.3069043}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1161,9 +1161,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 913.5699
+    m_Target: 592.976
     speed: 2
-    m_Value: 913.5699
+    m_Value: 620.9173
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1181,8 +1181,8 @@ MonoBehaviour:
     m_FarClip: 10000
     m_DynamicClip: 1
     m_OcclusionCulling: 0
-  m_LastSceneViewRotation: {x: -0.094282225, y: -0.040308345, z: -0.0038205232, w: 0.9947222}
-  m_LastSceneViewOrtho: 1
+  m_LastSceneViewRotation: {x: -0.08717229, y: 0.89959055, z: -0.21045254, w: -0.3726226}
+  m_LastSceneViewOrtho: 0
   m_ReplacementShader: {fileID: 0}
   m_ReplacementString: 
   m_SceneVisActive: 1
@@ -1255,7 +1255,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1

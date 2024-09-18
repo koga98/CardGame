@@ -71,7 +71,7 @@ public class ClickAdd : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void AddToDeckList(GameObject baseObject)
     {
-        copyObject = Instantiate(prefab);
+        copyObject = Instantiate(deckMake.cardPrehfab);
         copyObject.GetComponent<ClickAdd>().myObject = baseObject;
         copyObject.GetComponent<ClickAdd>().copyObject = copyObject;
         Card copy = copyObject.GetComponent<Card>();
