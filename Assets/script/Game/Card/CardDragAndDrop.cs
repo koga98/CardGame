@@ -33,6 +33,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         InitializeManagers();
         InitializeVariables();
+        InitializeSceneObjects();
     }
     private void InitializeManagers()
     {
@@ -118,8 +119,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 canDrag = false;
                 return;
             }
-
-            InitializeSceneObjects();
             StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
             if (clickedObject == null || !CanDragCard(clickedObject, eventData))
                 return;
@@ -239,12 +238,20 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private void HandlePlayGame(PointerEventData eventData)
     {
-        clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-        card = clickedObject.GetComponent<Card>();
-        if (eventData.position.y > 180)
-            StartCoroutine(PlayCard());
-        else
+        if(eventData.pointerCurrentRaycast.gameObject == null){
             CancelPlayCard();
+        }
+        else if (eventData.position.y > 180)
+        {
+            clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            card = clickedObject.GetComponent<Card>();
+            StartCoroutine(PlayCard());
+        }
+        else 
+        {
+            CancelPlayCard();
+        }
+        
     }
 
     private void CancelPlayCard()
@@ -257,9 +264,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         gameManager.isDealing = true;
         AudioManager.Instance.PlayPlayCardSound();
-        if (player2CardManager.AllFields.Count != 0)
-            yield return StartCoroutine(ExecuteChoiceCardEffect(card));
-        if (!cancelChoice)
+        if (card.inf.effectInfs == null || card.inf.effectInfs.Count == 0)
         {
             manaManager.P1ManaDecrease(card.cost);
             ChangePlayCardTransform();
@@ -269,7 +274,26 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             canDrag = false;
             //ここでアクティブパネルの操作をする
             StartCoroutine(manaManager.OnP1ManaChanged());
+            gameManager.isDealing = false;
+            yield break;
         }
+        else
+        {
+            if (player2CardManager.AllFields.Count != 0)
+                yield return StartCoroutine(ExecuteChoiceCardEffect(card));
+            if (!cancelChoice)
+            {
+                manaManager.P1ManaDecrease(card.cost);
+                ChangePlayCardTransform();
+                AddCardOnFields();
+                player1CardManager.Hands.Remove(card);
+                card.ActivePanel.SetActive(false);
+                canDrag = false;
+                //ここでアクティブパネルの操作をする
+                StartCoroutine(manaManager.OnP1ManaChanged());
+            }
+        }
+
     }
 
     private IEnumerator ExecuteChoiceCardEffect(Card card)
@@ -352,13 +376,14 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             gameManager.isDealing = false;
             yield break;
         }
-
-        foreach (var effect in card.inf.effectInfs)
-            yield return StartCoroutine(ExecuteAllPlayCardEffect(card, effect));
+        if (card.inf.effectInfs != null && card.inf.effectInfs.Count != 0)
+            foreach (var effect in card.inf.effectInfs)
+                yield return StartCoroutine(ExecuteAllPlayCardEffect(card, effect));
     }
 
     private IEnumerator ExecuteAllPlayCardEffect(Card card, EffectInf effect)
     {
+
         foreach (var trigger in effect.triggers)
             yield return StartCoroutine(ExecuteEachPlayCardEffect(card, effect, trigger));
 

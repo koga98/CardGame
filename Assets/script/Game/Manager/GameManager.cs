@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     public bool restrictionClick;
     public bool nowEnemyAttack;
     public bool isGameOver;
-
+    public bool nowCollectionChanging;
     public enum TurnStatus
     {
         OnPlay,
@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
         p2_turnElapsed = 0;
         finishEnemyTurn = true;
         completeButtonChoice = false;
+        nowCollectionChanging = false;
     }
 
     private void DecideTurnOrder()

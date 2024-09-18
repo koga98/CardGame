@@ -16,6 +16,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject enemyAttackField;
     public GameObject enemyDefenceField;
     public AttackManager attackManager;
+    public GameManager gameManager;
     public GameObject leader;
     bool isLeader = false;
     bool continueMethod = true;
@@ -102,6 +103,7 @@ public class EnemyAI : MonoBehaviour
 
     private async Task PlaySelectedCard(Card playCard, ManaManager manaManager)
     {
+        await WaitUntilFalse(() => gameManager.nowCollectionChanging);
         playCard.blindPanel.SetActive(false);
         player2CardManager.Hands.Remove(playCard);
         if (playCard.inf.cardType == CardType.Attack)
@@ -176,8 +178,6 @@ public class EnemyAI : MonoBehaviour
     public async Task Attack()
     {
         await WaitUntilFalse(() => continueMethod);
-        GameObject manager = GameObject.Find("GameManager");
-        GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.nowEnemyAttack = true;
         var attackFieldsCopy = player2CardManager.AttackFields?.ToList() ?? new List<Card>();
         var defenceFieldsCopy = player2CardManager.DefenceFields?.ToList() ?? new List<Card>();

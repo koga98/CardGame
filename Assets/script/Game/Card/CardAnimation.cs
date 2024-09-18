@@ -8,21 +8,23 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
 {
     public Animator animator;
     Card attackCard;
+    CardDragAndDrop dragAndDrop;
 
     public void OnPointerDown(PointerEventData eventData)
     {
         GameObject clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+        attackCard = clickedObject.GetComponent<Card>();
+        dragAndDrop = clickedObject.GetComponent<CardDragAndDrop>();
         if (SceneManager.GetActiveScene().name == "playGame")
         {
-            if (eventData.position.y > 222.24 && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
+            bool isOnField = clickedObject.transform.parent == dragAndDrop.myAttackField.transform || clickedObject.transform.parent == dragAndDrop.myDefenceField.transform;
+            if (isOnField && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
             {
                 if (clickedObject.tag == "Card")
                 {
-                    GameObject cardObject = GetCardObject(clickedObject);
-                    attackCard = cardObject.GetComponent<Card>();
                     if (!animator.GetBool("extendMy") && GameManager.attackObject == null && !attackCard.Attacked)
                     {
-                        AttackPrepareAnim(cardObject);
+                        AttackPrepareAnim(clickedObject);
                     }
                     else if (animator.GetBool("extendMy"))
                     {

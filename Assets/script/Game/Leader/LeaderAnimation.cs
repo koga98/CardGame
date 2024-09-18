@@ -29,7 +29,7 @@ public class leaderAnimation : MonoBehaviour, IPointerEnterHandler, IPointerExit
             if (player2CardManager.CardsWithProtectEffectOnField != null && player2CardManager.CardsWithProtectEffectOnField.Count != 0)
                 return;
 
-            if (!animator.GetBool("extendLeader") && GameManager.attackObject != null)
+            if (!animator.GetBool("extendLeader") && GameManager.attackObject != null && GameManager.attackObject.GetComponent<Card>().CardOwner == PlayerID.Player1)
             {
                 animator.SetBool("extendLeader", true);
                 GameManager.defenceObject = cradObject;

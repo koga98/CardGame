@@ -1816,6 +1816,7 @@ MonoBehaviour:
   enemyAttackField: {fileID: 1940095692}
   enemyDefenceField: {fileID: 1580719891}
   attackManager: {fileID: 1835211703}
+  gameManager: {fileID: 1835211702}
   leader: {fileID: 0}
 --- !u!4 &566178624
 Transform:
@@ -2863,6 +2864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectManager: {fileID: 1835211707}
+  gameManager: {fileID: 1835211702}
   allCardInf: {fileID: 11400000, guid: 684e677b2cda3184dad05485ca192dd8, type: 2}
   enemyDeck: {fileID: 11400000, guid: 39369c13c254f5143892dced45eee570, type: 2}
   hand: {fileID: 1034720701}
@@ -3221,6 +3223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectManager: {fileID: 1835211707}
+  gameManager: {fileID: 1835211702}
   allCardInf: {fileID: 11400000, guid: 684e677b2cda3184dad05485ca192dd8, type: 2}
   enemyDeck: {fileID: 0}
   hand: {fileID: 36596716}
@@ -3900,6 +3903,7 @@ MonoBehaviour:
   restrictionClick: 0
   nowEnemyAttack: 0
   isGameOver: 0
+  nowCollectionChanging: 0
 --- !u!114 &1835211703
 MonoBehaviour:
   m_ObjectHideFlags: 0

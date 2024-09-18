@@ -10,6 +10,7 @@ using UnityEngine;
 public class CardManager : MonoBehaviour
 {
     public EffectManager effectManager;
+    public GameManager gameManager;
     private System.Random rng = new System.Random();
     public AllCardInf allCardInf;
     public EnemyDeckInf enemyDeck;
@@ -59,7 +60,9 @@ public class CardManager : MonoBehaviour
     {
         if (e.Action == NotifyCollectionChangedAction.Add)
         {
+            gameManager.nowCollectionChanging = true;
             await effectManager.EffectWhenCollectionChanged(CardsWithEffectOnField, e);
+            gameManager.nowCollectionChanging = false;
         }
     }
 
