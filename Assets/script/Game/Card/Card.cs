@@ -192,6 +192,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         GameObject manager = GameObject.Find("GameManager");
         GameManager gameManager = manager.GetComponent<GameManager>();
         gameManager.nowDestory = true;
+        await effectManager.EffectAfterDie(this);
         if (CardOwner == PlayerID.Player1)
         {
             await DestroyCard(player1CardManager);
@@ -200,7 +201,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
         {
             await DestroyCard(player2CardManager);
         }
-        await effectManager.EffectAfterDie(this);
         Destroy(this.gameObject);
         gameManager.nowDestory = false;
     }
