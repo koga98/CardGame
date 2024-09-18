@@ -116,15 +116,15 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public void P1SetUp(CardInf cardInf)
     {
         CardManager cardManager = null;
-        if(GameObject.Find("P1CardManager") != null)
+        if (GameObject.Find("P1CardManager") != null)
             cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
-        SetUp(cardInf, PlayerID.Player1,cardManager);
+        SetUp(cardInf, PlayerID.Player1, cardManager);
     }
 
     public void P2SetUp(CardInf cardInf)
     {
         CardManager cardManager = null;
-        if(GameObject.Find("P2CardManager") != null)
+        if (GameObject.Find("P2CardManager") != null)
             cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         SetUp(cardInf, PlayerID.Player2, cardManager);
     }
@@ -207,19 +207,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     private async Task DestroyCard(CardManager cardManager)
     {
-        if (cardManager.AllFields.Contains(this))
-        {
-            cardManager.AllFields.Remove(this);
-            if (this.inf.cardType == CardType.Defence)
-            {
-                cardManager.DefenceFields.Remove(this);
-            }
-            else if (this.inf.cardType == CardType.Attack)
-            {
-                cardManager.AttackFields.Remove(this);
-            }
-        }
-
         var cardLists = new List<List<Card>> {
         cardManager.CardsWithEffectOnField,
         cardManager.SpelEffectAfterSomeTurn,
@@ -234,6 +221,18 @@ public class Card : MonoBehaviour, IPointerClickHandler
             if (list.Contains(this))
             {
                 list.Remove(this);
+            }
+        }
+        if (cardManager.AllFields.Contains(this))
+        {
+            cardManager.AllFields.Remove(this);
+            if (this.inf.cardType == CardType.Defence)
+            {
+                cardManager.DefenceFields.Remove(this);
+            }
+            else if (this.inf.cardType == CardType.Attack)
+            {
+                cardManager.AttackFields.Remove(this);
             }
         }
 
