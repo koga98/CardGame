@@ -10,6 +10,8 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
     Card attackCard;
     CardDragAndDrop dragAndDrop;
 
+
+
     public void OnPointerDown(PointerEventData eventData)
     {
         GameObject clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
@@ -30,7 +32,6 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
                     {
                         CancelAttackPrepareAnim();
                     }
-
                 }
             }
         }
@@ -43,7 +44,7 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
         attackCard.attackPre = true;
     }
 
-    private void CancelAttackPrepareAnim()
+    public void CancelAttackPrepareAnim()
     {
         if (GameManager.attackObject != null)
         {

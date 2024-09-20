@@ -14,7 +14,7 @@ public class AudioManager : MonoBehaviour
     public List<AudioClip> cardClips;
     public AudioSource audioSource;
     public AudioSource SEaudioSource;
-     public AudioSource voiceSource;
+    public AudioSource voiceSource;
     private string currentSceneName;
 
     private void Awake()
@@ -34,6 +34,9 @@ public class AudioManager : MonoBehaviour
     {
         PlaySound();
         currentSceneName = SceneManager.GetActiveScene().name;
+        audioSource.volume = 0.5f;
+        SEaudioSource.volume = 0.5f;
+        voiceSource.volume = 0.5f;
     }
 
     private void Update()

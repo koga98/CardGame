@@ -55,6 +55,7 @@ public class EffectManager : MonoBehaviour
 
     private async Task ProtectShieldDecreaseEffect(List<Card> effectList)
     {
+        if(effectList != null && effectList.Count != 0)
         for (int i = effectList.Count - 1; i >= 0; i--)
         {
             var card = effectList[i];
@@ -122,20 +123,19 @@ public class EffectManager : MonoBehaviour
 
     public IEnumerator PlayCardEffect(Card card, EffectInf effect)
     {
-        yield return StartCoroutine(ApplyEffect(effect, card).AsCoroutine());
-
         if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player1)
             player1CardManager.CardsWithEffectOnField.Add(card);
         else if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player2)
             player2CardManager.CardsWithEffectOnField.Add(card);
+        yield return StartCoroutine(ApplyEffect(effect, card).AsCoroutine());
     }
     public async Task AIPlayCardEffect(Card card, EffectInf effect)
     {
-        await ApplyEffect(effect, card);
         if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player1)
             player1CardManager.CardsWithEffectOnField.Add(card);
         else if (effect.triggers.Contains(EffectInf.CardTrigger.ProtectShieldDecrease) && card.CardOwner == PlayerID.Player2)
             player2CardManager.CardsWithEffectOnField.Add(card);
+        await ApplyEffect(effect, card);
     }
 
     public async Task EffectWhenAttackingLeader(Card attackCard)
@@ -151,6 +151,7 @@ public class EffectManager : MonoBehaviour
 
     public async Task EffectWhenCollectionChanged(List<Card> CardsWithEffectOnField, NotifyCollectionChangedEventArgs e)
     {
+        if(CardsWithEffectOnField == null ) return;
         if (CardsWithEffectOnField.Count == 0) return;
 
         Card card = (Card)e.NewItems[0];
@@ -170,34 +171,38 @@ public class EffectManager : MonoBehaviour
     {
         if (p1_turn)
         {
-            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnStart);
-            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnStart);
+            await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnTurnStart);
+            await TriggerEffectsAsync(player2CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnStart);
         }
         else
         {
-            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnStart);
-            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnStart);
+            await TriggerEffectsAsync(player2CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnTurnStart);
+            await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnStart);
         }
     }
 
     public async Task TurnEndEffect(bool p1_turn)
     {
+        Debug.Log("TurnEndEffectスタート");
         if (p1_turn)
         {
-            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnEnd);
-            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnEnd);
+            await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnTurnEnd);
+            Debug.Log("通過点");
+            await TriggerEffectsAsync(player2CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnEnd);
             await TriggerEffectsAsync(player2CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
         }
         else
         {
-            await TriggerEffectsAsync(player2CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnTurnEnd);
-            await TriggerEffectsAsync(player1CardManager.AllFields.ToList(), EffectInf.CardTrigger.OnEnemyTurnEnd);
+            await TriggerEffectsAsync(player2CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnTurnEnd);
+            await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnEnd);
             await TriggerEffectsAsync(player1CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
         }
+        Debug.Log("TurnEndEffect終了");
     }
 
     public async Task TriggerEffectsAsync(List<Card> cards, EffectInf.CardTrigger trigger)
     {
+        if(cards != null)
         for (int i = 0; i < cards.Count; i++)
         {
             var card = cards[i];
@@ -223,6 +228,7 @@ public class EffectManager : MonoBehaviour
 
     private async Task ExecuteEffects(Card card, params EffectInf.CardTrigger[] triggers)
     {
+        if(card != null)
         foreach (var effectInf in card.inf.effectInfs)
         {
             foreach (var trigger in triggers)

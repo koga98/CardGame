@@ -184,7 +184,19 @@ public class ConditionEffects
         {
             return false;
         }
+    }
 
+    public bool OneTimeElapsedTurns(ApplyEffectEventArgs e, int waitThisTime)
+    {
+
+        if (e.Card.elapsedTurns  ==  waitThisTime)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public bool LimitTurns(ApplyEffectEventArgs e, int limitTime){

@@ -37,9 +37,8 @@ public class EnemyCardAnimation : MonoBehaviour, IPointerEnterHandler, IPointerE
         {
             // 防御カードの攻撃制限をチェック
             if (player2CardManager.CannotAttackMyDefenceCard.Count > 0 && card.inf.cardType == CardType.Defence)
-            {
                 return;
-            }
+            
             // プロテクト効果のあるカードがあるかチェック
             if (player2CardManager.CardsWithProtectEffectOnField != null && player2CardManager.CardsWithProtectEffectOnField.Count != 0)
             {

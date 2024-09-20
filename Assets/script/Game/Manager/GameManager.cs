@@ -80,8 +80,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HideMessagePanelAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay);  
-        uIManager.messagePanel.SetActive(false); 
+        yield return new WaitForSeconds(delay);
+        uIManager.messagePanel.SetActive(false);
     }
 
     private void LeaderSetUp()
@@ -171,11 +171,19 @@ public class GameManager : MonoBehaviour
     {
         //効果処理が終わってから作動するようにしないとダメ
         turnStatus = TurnStatus.OnTurnEnd;
-        foreach (var card in player1CardManager.AllFields)
-            card.elapsedTurns++;
+        if (player1CardManager?.AllFields != null)
+            foreach (var card in player1CardManager.AllFields)
+            {
+                card.gameObject.GetComponent<CardAnimation>().CancelAttackPrepareAnim();
+                card.elapsedTurns++;
+            }
         await effectManager.TurnEndEffect(p1_turn);
-        foreach (var card in player1CardManager.AllFields)
-            card.ActivePanel.SetActive(false);
+        if (player1CardManager?.AllFields != null)
+            foreach (var card in player1CardManager.AllFields)
+            {
+                card.ActivePanel.SetActive(false);
+
+            }
 
         turnChange();
         uIManager.phazeOperateButton.SetActive(false);

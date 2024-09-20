@@ -38,6 +38,11 @@ public class EffectMethod
     {
         await aoeDestroy.EffectOfEffect(e);
         List<Card> targetFieldCards = P1GetTargetCards(targetFieldType);
+        if (targetFieldCards != null)
+        if (targetFieldCards == null || targetFieldCards.Count == 0)
+        {
+            return;
+        }
         for (int i = targetFieldCards.Count - 1; i >= 0; i--)
         {
             targetFieldCards[i].gameObject.SetActive(false);
@@ -50,6 +55,7 @@ public class EffectMethod
     {
         await aoeDestroy.EffectOfEffect(e);
         List<Card> targetFieldCards = P2GetTargetCards(targetFieldType);
+        if (targetFieldCards != null)
         for (int i = targetFieldCards.Count - 1; i >= 0; i--)
         {
             targetFieldCards[i].gameObject.SetActive(false);
@@ -149,7 +155,6 @@ public class EffectMethod
         }
         if (buffType == TargetType.All)
         {
-
             e.Card.attack -= amount;
             e.Card.attackText.text = e.Card.attack.ToString();
             await utilMethod.DamageMethod(e.Card, amount);
@@ -194,7 +199,6 @@ public class EffectMethod
             {
                 if (card.inf.name == target)
                 {
-                    Debug.Log(card.inf.name);
                     e.ChoiceCard = card;
                     if (healAmount == 0)
                     {
@@ -225,7 +229,6 @@ public class EffectMethod
             e.Card.healthText.text = e.Card.hp.ToString();
             await hpHealCard.EffectOfEffect(e);
         }
-
     }
 
     public async Task P1DamageShield(ApplyEffectEventArgs e, int damageAmount, ShieldDamageCard shieldDamageCard)
@@ -241,7 +244,7 @@ public class EffectMethod
             return;
         }
         leader.ProtectShield -= (int)(damageAmount * (1 - leader.shieldDamageCutAmount));
-        leader.GetComponent<Leader>().protectShieldText.text = leader.ProtectShield.ToString();
+        leader.protectShieldText.text = leader.ProtectShield.ToString();
         await shieldDamageCard.EffectOfEffect(e);
     }
 
@@ -258,7 +261,7 @@ public class EffectMethod
             return;
         }
         leader.ProtectShield -= (int)(damageAmount * (1 - leader.shieldDamageCutAmount));
-        gameManager.enemyLeader.GetComponent<Leader>().protectShieldText.text = gameManager.enemyLeader.GetComponent<Leader>().ProtectShield.ToString();
+        leader.protectShieldText.text = leader.ProtectShield.ToString();
         await shieldDamageCard.EffectOfEffect(e);
     }
 
@@ -321,16 +324,18 @@ public class EffectMethod
     {
         await aoeCard.EffectOfEffect(e);
         List<Card> targetFieldsCards = P1GetTargetCards(targetType);
-        for (int i = targetFieldsCards.Count - 1; i >= 0; i--)
-        {
-            await utilMethod.DamageMethod(targetFieldsCards[i], damageAmount);
-        }
+        if (targetFieldsCards != null)
+            for (int i = targetFieldsCards.Count - 1; i >= 0; i--)
+            {
+                await utilMethod.DamageMethod(targetFieldsCards[i], damageAmount);
+            }
     }
 
     public async Task P2Aoe(ApplyEffectEventArgs e, int damageAmount, TargetType targetType, AoeCard aoeCard)
     {
         await aoeCard.EffectOfEffect(e);
         List<Card> targetFieldsCards = P2GetTargetCards(targetType);
+        if (targetFieldsCards != null)
         for (int i = targetFieldsCards.Count - 1; i >= 0; i--)
         {
             await utilMethod.DamageMethod(targetFieldsCards[i], damageAmount);
@@ -372,7 +377,6 @@ public class EffectMethod
         ManaManager manaManager = manager.GetComponent<ManaManager>();
         await maxManaIncrease.EffectOfEffect(e);
         manaManager.P2MaxManaIncrease(increaseAmount);
-
     }
 
     public async Task P1ShieldDamageCut(ApplyEffectEventArgs e, double damageCut, ProtectShieldDamageCut protectShieldDamageCut)
@@ -416,6 +420,7 @@ public class EffectMethod
         await buffAttackFieldCards.EffectOfEffect(e);
         if (targetType == TargetType.All)
         {
+            if (e.PCards != null && e.PCards.Count != 0)
             foreach (Card card in e.PCards)
             {
                 card.attack += buffAmount;
@@ -424,6 +429,7 @@ public class EffectMethod
         }
         else if (targetType == TargetType.Attack)
         {
+            if (e.PCards != null && e.PCards.Count != 0)
             foreach (Card card in e.PAttackCards)
             {
                 card.attack += buffAmount;
@@ -432,6 +438,7 @@ public class EffectMethod
         }
         else if (targetType == TargetType.Defence)
         {
+            if (e.PCards != null && e.PCards.Count != 0)
             foreach (Card card in e.PDefenceCards)
             {
                 card.attack += buffAmount;
@@ -444,6 +451,7 @@ public class EffectMethod
         await buffAttackFieldCards.EffectOfEffect(e);
         if (targetType == TargetType.All)
         {
+            if (e.Cards != null && e.Cards.Count != 0)
             foreach (Card card in e.Cards)
             {
                 card.attack += buffAmount;
@@ -452,6 +460,7 @@ public class EffectMethod
         }
         else if (targetType == TargetType.Attack)
         {
+            if (e.EAttackCards != null && e.EAttackCards.Count != 0)
             foreach (Card card in e.EAttackCards)
             {
                 card.attack += buffAmount;
@@ -460,6 +469,7 @@ public class EffectMethod
         }
         else if (targetType == TargetType.Defence)
         {
+            if (e.EDefenceCards != null && e.EDefenceCards.Count != 0)
             foreach (Card card in e.EDefenceCards)
             {
                 card.attack += buffAmount;
@@ -472,13 +482,10 @@ public class EffectMethod
     {
         for (int i = 0; i < destroyAmount; i++)
         {
-
             List<Card> cards = P1GetTargetCards(targetType);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
             if (cards.Count == 0 && randomValue == 0)
-            {
                 return;
-            }
             else
             {
                 e.ChoiceCard = cards[randomValue];
@@ -497,9 +504,7 @@ public class EffectMethod
             List<Card> cards = P2GetTargetCards(targetType);
             int randomValue = UnityEngine.Random.Range(0, cards.Count);
             if (cards.Count == 0 && randomValue == 0)
-            {
                 return;
-            }
             else
             {
                 e.ChoiceCard = cards[randomValue];
@@ -519,9 +524,7 @@ public class EffectMethod
             e.Card.attackedList.Add(true);
         }
         else
-        {
             return;
-        }
     }
 
     public async Task P1ManaHeal(ApplyEffectEventArgs e, int healAmount, ManaHeal manaHeal)
@@ -654,6 +657,7 @@ public class EffectMethod
         List<Card> targetCards = P1GetTargetCards(fieldType);
 
         // 各カードに対してバフを適用
+        if(targetCards != null)
         foreach (Card card in targetCards)
         {
             // ターゲットが指定されている場合、その名前に一致するカードにのみ適用
@@ -688,7 +692,7 @@ public class EffectMethod
         CardManager cardManager = GameObject.Find("P1CardManager").GetComponent<CardManager>();
         return fieldType switch
         {
-            TargetType.All => cardManager.AllFields.ToList(),
+            TargetType.All => cardManager.AllFields?.ToList() ?? new List<Card>(),
             TargetType.Attack => cardManager.AttackFields,
             TargetType.Defence => cardManager.DefenceFields,
             _ => new List<Card>()
@@ -700,7 +704,7 @@ public class EffectMethod
         CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         return fieldType switch
         {
-            TargetType.All => cardManager.AllFields.ToList(),
+            TargetType.All => cardManager.AllFields?.ToList() ?? new List<Card>(),
             TargetType.Attack => cardManager.AttackFields,
             TargetType.Defence => cardManager.DefenceFields,
             _ => new List<Card>()

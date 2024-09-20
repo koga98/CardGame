@@ -10,6 +10,7 @@ public class TitleButtonMethod : MonoBehaviour
     public GameObject buttonPrefab;
     public GameObject nextAction;
     public GameObject buttonParent;
+    public GameObject SoundSliderPanel;
     public int buttonNumber;
     int buttonDealCoount;
 
@@ -125,6 +126,16 @@ public class TitleButtonMethod : MonoBehaviour
             CardManager.DeckInf = deckDatabaseCollection.cardDataLists[0].idLists;
             SceneManager.LoadScene("playGame");
         }
+    }
+
+    public void SoundSliderPanelActive(){
+        AudioManager.Instance.ButtonSound();
+        SoundSliderPanel.SetActive(true);
+    }
+
+    public void SoundSliderPanelInActive(){
+        AudioManager.Instance.ButtonSound();
+        SoundSliderPanel.SetActive(false);
     }
 
     public void ChoiceDeckNumber()

@@ -225,7 +225,6 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
         if (cardManager.AllFields.Contains(this))
         {
-            cardManager.AllFields.Remove(this);
             if (this.inf.cardType == CardType.Defence)
             {
                 cardManager.DefenceFields.Remove(this);
@@ -234,6 +233,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
             {
                 cardManager.AttackFields.Remove(this);
             }
+            cardManager.AllFields.Remove(this);
         }
 
         await Task.Yield();

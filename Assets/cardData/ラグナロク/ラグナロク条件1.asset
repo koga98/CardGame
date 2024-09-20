@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0916b567dcd4ed34faabc66b13ec9cb7, type: 3}
   m_Name: "\u30E9\u30B0\u30CA\u30ED\u30AF\u6761\u4EF61"
   m_EditorClassIdentifier: 
-  waitThisTime: 2
+  waitThisTime: 3

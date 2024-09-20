@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
     public GameObject ChoiceCardPlace;
     public GameObject gameSetPanel;
     public GameObject checkPanel;
+    public GameObject SettingPanel;
+    public GameObject SoundSliderPanel;
     public GameObject temporarySpelPanel;
     public Text messageTexts;
     public List<Text> cardDetailText;

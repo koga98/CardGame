@@ -46,16 +46,47 @@ public class PlayGameButton : MonoBehaviour
 
     public void P2underButtonMethod()
     {
+        AudioManager.Instance.ButtonSound();
         CardManager cardManager = GameObject.Find("P2CardManager").GetComponent<CardManager>();
         CardManager.enemyDeckInf.Add(CardManager.enemyDeckInf[cardManager.DeckIndex]);
         CardManager.enemyDeckInf.RemoveAt(cardManager.DeckIndex);
         GameManager.completeButtonChoice = true;
     }
 
+    public void SettingPanelActive(){
+        AudioManager.Instance.ButtonSound();
+        uIManager.SettingPanel.SetActive(true);
+    }
+    public void SettingPanelInActive(){
+        AudioManager.Instance.ButtonSound();
+        uIManager.SettingPanel.SetActive(false);
+    }
+
+    public void SoundSliderPanelActive(){
+        AudioManager.Instance.ButtonSound();
+        uIManager.SoundSliderPanel.SetActive(true);
+    }
+
+    public void SoundSliderPanelInActive(){
+        AudioManager.Instance.ButtonSound();
+        uIManager.SoundSliderPanel.SetActive(false);
+    }
+
     public void Retry()
     {
         AudioManager.Instance.ButtonSound();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Retire(){
+        AudioManager.Instance.ButtonSound();
+        uIManager.SettingPanel.SetActive(false);
+        gameManager.myLeader.GetComponent<Leader>().Hp = 0;
+    }
+
+    public void ReturnTitle(){
+        AudioManager.Instance.ButtonSound();
+        SceneManager.LoadScene("Title");
     }
 
     public void EndGame()
