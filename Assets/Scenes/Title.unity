@@ -231,6 +231,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6896c670f3326414a9424023f3abfa33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bgmSlider: {fileID: 556866680}
+  SeSlider: {fileID: 1619636189}
+  voiceSlider: {fileID: 2091020535}
 --- !u!4 &118209512
 Transform:
   m_ObjectHideFlags: 0
@@ -1393,11 +1396,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a9d07b4384d6441b415411baf8eafb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleGamemanager: {fileID: 0}
   buttonPrefab: {fileID: 4152553358691441343, guid: 37fbfa0005bdc7d418ddb3fd6892d0a1, type: 3}
   nextAction: {fileID: 323198301}
   buttonParent: {fileID: 223904032}
   SoundSliderPanel: {fileID: 0}
   buttonNumber: 0
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &833657821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1717,11 +1724,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a9d07b4384d6441b415411baf8eafb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleGamemanager: {fileID: 0}
   buttonPrefab: {fileID: 4152553358691441343, guid: 37fbfa0005bdc7d418ddb3fd6892d0a1, type: 3}
   nextAction: {fileID: 0}
   buttonParent: {fileID: 242248088}
   SoundSliderPanel: {fileID: 0}
   buttonNumber: 0
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!1 &952903927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1774,11 +1785,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a9d07b4384d6441b415411baf8eafb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleGamemanager: {fileID: 0}
   buttonPrefab: {fileID: 0}
   nextAction: {fileID: 0}
   buttonParent: {fileID: 0}
   SoundSliderPanel: {fileID: 0}
   buttonNumber: 0
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &952903930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2685,11 +2700,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a9d07b4384d6441b415411baf8eafb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleGamemanager: {fileID: 0}
   buttonPrefab: {fileID: 0}
   nextAction: {fileID: 0}
   buttonParent: {fileID: 0}
   SoundSliderPanel: {fileID: 2066326150}
   buttonNumber: 0
+  bgmSlider: {fileID: 556866680}
+  SeSlider: {fileID: 1619636189}
+  voiceSlider: {fileID: 2091020535}
 --- !u!1 &1653016750
 GameObject:
   m_ObjectHideFlags: 0
@@ -2816,11 +2835,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a9d07b4384d6441b415411baf8eafb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleGamemanager: {fileID: 0}
   buttonPrefab: {fileID: 0}
   nextAction: {fileID: 0}
   buttonParent: {fileID: 0}
   SoundSliderPanel: {fileID: 2066326150}
   buttonNumber: 0
+  bgmSlider: {fileID: 556866680}
+  SeSlider: {fileID: 1619636189}
+  voiceSlider: {fileID: 2091020535}
 --- !u!114 &1782717218
 MonoBehaviour:
   m_ObjectHideFlags: 0

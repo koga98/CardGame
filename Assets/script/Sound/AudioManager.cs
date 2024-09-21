@@ -34,9 +34,6 @@ public class AudioManager : MonoBehaviour
     {
         PlaySound();
         currentSceneName = SceneManager.GetActiveScene().name;
-        audioSource.volume = 0.5f;
-        SEaudioSource.volume = 0.5f;
-        voiceSource.volume = 0.5f;
     }
 
     private void Update()

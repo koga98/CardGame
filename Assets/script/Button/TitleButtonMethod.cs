@@ -7,16 +7,23 @@ using UnityEngine.UI;
 
 public class TitleButtonMethod : MonoBehaviour
 {
+    public TitleGamemanager titleGamemanager;
     public GameObject buttonPrefab;
     public GameObject nextAction;
     public GameObject buttonParent;
     public GameObject SoundSliderPanel;
     public int buttonNumber;
     int buttonDealCoount;
+    string filePath;
+    public Slider bgmSlider;
+    public Slider SeSlider;
+    public Slider voiceSlider;
+    
 
     void Start()
     {
         buttonDealCoount = 0;
+        filePath = Application.persistentDataPath + "SoundData.json";
     }
     public void MakeDeckButton()
     {
@@ -128,14 +135,64 @@ public class TitleButtonMethod : MonoBehaviour
         }
     }
 
-    public void SoundSliderPanelActive(){
+    public void SoundSliderPanelActive()
+    {
         AudioManager.Instance.ButtonSound();
+        LoadButton();
         SoundSliderPanel.SetActive(true);
+
     }
 
-    public void SoundSliderPanelInActive(){
+    public void SoundSliderPanelInActive()
+    {
         AudioManager.Instance.ButtonSound();
+        Save();
         SoundSliderPanel.SetActive(false);
+    }
+
+    private void Save()
+    {
+        TitleGamemanager.soundDataBase.soundSetting.Clear();
+        TitleGamemanager.soundDataBase.soundSetting.Add(bgmSlider.value);
+        TitleGamemanager.soundDataBase.soundSetting.Add(SeSlider.value);
+        TitleGamemanager.soundDataBase.soundSetting.Add(voiceSlider.value);
+        try
+        {
+            string json = JsonUtility.ToJson(TitleGamemanager.soundDataBase);
+            using (StreamWriter streamWriter = new StreamWriter(filePath))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"Failed to save data: {e.Message}");
+        }
+    }
+
+    public void LoadButton()
+    {
+        if (File.Exists(filePath))
+        {
+            StreamReader streamReader = new StreamReader(filePath);
+            string data = streamReader.ReadToEnd();
+            streamReader.Close();
+            TitleGamemanager.soundDataBase = JsonUtility.FromJson<SoundDataBase>(data);
+
+            if (TitleGamemanager.soundDataBase != null && TitleGamemanager.soundDataBase.soundSetting.Count > 0)
+            {
+                bgmSlider.value = TitleGamemanager.soundDataBase.soundSetting[0];
+                SeSlider.value = TitleGamemanager.soundDataBase.soundSetting[1];
+                voiceSlider.value = TitleGamemanager.soundDataBase.soundSetting[2];
+                AudioManager.Instance.audioSource.volume = bgmSlider.value;
+                AudioManager.Instance.SEaudioSource.volume = SeSlider.value;
+                AudioManager.Instance.voiceSource.volume = voiceSlider.value;
+            }
+            else
+                Debug.LogError("Failed to load deck data.");
+        }
     }
 
     public void ChoiceDeckNumber()

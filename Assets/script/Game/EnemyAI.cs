@@ -171,8 +171,11 @@ public class EnemyAI : MonoBehaviour
             }
             await ExecuteAllPlayCardEffect(card, effect);
         }
-        player2CardManager.AllFields.Add(card);
-        player2CardManager.DefenceFields.Add(card);
+        if (card.gameObject.activeSelf)
+        {
+            player2CardManager.AllFields.Add(card);
+            player2CardManager.DefenceFields.Add(card);
+        }
     }
 
     public async Task Attack()
@@ -202,7 +205,7 @@ public class EnemyAI : MonoBehaviour
         {
             if (gameManager.isGameOver)
                 return;
-            
+
             Card filed = allFieldsList[i];
 
             if (filed == null || filed.gameObject == null)
@@ -269,7 +272,7 @@ public class EnemyAI : MonoBehaviour
         for (int i = 0; i < cards.Count; i++)
         {
             Card childCard = cards[i];
-            if (player1CardManager.CannotAttackMyDefenceCard.Count != 0 && childCard.inf.cardType == CardType.Defence)
+            if (player1CardManager.CannotAttackMyDefenceCard.Count != 0 && childCard.inf.cardType == CardType.Defence || !childCard.canAttackTarget)
                 continue;
 
             int newScore = 0;

@@ -183,11 +183,9 @@ public class EffectManager : MonoBehaviour
 
     public async Task TurnEndEffect(bool p1_turn)
     {
-        Debug.Log("TurnEndEffectスタート");
         if (p1_turn)
         {
             await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnTurnEnd);
-            Debug.Log("通過点");
             await TriggerEffectsAsync(player2CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnEnd);
             await TriggerEffectsAsync(player2CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
         }
@@ -197,7 +195,6 @@ public class EffectManager : MonoBehaviour
             await TriggerEffectsAsync(player1CardManager.AllFields?.ToList() ?? new List<Card>(), EffectInf.CardTrigger.OnEnemyTurnEnd);
             await TriggerEffectsAsync(player1CardManager.SpelEffectAfterSomeTurn, EffectInf.CardTrigger.SpelEffectSomeTurn);
         }
-        Debug.Log("TurnEndEffect終了");
     }
 
     public async Task TriggerEffectsAsync(List<Card> cards, EffectInf.CardTrigger trigger)

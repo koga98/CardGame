@@ -238,7 +238,8 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private void HandlePlayGame(PointerEventData eventData)
     {
-        if(eventData.pointerCurrentRaycast.gameObject == null){
+        if (eventData.pointerCurrentRaycast.gameObject == null)
+        {
             CancelPlayCard();
         }
         else if (eventData.position.y > 180)
@@ -247,11 +248,11 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
             card = clickedObject.GetComponent<Card>();
             StartCoroutine(PlayCard());
         }
-        else 
+        else
         {
             CancelPlayCard();
         }
-        
+
     }
 
     private void CancelPlayCard()
@@ -430,15 +431,19 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private void AddCardOnFields()
     {
-        if (card.inf.cardType == CardType.Defence)
+        if (gameObject.activeSelf)
         {
-            player1CardManager.DefenceFields.Add(card);
-            player1CardManager.AllFields.Add(card);
+            if (card.inf.cardType == CardType.Defence)
+            {
+                player1CardManager.DefenceFields.Add(card);
+                player1CardManager.AllFields.Add(card);
+            }
+            else if (card.inf.cardType == CardType.Attack)
+            {
+                player1CardManager.AttackFields.Add(card);
+                player1CardManager.AllFields.Add(card);
+            }
         }
-        else if (card.inf.cardType == CardType.Attack)
-        {
-            player1CardManager.AttackFields.Add(card);
-            player1CardManager.AllFields.Add(card);
-        }
+
     }
 }

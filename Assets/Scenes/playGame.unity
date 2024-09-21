@@ -6571,6 +6571,9 @@ MonoBehaviour:
   finishEnemyTurn: 0
   myLeader: {fileID: 0}
   enemyLeader: {fileID: 0}
+  bgmSlider: {fileID: 776410184}
+  SeSlider: {fileID: 1550095727}
+  voiceSlider: {fileID: 942500090}
   p1_turnElapsed: 0
   p2_turnElapsed: 0
   oneTime: 0

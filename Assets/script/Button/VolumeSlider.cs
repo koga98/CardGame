@@ -5,21 +5,18 @@ using UnityEngine.UI;
 
 public class VolumeSlider : MonoBehaviour
 {
-    public Slider m_Slider;
-    void Start(){
-        m_Slider.value = 0.5f;
-    }
-    public void SetBGMVolume(float volume)
+   public Slider m_Slider;
+    public void SetBGMVolume()
     {
-       AudioManager.Instance.audioSource.volume = m_Slider.value;
+      AudioManager.Instance.audioSource.volume = m_Slider.value;
     }
 
-    public void SetSEVolume(float volume)
+    public void SetSEVolume()
     {
        AudioManager.Instance.SEaudioSource.volume = m_Slider.value;
     }
 
-    public void SetVoiceVolume(float volume)
+    public void SetVoiceVolume()
     {
        AudioManager.Instance.voiceSource.volume = m_Slider.value;
     }

@@ -2,6 +2,8 @@ using UnityEngine;
 using System;
 using System.Threading.Tasks;
 using System.Collections;
+using System.IO;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +22,9 @@ public class GameManager : MonoBehaviour
     public bool finishEnemyTurn;
     public GameObject myLeader;
     public GameObject enemyLeader;
+    public Slider bgmSlider;
+    public Slider SeSlider;
+    public Slider voiceSlider;
     public static bool completeButtonChoice;
     public int p1_turnElapsed;
     public int p2_turnElapsed;
@@ -36,6 +41,7 @@ public class GameManager : MonoBehaviour
     public bool nowEnemyAttack;
     public bool isGameOver;
     public bool nowCollectionChanging;
+    string filePath;
     public enum TurnStatus
     {
         OnPlay,
@@ -53,10 +59,12 @@ public class GameManager : MonoBehaviour
         InitializeGameSettings();
         LeaderSetUp();
         DecideTurnOrder();
+        SoundSet();
     }
 
     private void InitializeGameSettings()
     {
+        filePath = Application.persistentDataPath + "SoundData.json";
         nowEnemyAttack = false;
         restrictionClick = false;
         isGameOver = false;
@@ -248,6 +256,29 @@ public class GameManager : MonoBehaviour
             p1_turn = false;
         else
             p1_turn = true;
+    }
+
+    public void SoundSet()
+    {
+        if (File.Exists(filePath))
+        {
+            StreamReader streamReader = new StreamReader(filePath);
+            string data = streamReader.ReadToEnd();
+            streamReader.Close();
+            TitleGamemanager.soundDataBase = JsonUtility.FromJson<SoundDataBase>(data);
+
+            if (TitleGamemanager.soundDataBase != null && TitleGamemanager.soundDataBase.soundSetting.Count > 0)
+            {
+                bgmSlider.value = TitleGamemanager.soundDataBase.soundSetting[0];
+                SeSlider.value = TitleGamemanager.soundDataBase.soundSetting[1];
+                voiceSlider.value = TitleGamemanager.soundDataBase.soundSetting[2];
+                AudioManager.Instance.audioSource.volume = bgmSlider.value;
+                AudioManager.Instance.SEaudioSource.volume = SeSlider.value;
+                AudioManager.Instance.voiceSource.volume = voiceSlider.value;
+            }
+            else
+                Debug.LogError("Failed to load deck data.");
+        }
     }
 
 }

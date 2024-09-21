@@ -180,13 +180,11 @@ public class EffectMethod
         if (e.ChoiceCard != null)
         {
             e.ChoiceCard.gameObject.SetActive(false);
-            await Task.Delay(1);
             await e.ChoiceCard.DestoryThis();
         }
         else
         {
             e.Card.gameObject.SetActive(false);
-            await Task.Delay(1);
             await e.Card.DestoryThis();
         }
     }
