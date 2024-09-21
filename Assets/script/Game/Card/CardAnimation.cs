@@ -49,10 +49,11 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
         if (GameManager.attackObject != null)
         {
             attackCard = GameManager.attackObject.GetComponent<Card>();
+            animator.SetBool("extendMy", false);
+            GameManager.attackObject = null;
+            attackCard.attackPre = false;
         }
-        animator.SetBool("extendMy", false);
-        GameManager.attackObject = null;
-        attackCard.attackPre = false;
+
     }
 
     public GameObject GetCardObject(GameObject clickedGameObject)
