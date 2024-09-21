@@ -23,7 +23,7 @@ public class TitleButtonMethod : MonoBehaviour
     void Start()
     {
         buttonDealCoount = 0;
-        filePath = Application.persistentDataPath + "SoundData.json";
+        filePath = Application.persistentDataPath + "/"  + "SoundData.json";
     }
     public void MakeDeckButton()
     {

@@ -116,7 +116,6 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         {
             if (GameManager.turnStatus != GameManager.TurnStatus.OnPlay || clickedObject.tag == "Enemy" || gameManager.isPlayerTurnProcessing)
             {
-                canDrag = false;
                 return;
             }
             StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
@@ -245,6 +244,10 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         else if (eventData.position.y > 180)
         {
             clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+            if(clickedObject == null){
+                CancelPlayCard();
+                return;
+            }
             card = clickedObject.GetComponent<Card>();
             StartCoroutine(PlayCard());
         }

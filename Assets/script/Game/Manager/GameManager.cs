@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
 
     private void InitializeGameSettings()
     {
-        filePath = Application.persistentDataPath + "SoundData.json";
+        filePath = Application.persistentDataPath + "/"  + "SoundData.json";
         nowEnemyAttack = false;
         restrictionClick = false;
         isGameOver = false;

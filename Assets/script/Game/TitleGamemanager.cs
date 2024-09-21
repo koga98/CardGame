@@ -22,7 +22,7 @@ public class TitleGamemanager : MonoBehaviour
     void Start()
     {
         Screen.SetResolution(1280, 720, false);
-        filePath = Application.persistentDataPath + "SoundData.json";
+        filePath = Application.persistentDataPath + "/" + "SoundData.json";
         LoadButton();
     }
 
