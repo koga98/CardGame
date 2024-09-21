@@ -25,6 +25,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     public static bool OnCoroutine = false;
     public static bool OnButtonCoroutine = false;
     public bool canDrag = false;
+    bool notStartDrag = true;
     string currentSceneName;
 
     int siblingIndex = 0;
@@ -52,6 +53,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         cancelChoice = false;
         completeChoice = false;
         OnCoroutine = false;
+        notStartDrag = true;
         currentSceneName = SceneManager.GetActiveScene().name;
         card = gameObject.GetComponent<Card>();
     }
@@ -111,6 +113,8 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
+        if (clickedObject == null)
+            return;
         // プレイシーンとターンステータスのチェック
         if (SceneManager.GetActiveScene().name == "playGame")
         {
@@ -198,11 +202,12 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         canvas = GameObject.Find("Canvas");
         defaultParent = canvas.transform;
         transform.SetParent(defaultParent, false);
+        notStartDrag = false;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag && !notStartDrag)
         {
             DragCard(eventData);
         }
@@ -228,7 +233,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag)
+        if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag && !notStartDrag)
         {
             if (currentSceneName.Equals("playGame"))
                 HandlePlayGame(eventData);
@@ -244,7 +249,8 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         else if (eventData.position.y > 180)
         {
             clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-            if(clickedObject == null){
+            if (clickedObject == null)
+            {
                 CancelPlayCard();
                 return;
             }
