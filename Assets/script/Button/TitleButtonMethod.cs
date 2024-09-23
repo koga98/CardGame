@@ -138,7 +138,7 @@ public class TitleButtonMethod : MonoBehaviour
     public void SoundSliderPanelActive()
     {
         AudioManager.Instance.ButtonSound();
-        LoadButton();
+        LoadSoundData();
         SoundSliderPanel.SetActive(true);
 
     }
@@ -172,7 +172,7 @@ public class TitleButtonMethod : MonoBehaviour
         }
     }
 
-    public void LoadButton()
+    public void LoadSoundData()
     {
         if (File.Exists(filePath))
         {

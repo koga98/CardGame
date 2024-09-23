@@ -1,14 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayGameButton : MonoBehaviour
 {
     public GameManager gameManager;
     public UIManager uIManager;
+    public Slider bgmSlider;
+    public Slider SeSlider;
+    public Slider voiceSlider;
+    string filePath;
     public void topButtonMethod()
     {
         AudioManager.Instance.ButtonSound();
@@ -17,8 +23,8 @@ public class PlayGameButton : MonoBehaviour
 
     public async void nextPlay()
     {
-        if(gameManager.isGameOver)
-        return;
+        if (gameManager.isGameOver)
+            return;
         AudioManager.Instance.TurnEndButtonSound();
         if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay)
         {
@@ -53,22 +59,29 @@ public class PlayGameButton : MonoBehaviour
         GameManager.completeButtonChoice = true;
     }
 
-    public void SettingPanelActive(){
+    public void SettingPanelActive()
+    {
         AudioManager.Instance.ButtonSound();
         uIManager.SettingPanel.SetActive(true);
     }
-    public void SettingPanelInActive(){
+    public void SettingPanelInActive()
+    {
         AudioManager.Instance.ButtonSound();
+        
         uIManager.SettingPanel.SetActive(false);
     }
 
-    public void SoundSliderPanelActive(){
+    public void SoundSliderPanelActive()
+    {
         AudioManager.Instance.ButtonSound();
+        LoadButton();
         uIManager.SoundSliderPanel.SetActive(true);
     }
 
-    public void SoundSliderPanelInActive(){
+    public void SoundSliderPanelInActive()
+    {
         AudioManager.Instance.ButtonSound();
+        Save();
         uIManager.SoundSliderPanel.SetActive(false);
     }
 
@@ -78,13 +91,15 @@ public class PlayGameButton : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void Retire(){
+    public void Retire()
+    {
         AudioManager.Instance.ButtonSound();
         uIManager.SettingPanel.SetActive(false);
         gameManager.myLeader.GetComponent<Leader>().Hp = 0;
     }
 
-    public void ReturnTitle(){
+    public void ReturnTitle()
+    {
         AudioManager.Instance.ButtonSound();
         SceneManager.LoadScene("Title");
     }
@@ -114,7 +129,8 @@ public class PlayGameButton : MonoBehaviour
         return null;
     }
 
-    public void CancelChoice(){
+    public void CancelChoice()
+    {
         GameObject manager = GameObject.Find("P1CardManager");
         CardManager cardManager = manager.GetComponent<CardManager>();
         CardDragAndDrop.OnCoroutine = false;
@@ -122,11 +138,58 @@ public class PlayGameButton : MonoBehaviour
         cardManager.choiceCard.GetComponent<CardDragAndDrop>().cancelChoice = true;
     }
 
-     public async Task WaitUntilFalse(Func<bool> condition)
+    public async Task WaitUntilFalse(Func<bool> condition)
     {
         while (condition())
         {
             await Task.Yield();
+        }
+    }
+
+    private void Save()
+    {
+        filePath = Application.persistentDataPath + "/"  + "SoundData.json";
+        TitleGamemanager.soundDataBase.soundSetting.Clear();
+        TitleGamemanager.soundDataBase.soundSetting.Add(bgmSlider.value);
+        TitleGamemanager.soundDataBase.soundSetting.Add(SeSlider.value);
+        TitleGamemanager.soundDataBase.soundSetting.Add(voiceSlider.value);
+        try
+        {
+            string json = JsonUtility.ToJson(TitleGamemanager.soundDataBase);
+            using (StreamWriter streamWriter = new StreamWriter(filePath))
+            {
+                streamWriter.Write(json);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"Failed to save data: {e.Message}");
+        }
+    }
+
+    public void LoadButton()
+    {
+        filePath = Application.persistentDataPath + "/"  + "SoundData.json";
+        if (File.Exists(filePath))
+        {
+            StreamReader streamReader = new StreamReader(filePath);
+            string data = streamReader.ReadToEnd();
+            streamReader.Close();
+            TitleGamemanager.soundDataBase = JsonUtility.FromJson<SoundDataBase>(data);
+
+            if (TitleGamemanager.soundDataBase != null && TitleGamemanager.soundDataBase.soundSetting.Count > 0)
+            {
+                bgmSlider.value = TitleGamemanager.soundDataBase.soundSetting[0];
+                SeSlider.value = TitleGamemanager.soundDataBase.soundSetting[1];
+                voiceSlider.value = TitleGamemanager.soundDataBase.soundSetting[2];
+                AudioManager.Instance.audioSource.volume = bgmSlider.value;
+                AudioManager.Instance.SEaudioSource.volume = SeSlider.value;
+                AudioManager.Instance.voiceSource.volume = voiceSlider.value;
+            }
+            else
+                Debug.LogError("Failed to load deck data.");
         }
     }
 

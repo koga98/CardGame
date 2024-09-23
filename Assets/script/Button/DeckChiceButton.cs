@@ -8,20 +8,25 @@ public class DeckChiceButton : MonoBehaviour
     public int deckNumber;
     public static int passNumber;
 
-    public void ChoiceDeckNumber(){
+    public void ChoiceDeckNumber()
+    {
         AudioManager.Instance.ButtonSound();
         passNumber = deckNumber;
         SceneManager.LoadScene("makeDeck");
     }
 
-    public void BackPrePage(){
+    public void BackPrePage()
+    {
         AudioManager.Instance.ButtonSound();
-        if(SceneManager.GetActiveScene().name == "makeDeck"){
+        if (SceneManager.GetActiveScene().name == "makeDeck")
+        {
             SceneManager.LoadScene("ChoiceDeckNumber");
-        }else if(SceneManager.GetActiveScene().name == "ChoiceDeckNumber"){
+        }
+        else if (SceneManager.GetActiveScene().name == "ChoiceDeckNumber")
+        {
             SceneManager.LoadScene("Title");
         }
-        
+
     }
 
     public void EndGame()
@@ -30,7 +35,7 @@ public class DeckChiceButton : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-    Application.Quit();
+        Application.Quit();
 #endif
 
     }

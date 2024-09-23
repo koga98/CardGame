@@ -887,6 +887,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!1 &171320808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1330,6 +1333,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 776410184}
+  SeSlider: {fileID: 1550095727}
+  voiceSlider: {fileID: 942500090}
 --- !u!1 &297920169
 GameObject:
   m_ObjectHideFlags: 0
@@ -1850,6 +1856,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 776410184}
+  SeSlider: {fileID: 1550095727}
+  voiceSlider: {fileID: 942500090}
 --- !u!1 &430464360
 GameObject:
   m_ObjectHideFlags: 0
@@ -2397,6 +2406,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   uIManager: {fileID: 0}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &524352766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4202,6 +4214,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &1173034607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4507,6 +4522,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   uIManager: {fileID: 0}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &1312226918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4760,6 +4778,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   uIManager: {fileID: 0}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &1341997627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5201,7 +5222,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1528133325
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5410,6 +5431,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!1 &1533015224
 GameObject:
   m_ObjectHideFlags: 0
@@ -6049,6 +6073,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
+  bgmSlider: {fileID: 776410184}
+  SeSlider: {fileID: 1550095727}
+  voiceSlider: {fileID: 942500090}
 --- !u!114 &1732698736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6428,6 +6455,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   uIManager: {fileID: 0}
+  bgmSlider: {fileID: 0}
+  SeSlider: {fileID: 0}
+  voiceSlider: {fileID: 0}
 --- !u!114 &1777434028
 MonoBehaviour:
   m_ObjectHideFlags: 0
