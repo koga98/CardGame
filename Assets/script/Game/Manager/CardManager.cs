@@ -11,6 +11,7 @@ public class CardManager : MonoBehaviour
 {
     public EffectManager effectManager;
     public GameManager gameManager;
+    public UIManager uIManager;
     private System.Random rng = new System.Random();
     public AllCardInf allCardInf;
     public EnemyDeckInf enemyDeck;
@@ -49,8 +50,8 @@ public class CardManager : MonoBehaviour
         CannotDrawEffectList = new List<bool>();
         AllFields = new ObservableCollection<Card>();
         AllFields.CollectionChanged += CollectionChanged;
-        if(Owner == PlayerType.Player2)
-        EnemyDeckCreate();
+        if (Owner == PlayerType.Player2)
+            EnemyDeckCreate();
         Shuffle(DeckInf);
         Shuffle(enemyDeckInf);
         FirstHandSetUp();
@@ -66,7 +67,8 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    private void EnemyDeckCreate(){
+    private void EnemyDeckCreate()
+    {
         enemyDeckInf = enemyDeck.enemyDeckInf;
     }
 
@@ -81,7 +83,7 @@ public class CardManager : MonoBehaviour
         // 各数が3回までしか追加されないようにしながら、40回追加
         while (enemyDeckInf.Count < maxCount)
         {
-            int num = rng.Next(0, x );  // 1からxまでのランダムな数
+            int num = rng.Next(0, x);  // 1からxまでのランダムな数
             if (!counts.ContainsKey(num))
             {
                 counts[num] = 0;
@@ -123,6 +125,8 @@ public class CardManager : MonoBehaviour
                 Hands.Add(card.GetComponent<Card>());
                 card.transform.localScale = Vector3.one;
             }
+            uIManager.ChangeDeckNumber(1, 40 - DeckIndex);
+            uIManager.ChangeHandNumber(1, Hands.Count);
         }
         else if (Owner == PlayerType.Player1)
         {
@@ -133,7 +137,8 @@ public class CardManager : MonoBehaviour
                 Hands.Add(card.GetComponent<Card>());
                 card.transform.localScale = Vector3.one;
             }
-
+            uIManager.ChangeDeckNumber(0, 40 - DeckIndex);
+            uIManager.ChangeHandNumber(0, Hands.Count);
         }
     }
     public void drawCard()
@@ -143,19 +148,30 @@ public class CardManager : MonoBehaviour
             AudioManager.Instance.PlayDrawSound();
             if (Owner == PlayerType.Player2)
             {
-                GameObject card = Instantiate(cardPrefab, hand, false);
-                card.GetComponent<Card>().P2SetUp(allCardInf.allList[enemyDeckInf[DeckIndex]]);
-                card.transform.localScale = Vector3.one;
-                Hands.Add(card.GetComponent<Card>());
+                if (Hands.Count < 8)
+                {
+                    GameObject card = Instantiate(cardPrefab, hand, false);
+                    card.GetComponent<Card>().P2SetUp(allCardInf.allList[enemyDeckInf[DeckIndex]]);
+                    card.transform.localScale = Vector3.one;
+                    Hands.Add(card.GetComponent<Card>());
+                    uIManager.ChangeHandNumber(1, Hands.Count);
+                }
                 DeckIndex++;
+                uIManager.ChangeDeckNumber(1, 40 - DeckIndex);
             }
             else if (Owner == PlayerType.Player1)
             {
-                GameObject card = Instantiate(cardPrefab, hand, false);
-                card.GetComponent<Card>().P1SetUp(allCardInf.allList[DeckInf[DeckIndex]]);
-                card.transform.localScale = Vector3.one;
-                Hands.Add(card.GetComponent<Card>());
+                if (Hands.Count < 8)
+                {
+                    GameObject card = Instantiate(cardPrefab, hand, false);
+                    card.GetComponent<Card>().P1SetUp(allCardInf.allList[DeckInf[DeckIndex]]);
+                    card.transform.localScale = Vector3.one;
+                    Hands.Add(card.GetComponent<Card>());
+                    uIManager.ChangeHandNumber(0, Hands.Count);
+                }
                 DeckIndex++;
+                uIManager.ChangeDeckNumber(0, 40 - DeckIndex);
+                
             }
         }
     }

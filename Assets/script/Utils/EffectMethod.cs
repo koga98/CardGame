@@ -554,13 +554,13 @@ public class EffectMethod
         cardObject.GetComponent<Card>().P1SetUp(token);
         GameObject myAttackField = GameObject.Find("myAttackField");
         GameObject myDefenceField = GameObject.Find("myDefenceField");
-        if (token.cardType == CardType.Attack)
+        if (token.cardType == CardType.Attack && cardManager.AttackFields.Count < 7 )
         {
             cardObject.transform.SetParent(myAttackField.transform, false);
             cardManager.AttackFields.Add(cardObject.GetComponent<Card>());
             cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
-        else if (token.cardType == CardType.Defence)
+        else if (token.cardType == CardType.Defence && cardManager.DefenceFields.Count < 7)
         {
             cardObject.transform.SetParent(myDefenceField.transform, false);
             cardManager.DefenceFields.Add(cardObject.GetComponent<Card>());
@@ -577,13 +577,13 @@ public class EffectMethod
         cardObject.GetComponent<Card>().blindPanel.SetActive(false);
         GameObject enemyAttackField = GameObject.Find("enemyAttackField");
         GameObject enemyDefenceField = GameObject.Find("enemyDefenceField");
-        if (token.cardType == CardType.Attack)
+        if (token.cardType == CardType.Attack && cardManager.AttackFields.Count < 7)
         {
             cardObject.transform.SetParent(enemyAttackField.transform, false);
             cardManager.AttackFields.Add(cardObject.GetComponent<Card>());
             cardManager.AllFields.Add(cardObject.GetComponent<Card>());
         }
-        else if (token.cardType == CardType.Defence)
+        else if (token.cardType == CardType.Defence && cardManager.DefenceFields.Count < 7)
         {
             cardObject.transform.SetParent(enemyDefenceField.transform, false);
             cardManager.DefenceFields.Add(cardObject.GetComponent<Card>());

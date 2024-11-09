@@ -16,7 +16,7 @@ public class ManaManager : MonoBehaviour
     private int p2MaxMana;
     public Text P1_manaText;
     public Text P2_manaText;
-
+    private UtilMethod utilMethod = new UtilMethod();
 
     public int P1_mana
     {
@@ -170,7 +170,7 @@ public class ManaManager : MonoBehaviour
             var card = player1CardManager.Hands[i];
             GameObject cardObject = card.gameObject;
             CardDragAndDrop dragCard = cardObject.GetComponent<CardDragAndDrop>();
-            dragCard.canDrag = IsPlayableCard(card);
+            dragCard.canDrag = utilMethod.JudgeActiveCard(card,P1_mana,player1CardManager);
             yield return StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
             // カードのActivePanelの状態をcanDragプロパティに基づいて設定
             card.ActivePanel.SetActive(dragCard.canDrag);
@@ -181,6 +181,16 @@ public class ManaManager : MonoBehaviour
     {
         bool isPlayable;
         if (card.cost > P1_mana)
+        {
+            isPlayable = false;
+        }
+        else
+        {
+            isPlayable = true;
+        }
+
+        if (player1CardManager.AttackFields.Count >= 7 && card.inf.cardType == CardType.Attack 
+        || player1CardManager.DefenceFields.Count >= 7 && card.inf.cardType == CardType.Defence)
         {
             isPlayable = false;
         }

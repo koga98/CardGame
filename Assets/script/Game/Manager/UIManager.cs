@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
     public Text messageTexts;
     public List<Text> cardDetailText;
     public Text gameSetText;
+    public List<Text> deckNumber;
+    public List<Text> handNumber;
     public Text phazeOperateButtonText;
     public GameObject phazeOperateButton;
     // Start is called before the first frame update
@@ -67,5 +69,15 @@ public class UIManager : MonoBehaviour
     public void ChangePhazeOperateButtonText(string text)
     {
         phazeOperateButtonText.text = text;
+    }
+
+    public void ChangeDeckNumber(int playerNumber,int restDeck){
+        string Deck = "    ×    " + restDeck;
+        deckNumber[playerNumber].text = Deck;
+    }
+
+    public void  ChangeHandNumber(int playerNumber,int nowHand){
+        string Hand = "    ×    " + nowHand;
+        handNumber[playerNumber].text = Hand;
     }
 }

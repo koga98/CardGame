@@ -6,6 +6,7 @@ using GameNamespace;
 
 public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
 {
+    private UtilMethod utilMethod = new UtilMethod();
     public Transform defaultParent;
     public GameObject canvas;
     EffectManager effectManager;
@@ -74,7 +75,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         if (OnCoroutine)
         {
             clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-            if (clickedObject.tag == "Enemy")
+            if (clickedObject.tag == "Enemy" && !clickedObject.GetComponent<Card>().blindPanel.activeSelf)
             {
                 Card clickedObjectCard = clickedObject.GetComponent<Card>();
                 player1CardManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
@@ -123,8 +124,13 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 return;
             }
             StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
-            if (clickedObject == null || !CanDragCard(clickedObject, eventData))
+            if (clickedObject == null){
                 return;
+            }
+            if(!CanDragCard(clickedObject, eventData)){
+                ShowCannotDragMessage(clickedObject);
+                return;
+            }
         }
         StartDrag();
     }
@@ -142,37 +148,17 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     }
     private bool CanDragCard(GameObject cardObject, PointerEventData eventData)
     {
-        var cardComponent = cardObject.GetComponent<Card>();
-
-        if (!canDrag)
-        {
-            ShowCannotDragMessage(cardObject);
+        if(!canDrag){
             return false;
         }
 
-        // マナコストチェック
-        if (manaManager.P1_mana < cardComponent.cost)
-        {
-            ShowCannotDragMessage(cardObject);
-            return false;
-        }
-
-        // 防御カードプレイ制限チェック
-        if (player1CardManager.CannotPlayDefenceCard.Count != 0 && cardComponent.inf.cardType == CardType.Defence)
-        {
-            ShowCannotDragMessage(cardObject);
-            return false;
-        }
-
+        canDrag = utilMethod.JudgeActiveCard(cardObject.GetComponent<Card>(),manaManager.P1_mana,player1CardManager);
         // カードの位置チェック
         if (card.transform.position.y > 180)
         {
-            ShowCannotDragMessage(cardObject);
-            return false;
+            canDrag = false;
         }
-
-        canDrag = true;
-        return true;
+        return canDrag;
     }
 
     private void ShowCannotDragMessage(GameObject clickedObject)
@@ -235,6 +221,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag && !notStartDrag)
         {
+
             if (currentSceneName.Equals("playGame"))
                 HandlePlayGame(eventData);
         }
@@ -276,14 +263,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         AudioManager.Instance.PlayPlayCardSound();
         if (card.inf.effectInfs == null || card.inf.effectInfs.Count == 0)
         {
-            manaManager.P1ManaDecrease(card.cost);
-            ChangePlayCardTransform();
-            AddCardOnFields();
-            player1CardManager.Hands.Remove(card);
-            card.ActivePanel.SetActive(false);
-            canDrag = false;
-            //ここでアクティブパネルの操作をする
-            StartCoroutine(manaManager.OnP1ManaChanged());
+            ApplyAfterDragedChange();
             gameManager.isDealing = false;
             yield break;
         }
@@ -293,17 +273,25 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 yield return StartCoroutine(ExecuteChoiceCardEffect(card));
             if (!cancelChoice)
             {
-                manaManager.P1ManaDecrease(card.cost);
-                ChangePlayCardTransform();
-                AddCardOnFields();
-                player1CardManager.Hands.Remove(card);
-                card.ActivePanel.SetActive(false);
-                canDrag = false;
-                //ここでアクティブパネルの操作をする
-                StartCoroutine(manaManager.OnP1ManaChanged());
+                ApplyAfterDragedChange();
             }
         }
 
+    }
+
+    private void ApplyAfterDragedChange()
+    {
+        
+        manaManager.P1ManaDecrease(card.cost);
+        ChangePlayCardTransform();
+        AddCardOnFields();
+        player1CardManager.Hands.Remove(card);
+        card.ActivePanel.SetActive(false);
+        canDrag = false;
+        uIManager.ChangeDeckNumber(0, 40 - player1CardManager.DeckIndex);
+        uIManager.ChangeHandNumber(0, player1CardManager.Hands.Count);
+        //ここでアクティブパネルの操作をする
+        StartCoroutine(manaManager.OnP1ManaChanged());
     }
 
     private IEnumerator ExecuteChoiceCardEffect(Card card)

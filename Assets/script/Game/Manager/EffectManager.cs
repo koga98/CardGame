@@ -55,22 +55,22 @@ public class EffectManager : MonoBehaviour
 
     private async Task ProtectShieldDecreaseEffect(List<Card> effectList)
     {
-        if(effectList != null && effectList.Count != 0)
-        for (int i = effectList.Count - 1; i >= 0; i--)
-        {
-            var card = effectList[i];
-            for (int j = card.inf.effectInfs.Count - 1; j >= 0; j--)
+        if (effectList != null && effectList.Count != 0)
+            for (int i = effectList.Count - 1; i >= 0; i--)
             {
-                var effectInf = card.inf.effectInfs[j];
-
-                for (int k = effectInf.triggers.Count - 1; k >= 0; k--)
+                var card = effectList[i];
+                for (int j = card.inf.effectInfs.Count - 1; j >= 0; j--)
                 {
-                    var cardTrigger = effectInf.triggers[k];
-                    if (cardTrigger == EffectInf.CardTrigger.ProtectShieldDecrease)
-                        await ApplyEffect(effectInf, card);
+                    var effectInf = card.inf.effectInfs[j];
+
+                    for (int k = effectInf.triggers.Count - 1; k >= 0; k--)
+                    {
+                        var cardTrigger = effectInf.triggers[k];
+                        if (cardTrigger == EffectInf.CardTrigger.ProtectShieldDecrease)
+                            await ApplyEffect(effectInf, card);
+                    }
                 }
             }
-        }
     }
 
     public async Task BeforeCardDrag(Card card)
@@ -151,19 +151,18 @@ public class EffectManager : MonoBehaviour
 
     public async Task EffectWhenCollectionChanged(List<Card> CardsWithEffectOnField, NotifyCollectionChangedEventArgs e)
     {
-        if(CardsWithEffectOnField == null ) return;
+        if (CardsWithEffectOnField == null) return;
         if (CardsWithEffectOnField.Count == 0) return;
 
         Card card = (Card)e.NewItems[0];
         var applyEffectArgs = GetAllFields(card);
 
-        foreach (var effectCard in CardsWithEffectOnField)
+        for (int i = CardsWithEffectOnField.Count - 1; i >= 0; i--)
         {
+            var effectCard = CardsWithEffectOnField[i];
             foreach (var effect in effectCard.inf.effectInfs)
-            {
                 if (effect.triggers.Contains(EffectInf.CardTrigger.OnFieldOnAfterPlay) && effect is ICardEffect cardEffect)
-                await cardEffect.Apply(applyEffectArgs);
-            }
+                    await cardEffect.Apply(applyEffectArgs);
         }
     }
 
@@ -199,19 +198,19 @@ public class EffectManager : MonoBehaviour
 
     public async Task TriggerEffectsAsync(List<Card> cards, EffectInf.CardTrigger trigger)
     {
-        if(cards != null)
-        for (int i = 0; i < cards.Count; i++)
-        {
-            var card = cards[i];
-            for (int j = 0; j < card.inf.effectInfs.Count; j++)
+        if (cards != null)
+            for (int i = 0; i < cards.Count; i++)
             {
-                var effect = card.inf.effectInfs[j];
-                if (effect.triggers.Contains(trigger) && effect is ICardEffect cardEffect)
+                var card = cards[i];
+                for (int j = 0; j < card.inf.effectInfs.Count; j++)
                 {
-                    await cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields, player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
+                    var effect = card.inf.effectInfs[j];
+                    if (effect.triggers.Contains(trigger) && effect is ICardEffect cardEffect)
+                    {
+                        await cardEffect.Apply(new ApplyEffectEventArgs(card, player2CardManager.AllFields, player2CardManager.AttackFields, player2CardManager.DefenceFields, player1CardManager.AllFields, player1CardManager.AttackFields, player1CardManager.DefenceFields));
+                    }
                 }
             }
-        }
     }
 
     private async Task ApplyEffect(EffectInf effect, Card card, Card clickedObjectCard = null)
@@ -225,17 +224,17 @@ public class EffectManager : MonoBehaviour
 
     private async Task ExecuteEffects(Card card, params EffectInf.CardTrigger[] triggers)
     {
-        if(card != null)
-        foreach (var effectInf in card.inf.effectInfs)
-        {
-            foreach (var trigger in triggers)
+        if (card != null)
+            foreach (var effectInf in card.inf.effectInfs)
             {
-                if (effectInf.triggers.Contains(trigger) && effectInf is ICardEffect cardEffect)
+                foreach (var trigger in triggers)
                 {
-                    await cardEffect.Apply(GetAllFields(card));
+                    if (effectInf.triggers.Contains(trigger) && effectInf is ICardEffect cardEffect)
+                    {
+                        await cardEffect.Apply(GetAllFields(card));
+                    }
                 }
             }
-        }
     }
 
     private ApplyEffectEventArgs GetAllFields(Card card, Card clickedObjectCard = null)

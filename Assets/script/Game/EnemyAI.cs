@@ -10,8 +10,10 @@ using System;
 
 public class EnemyAI : MonoBehaviour
 {
+    private UtilMethod utilMethod = new UtilMethod();
     public CardManager player1CardManager;
     public CardManager player2CardManager;
+    public UIManager uIManager;
     public EffectManager effectManager;
     public GameObject enemyAttackField;
     public GameObject enemyDefenceField;
@@ -39,21 +41,9 @@ public class EnemyAI : MonoBehaviour
             Card playCard = null;
             foreach (Card hand in player2CardManager.Hands)
             {
-                if (playCard == null)
+                if (playCard == null || playCard.cost < hand.cost)
                 {
-                    if (manaManager.P2_mana >= hand.cost)
-                    {
-                        await effectManager.BeforeCardDrag(hand);
-                        playCard = PlayCardSelecte(hand);
-                    }
-                }
-                else
-                {
-                    if (manaManager.P2_mana >= hand.cost && playCard.cost < hand.cost)
-                    {
-                        await effectManager.BeforeCardDrag(hand);
-                        playCard = SetBetterCard(playCard, hand);
-                    }
+                    playCard = await PlayCardSelecte(hand, manaManager);
                 }
             }
             if (playCard != null)
@@ -67,38 +57,14 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private Card PlayCardSelecte(Card hand)
+    private async Task<Card> PlayCardSelecte(Card hand, ManaManager manaManager)
     {
-        bool ClearCardEffectConditon = hand.gameObject.GetComponent<CardDragAndDrop>().canDrag;
-        bool NoRestrictPlayDefenceCard = player2CardManager.CannotPlayDefenceCard.Count == 0;
-        bool IsNotDefenceCard = player2CardManager.CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence;
-        bool canPlayDefenceCard;
-        if (NoRestrictPlayDefenceCard || IsNotDefenceCard)
-            canPlayDefenceCard = true;
-        else
-            canPlayDefenceCard = false;
-
-        if (canPlayDefenceCard && ClearCardEffectConditon)
+        hand.gameObject.GetComponent<CardDragAndDrop>().canDrag = utilMethod.JudgeActiveCard(hand, manaManager.P2_mana, player2CardManager);
+        await effectManager.BeforeCardDrag(hand);
+        if (hand.gameObject.GetComponent<CardDragAndDrop>().canDrag)
             return hand;
         else
             return null;
-    }
-
-    private Card SetBetterCard(Card playCard, Card hand)
-    {
-        bool ClearCardEffectConditon = hand.gameObject.GetComponent<CardDragAndDrop>().canDrag;
-        bool NoRestrictPlayDefenceCard = player2CardManager.CannotPlayDefenceCard.Count == 0;
-        bool IsNotDefenceCard = player2CardManager.CannotPlayDefenceCard.Count != 0 && hand.inf.cardType != CardType.Defence;
-        bool canPlayDefenceCard;
-        if (NoRestrictPlayDefenceCard || IsNotDefenceCard)
-            canPlayDefenceCard = true;
-        else
-            canPlayDefenceCard = false;
-
-        if (canPlayDefenceCard && ClearCardEffectConditon)
-            return hand;
-        else
-            return playCard;
     }
 
     private async Task PlaySelectedCard(Card playCard, ManaManager manaManager)
@@ -106,6 +72,8 @@ public class EnemyAI : MonoBehaviour
         await WaitUntilFalse(() => gameManager.nowCollectionChanging);
         playCard.blindPanel.SetActive(false);
         player2CardManager.Hands.Remove(playCard);
+        uIManager.ChangeDeckNumber(1, 40 - player2CardManager.DeckIndex);
+        uIManager.ChangeHandNumber(1, player2CardManager.Hands.Count);
         if (playCard.inf.cardType == CardType.Attack)
         {
             await PlayAttackCard(playCard);
@@ -120,6 +88,7 @@ public class EnemyAI : MonoBehaviour
         }
         manaManager.P2_mana -= playCard.cost;
         AudioManager.Instance.PlayPlayCardSound();
+
         if (manaManager.P2_mana == 0)
         {
             continueMethod = false;
