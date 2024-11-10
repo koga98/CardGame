@@ -14,6 +14,7 @@ public class DekeMakeUIManager : MonoBehaviour
     public GameObject BattleConfirmPanel;
     public GameObject ConfirmContinuePanel;
     public GameObject detailPanel;
+    public GameObject HowToDoItPanel;
     public List<Text> cardDetailText;
     // Start is called before the first frame update
     void Start()
@@ -82,6 +83,14 @@ public class DekeMakeUIManager : MonoBehaviour
     {
         SavePanel.SetActive(true);
         ConfirmContinuePanel.SetActive(false);
+    }
+
+    public void OpenHowToDoItPanel(){
+        HowToDoItPanel.SetActive(true);
+    }
+
+    public void CloseHowToDoItPanel(){
+        HowToDoItPanel.SetActive(false);
     }
 
 }

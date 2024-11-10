@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AttackManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class AttackManager : MonoBehaviour
     public GameManager gameManager;
     public EffectManager effectManager;
     public EffectAnimationManager effectAnimationManager;
+    
     public static GameObject attackObject;
     public static GameObject defenceObject;
     UtilMethod utilMethod = new UtilMethod();
@@ -29,6 +31,8 @@ public class AttackManager : MonoBehaviour
     {
         // 非同期メソッドを実行し、その完了を待つyield return AttackedLeaderAsync().AsCoroutine();
         yield return AttackLeader().AsCoroutine();
+        if(SceneManager.GetActiveScene().name == "tutorial")
+        gameManager.tutorialManager.attackComplete = true;
     }
 
     public IEnumerator AttackCardCoroutine()

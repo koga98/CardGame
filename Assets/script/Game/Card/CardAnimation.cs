@@ -17,7 +17,7 @@ public class CardAnimation : MonoBehaviour, IPointerDownHandler
         GameObject clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
         attackCard = clickedObject.GetComponent<Card>();
         dragAndDrop = clickedObject.GetComponent<CardDragAndDrop>();
-        if (SceneManager.GetActiveScene().name == "playGame")
+        if (SceneManager.GetActiveScene().name == "playGame" || SceneManager.GetActiveScene().name == "tutorial")
         {
             bool isOnField = clickedObject.transform.parent == dragAndDrop.myAttackField.transform || clickedObject.transform.parent == dragAndDrop.myDefenceField.transform;
             if (isOnField && GameManager.turnStatus == GameManager.TurnStatus.OnAttack)

@@ -479,6 +479,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 93230880}
   m_CullTransparentMesh: 1
+--- !u!1 &105091422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 105091424}
+  - component: {fileID: 105091423}
+  m_Layer: 0
+  m_Name: TurnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &105091423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105091422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb543a778bff828478e74639a1b85d8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 1835211702}
+  uIManager: {fileID: 1835211705}
+  tutorialManager: {fileID: 517896987}
+--- !u!4 &105091424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 105091422}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.53180707, y: -0.16294564, z: 432.7173}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &108006161
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,7 +1008,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -737, y: 438}
+  m_AnchoredPosition: {x: 742, y: -436}
   m_SizeDelta: {x: -1763.1901, y: -903.22}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176932799
@@ -2352,6 +2399,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510971864}
   m_CullTransparentMesh: 1
+--- !u!1 &517896986
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 517896988}
+  - component: {fileID: 517896987}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &517896987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517896986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 505f8185d7f9bc843b80a0b6ffc46042, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uIManager: {fileID: 1835211705}
+  gameManager: {fileID: 1835211702}
+  buttonComplete: 0
+  attackComplete: 0
+  targetCard: {fileID: 0}
+  p1CardManager: {fileID: 1354726386}
+  manaManager: {fileID: 1835211706}
+--- !u!4 &517896988
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517896986}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.53180707, y: -0.16294564, z: 432.7173}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &524352763
 GameObject:
   m_ObjectHideFlags: 0
@@ -4846,6 +4944,7 @@ MonoBehaviour:
   CannotAttackMyDefenceCard: []
   CannotDrawEffectList: 
   Owner: 1
+  TutorialDeckInf: {fileID: 0}
 --- !u!4 &1223515576
 Transform:
   m_ObjectHideFlags: 0
@@ -5469,6 +5568,7 @@ MonoBehaviour:
   CannotAttackMyDefenceCard: []
   CannotDrawEffectList: 
   Owner: 0
+  TutorialDeckInf: {fileID: 0}
 --- !u!4 &1354726387
 Transform:
   m_ObjectHideFlags: 0
@@ -5970,7 +6070,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 810, y: -323}
+  m_AnchoredPosition: {x: 810, y: -231}
   m_SizeDelta: {x: 197.35, y: 194.34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1529897118
@@ -7344,10 +7444,12 @@ MonoBehaviour:
   player2CardManager: {fileID: 1223515575}
   manaManager: {fileID: 1835211706}
   effectManager: {fileID: 1835211707}
+  tutorialManager: {fileID: 517896987}
   uIManager: {fileID: 1835211705}
   leaderPrefab: {fileID: 1564859748892802202, guid: 182c43d47a9d86749995b604bf8d3bdb, type: 3}
   enemyLeaderPrefab: {fileID: 7447574546681705576, guid: fddfaad7e2d0f29438402cae422a836e, type: 3}
   allCardInf: {fileID: 11400000, guid: 684e677b2cda3184dad05485ca192dd8, type: 2}
+  turnManager: {fileID: 105091423}
   myLeaderInf: {fileID: 11400000, guid: 52d16d9f8a6c75c44b46d7fea381457f, type: 2}
   enemyLeaderInf: {fileID: 11400000, guid: 8774f2bdbc91a1944af1fbd4692f6c97, type: 2}
   canvas: {fileID: 527492933}
@@ -7361,13 +7463,13 @@ MonoBehaviour:
   p1_turnElapsed: 0
   p2_turnElapsed: 0
   oneTime: 0
-  p1_turn: 0
   isPlayerTurnProcessing: 0
   isDealing: 0
   nowDestory: 0
   restrictionClick: 0
   nowEnemyAttack: 0
   isGameOver: 0
+  isTutorial: 0
   nowCollectionChanging: 0
 --- !u!114 &1835211703
 MonoBehaviour:
@@ -7425,6 +7527,8 @@ MonoBehaviour:
   SettingPanel: {fileID: 1528133324}
   SoundSliderPanel: {fileID: 1312331120}
   temporarySpelPanel: {fileID: 176932797}
+  tutorialPanel: {fileID: 0}
+  tutorialText: {fileID: 0}
   messageTexts: {fileID: 661937873}
   cardDetailText:
   - {fileID: 2058453093}
@@ -7459,6 +7563,7 @@ MonoBehaviour:
   effectManager: {fileID: 1835211707}
   P1_manaText: {fileID: 1573396496}
   P2_manaText: {fileID: 430464362}
+  tutorialManager: {fileID: 517896987}
 --- !u!114 &1835211707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8466,3 +8571,5 @@ SceneRoots:
   - {fileID: 566178624}
   - {fileID: 1354726387}
   - {fileID: 1223515576}
+  - {fileID: 105091424}
+  - {fileID: 517896988}

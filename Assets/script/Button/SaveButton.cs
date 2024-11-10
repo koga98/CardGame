@@ -101,7 +101,20 @@ public class SaveButton : MonoBehaviour
     //×ボタン
     public void closePanelButton()
     {
+        AudioManager.Instance.ButtonSound();
         dekeMakeUIManager.closePanel();
+    }
+
+    public void OpenHowToDoIt()
+    {
+        AudioManager.Instance.ButtonSound();
+        dekeMakeUIManager.OpenHowToDoItPanel();
+    }
+
+    public void CloseHowToDoIt()
+    {
+        AudioManager.Instance.ButtonSound();
+        dekeMakeUIManager.CloseHowToDoItPanel();
     }
 
     private void Save()

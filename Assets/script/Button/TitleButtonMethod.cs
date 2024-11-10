@@ -9,36 +9,38 @@ public class TitleButtonMethod : MonoBehaviour
 {
     public TitleGamemanager titleGamemanager;
     public GameObject buttonPrefab;
-    public GameObject nextAction;
+    public GameObject ExplainText;
     public GameObject buttonParent;
     public GameObject SoundSliderPanel;
+    public GameObject DeckChoicePanel;
     public int buttonNumber;
     int buttonDealCoount;
     string filePath;
     public Slider bgmSlider;
     public Slider SeSlider;
     public Slider voiceSlider;
-    
+
 
     void Start()
     {
         buttonDealCoount = 0;
-        filePath = Application.persistentDataPath + "/"  + "SoundData.json";
+        filePath = Application.persistentDataPath + "/" + "SoundData.json";
     }
     public void MakeDeckButton()
     {
+        if (ExplainText != null)
+        {
+            ExplainText.SetActive(true);
+        }
+
+        if (buttonParent != null)
+        {
+            DeckChoicePanel.SetActive(true);
+            buttonParent.SetActive(true);
+        }
+
         if (buttonDealCoount == 0)
         {
-            if (nextAction != null)
-            {
-                nextAction.SetActive(true);
-            }
-
-            if (buttonParent != null)
-            {
-                buttonParent.SetActive(true);
-            }
-
             for (int i = 1; i < 5; i++)
             {
                 string filePath = Application.persistentDataPath + "/" + "SaveData.json" + i.ToString();
@@ -72,8 +74,10 @@ public class TitleButtonMethod : MonoBehaviour
             }
         }
 
+
+
         // Textコンポーネントの設定（親オブジェクトかその子オブジェクトにあるかを確認）
-        Text nextActionText = nextAction.GetComponentInChildren<Text>();
+        Text nextActionText = ExplainText.GetComponentInChildren<Text>();
         buttonDealCoount++;
         if (nextActionText != null)
         {
@@ -85,7 +89,6 @@ public class TitleButtonMethod : MonoBehaviour
             else
             {
                 nextActionText.text = "デッキを選択";
-
             }
         }
         else
@@ -99,7 +102,7 @@ public class TitleButtonMethod : MonoBehaviour
         // 任意の遅延時間を設定
         yield return new WaitForSeconds(2f);
         // パネルを閉じる処理などを追加
-        nextAction.SetActive(false);
+        ExplainText.SetActive(false);
         buttonParent.SetActive(false);
     }
     public void ScenChange()
@@ -141,6 +144,11 @@ public class TitleButtonMethod : MonoBehaviour
         LoadSoundData();
         SoundSliderPanel.SetActive(true);
 
+    }
+
+    public void ToSceneTutorial()
+    {
+        SceneManager.LoadScene("tutorial");
     }
 
     public void SoundSliderPanelInActive()
@@ -199,6 +207,12 @@ public class TitleButtonMethod : MonoBehaviour
     {
         AudioManager.Instance.ButtonSound();
         SceneManager.LoadScene("ChoiceDeckNumber");
+    }
+
+    public void CloseDeckChoicePanel()
+    {
+        DeckChoicePanel.SetActive(false);
+        ExplainText.SetActive(false);
     }
 
     public void EndGame()

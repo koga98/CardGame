@@ -114,12 +114,12 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     public void OnBeginDrag(PointerEventData eventData)
     {
         clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
-        if (clickedObject == null)
+        if (clickedObject == null || GameManager.turnStatus != GameManager.TurnStatus.OnPlay)
             return;
         // プレイシーンとターンステータスのチェック
         if (SceneManager.GetActiveScene().name == "playGame")
         {
-            if (GameManager.turnStatus != GameManager.TurnStatus.OnPlay || clickedObject.tag == "Enemy" || gameManager.isPlayerTurnProcessing)
+            if (clickedObject.tag == "Enemy" || gameManager.isPlayerTurnProcessing)
             {
                 return;
             }
@@ -131,7 +131,13 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
                 ShowCannotDragMessage(clickedObject);
                 return;
             }
+        }else if(SceneManager.GetActiveScene().name == "tutorial"){
+            if(!CanDragCard(clickedObject, eventData)){
+                ShowCannotDragTutorialMessage(clickedObject);
+                return;
+            }
         }
+    
         StartDrag();
     }
 
@@ -139,7 +145,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     {
         currentSceneName = SceneManager.GetActiveScene().name;
 
-        if (currentSceneName.Equals("playGame"))
+        if (currentSceneName.Equals("playGame") || currentSceneName.Equals("tutorial"))
         {
             myHand = GameObject.Find("myHand");
             myAttackField = GameObject.Find("myAttackField");
@@ -166,6 +172,17 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         if (clickedObject.transform.parent == myHand.transform)
         {
             uIManager.ChangeMessageTexts("このカードはプレイできません");
+            uIManager.messagePanel.SetActive(true);
+            StartCoroutine(WaitForClosePanel());
+            canDrag = false;
+        }
+    }
+
+    private void ShowCannotDragTutorialMessage(GameObject clickedObject)
+    {
+        if (clickedObject.transform.parent == myHand.transform)
+        {
+            uIManager.ChangeMessageTexts("縁が緑のカードを使おう");
             uIManager.messagePanel.SetActive(true);
             StartCoroutine(WaitForClosePanel());
             canDrag = false;
@@ -222,7 +239,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         if (GameManager.turnStatus == GameManager.TurnStatus.OnPlay && canDrag && !notStartDrag)
         {
 
-            if (currentSceneName.Equals("playGame"))
+            if (currentSceneName.Equals("playGame") || currentSceneName.Equals("tutorial"))
                 HandlePlayGame(eventData);
         }
     }
@@ -281,11 +298,10 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private void ApplyAfterDragedChange()
     {
-        
         manaManager.P1ManaDecrease(card.cost);
+        player1CardManager.Hands.Remove(card);
         ChangePlayCardTransform();
         AddCardOnFields();
-        player1CardManager.Hands.Remove(card);
         card.ActivePanel.SetActive(false);
         canDrag = false;
         uIManager.ChangeDeckNumber(0, 40 - player1CardManager.DeckIndex);

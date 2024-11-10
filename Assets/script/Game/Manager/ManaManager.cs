@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GameNamespace;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ManaManager : MonoBehaviour
@@ -17,6 +18,8 @@ public class ManaManager : MonoBehaviour
     public Text P1_manaText;
     public Text P2_manaText;
     private UtilMethod utilMethod = new UtilMethod();
+    [SerializeField]
+    private TutorialManager tutorialManager;
 
     public int P1_mana
     {
@@ -160,6 +163,8 @@ public class ManaManager : MonoBehaviour
         if (player1CardManager.Hands != null)
         {
             yield return StartCoroutine(ConfirmCanPlayCard());
+            if(SceneManager.GetActiveScene().name == "tutorial")
+            tutorialManager.ArrangeCandrag();
         }
     }
 

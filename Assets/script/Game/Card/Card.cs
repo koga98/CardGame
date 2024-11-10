@@ -82,7 +82,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
 
     private void InitializeManagers(string sceneName)
     {
-        if (sceneName == "playGame")
+        if (sceneName == "playGame" || sceneName == "tutorial")
         {
             manager = GameObject.Find("GameManager");
             gameManager = manager.GetComponent<GameManager>();
@@ -147,7 +147,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         attackedList[0] = true;
         CardOwner = owner;
 
-        if (SceneManager.GetActiveScene().name == "playGame")
+        if (SceneManager.GetActiveScene().name == "playGame" || SceneManager.GetActiveScene().name == "tutorial")
         {
             if (CardOwner == PlayerID.Player1)
                 player1CardManager = cardManager;

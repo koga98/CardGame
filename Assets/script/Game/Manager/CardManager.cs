@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using GameNamespace;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CardManager : MonoBehaviour
@@ -38,6 +36,8 @@ public class CardManager : MonoBehaviour
     public List<Card> CannotAttackMyDefenceCard;
     public List<bool> CannotDrawEffectList;
     public PlayerType Owner;
+    [SerializeField]
+    private TutorialDeckInf TutorialDeckInf;
 
     void Start()
     {
@@ -50,11 +50,6 @@ public class CardManager : MonoBehaviour
         CannotDrawEffectList = new List<bool>();
         AllFields = new ObservableCollection<Card>();
         AllFields.CollectionChanged += CollectionChanged;
-        if (Owner == PlayerType.Player2)
-            EnemyDeckCreate();
-        Shuffle(DeckInf);
-        Shuffle(enemyDeckInf);
-        FirstHandSetUp();
     }
 
     private async void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -67,9 +62,24 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    private void EnemyDeckCreate()
+    public void P1DeckCreate(){
+        Shuffle(DeckInf);
+        FirstHandSetUp();
+    }
+
+    public void EnemyDeckCreate()
     {
         enemyDeckInf = enemyDeck.enemyDeckInf;
+        Shuffle(enemyDeckInf);
+        FirstHandSetUp();
+    }
+
+    public void TutorialDeckCreate(){
+        if(Owner == PlayerType.Player2)
+        enemyDeckInf = TutorialDeckInf.DeckInf;
+        else if(Owner == PlayerType.Player1)
+        DeckInf = TutorialDeckInf.DeckInf;
+        FirstHandSetUp();
     }
 
     private void EnemyDeckRandomCreate()
@@ -101,7 +111,7 @@ public class CardManager : MonoBehaviour
         }
     }
 
-    private void Shuffle<T>(List<T> list)
+    public void Shuffle<T>(List<T> list)
     {
         int n = list.Count;
         while (n > 1)
@@ -125,7 +135,7 @@ public class CardManager : MonoBehaviour
                 Hands.Add(card.GetComponent<Card>());
                 card.transform.localScale = Vector3.one;
             }
-            uIManager.ChangeDeckNumber(1, 40 - DeckIndex);
+            uIManager.ChangeDeckNumber(1, enemyDeckInf.Count - DeckIndex);
             uIManager.ChangeHandNumber(1, Hands.Count);
         }
         else if (Owner == PlayerType.Player1)
@@ -137,7 +147,7 @@ public class CardManager : MonoBehaviour
                 Hands.Add(card.GetComponent<Card>());
                 card.transform.localScale = Vector3.one;
             }
-            uIManager.ChangeDeckNumber(0, 40 - DeckIndex);
+            uIManager.ChangeDeckNumber(0, DeckInf.Count - DeckIndex);
             uIManager.ChangeHandNumber(0, Hands.Count);
         }
     }
@@ -157,7 +167,7 @@ public class CardManager : MonoBehaviour
                     uIManager.ChangeHandNumber(1, Hands.Count);
                 }
                 DeckIndex++;
-                uIManager.ChangeDeckNumber(1, 40 - DeckIndex);
+                uIManager.ChangeDeckNumber(1, enemyDeckInf.Count - DeckIndex);
             }
             else if (Owner == PlayerType.Player1)
             {
@@ -170,7 +180,7 @@ public class CardManager : MonoBehaviour
                     uIManager.ChangeHandNumber(0, Hands.Count);
                 }
                 DeckIndex++;
-                uIManager.ChangeDeckNumber(0, 40 - DeckIndex);
+                uIManager.ChangeDeckNumber(0, DeckInf.Count - DeckIndex);
                 
             }
         }

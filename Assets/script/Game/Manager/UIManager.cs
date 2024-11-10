@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     public GameObject SettingPanel;
     public GameObject SoundSliderPanel;
     public GameObject temporarySpelPanel;
+    public GameObject tutorialPanel;
+    public Text tutorialText;
     public Text messageTexts;
     public List<Text> cardDetailText;
     public Text gameSetText;
@@ -53,7 +55,7 @@ public class UIManager : MonoBehaviour
         cardDetailText[2].text = inf.attack.ToString();
         cardDetailText[3].text = inf.hp.ToString();
         cardDetailText[4].text = inf.longText;
-        cardDetailText[5].text = (inf.cardType == CardType.Defence) ? "後衛": (inf.cardType == CardType.Attack) ? "前衛":"スペル";
+        cardDetailText[5].text = (inf.cardType == CardType.Defence) ? "後衛" : (inf.cardType == CardType.Attack) ? "前衛" : "スペル";
     }
 
     public void ChangeMessageTexts(string text)
@@ -71,13 +73,30 @@ public class UIManager : MonoBehaviour
         phazeOperateButtonText.text = text;
     }
 
-    public void ChangeDeckNumber(int playerNumber,int restDeck){
+    public void ChangeDeckNumber(int playerNumber, int restDeck)
+    {
         string Deck = "    ×    " + restDeck;
         deckNumber[playerNumber].text = Deck;
     }
 
-    public void  ChangeHandNumber(int playerNumber,int nowHand){
+    public void ChangeHandNumber(int playerNumber, int nowHand)
+    {
         string Hand = "    ×    " + nowHand;
         handNumber[playerNumber].text = Hand;
+    }
+
+    public void ChangeTutorialExplainer(Vector3 position, Vector3 rotation, String text)
+    {
+        if (tutorialPanel != null)
+        {
+            tutorialPanel.SetActive(true);
+            RectTransform rectTransform = tutorialPanel.GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = position;
+            rectTransform.localEulerAngles = rotation;
+            RectTransform TextRectTransform = tutorialText.gameObject.GetComponent<RectTransform>();
+            TextRectTransform.localEulerAngles = rotation;
+            tutorialText.text = text;
+        }
+
     }
 }

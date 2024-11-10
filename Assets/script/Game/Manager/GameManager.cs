@@ -4,17 +4,22 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public CardManager player1CardManager;
+    [SerializeField]
+    private CardManager player1CardManager;
     public CardManager player2CardManager;
     public ManaManager manaManager;
     public EffectManager effectManager;
+    public TutorialManager tutorialManager;
     public UIManager uIManager;
     public GameObject leaderPrefab;
     public GameObject enemyLeaderPrefab;
     public AllCardInf allCardInf;
+    [SerializeField]
+    TurnManager turnManager;
     [SerializeField] private LeaderInf myLeaderInf;
     [SerializeField] private LeaderInf enemyLeaderInf;
     public GameObject canvas;
@@ -30,7 +35,6 @@ public class GameManager : MonoBehaviour
     public int p2_turnElapsed;
     public bool oneTime = false;
     public static TurnStatus turnStatus;
-    public bool p1_turn;
     public static GameObject attackObject;
     public static GameObject defenceObject;
     bool isEnemyTurnProcessing = false;
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
     public bool restrictionClick;
     public bool nowEnemyAttack;
     public bool isGameOver;
+    public bool isTutorial;
     public bool nowCollectionChanging;
     string filePath;
     public enum TurnStatus
@@ -58,7 +63,18 @@ public class GameManager : MonoBehaviour
     {
         InitializeGameSettings();
         LeaderSetUp();
-        DecideTurnOrder();
+        if(!isTutorial){
+            turnManager.DecideTurnOrder();
+            player2CardManager.EnemyDeckCreate();
+            player1CardManager.P1DeckCreate();
+        }
+        else if(isTutorial){
+            isGameOver = false;
+            turnManager.TutorialTurnOrder();
+            player1CardManager.TutorialDeckCreate();
+            player2CardManager.TutorialDeckCreate();
+        }
+        
         SoundSet();
     }
 
@@ -73,23 +89,7 @@ public class GameManager : MonoBehaviour
         finishEnemyTurn = true;
         completeButtonChoice = false;
         nowCollectionChanging = false;
-    }
-
-    private void DecideTurnOrder()
-    {
-        System.Random random = new System.Random();
-        bool isP1First = random.Next(2) == 0;
-        p1_turn = isP1First;
-        string turnOrder = p1_turn ? "あなたは先攻" : "あなたは後攻";
-        uIManager.messagePanel.SetActive(true);
-        uIManager.ChangeMessageTexts(turnOrder);
-        StartCoroutine(HideMessagePanelAfterDelay(2.0f));
-    }
-
-    private IEnumerator HideMessagePanelAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        uIManager.messagePanel.SetActive(false);
+        isTutorial = SceneManager.GetActiveScene().name == "tutorial" ? true: false;
     }
 
     private void LeaderSetUp()
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!isGameOver)
+        if (!isGameOver && !isTutorial)
         {
             ManageEachTurns();
             if (Input.GetMouseButtonDown(0))
@@ -118,14 +118,14 @@ public class GameManager : MonoBehaviour
 
     private void ManageEachTurns()
     {
-        if (!p1_turn && !isEnemyTurnProcessing)
+        if (!turnManager.IsPlayerTurn && !isEnemyTurnProcessing)
         {
             isEnemyTurnProcessing = true;
             finishEnemyTurn = false;
             StartEnemyTurn();
         }
 
-        if (p1_turn && !oneTime && !isPlayerTurnProcessing)
+        if (turnManager.IsPlayerTurn && !oneTime && !isPlayerTurnProcessing)
         {
             isPlayerTurnProcessing = true;
             oneTime = true;
@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
         p1_turnElapsed++;
         player1CardManager.drawCard();
         manaManager.P1TurnStart();
-        await effectManager.TurnStartEffect(p1_turn);
+        await effectManager.TurnStartEffect(turnManager.IsPlayerTurn);
     }
 
     public void AttackPhaze()
@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
                 card.gameObject.GetComponent<CardAnimation>().CancelAttackPrepareAnim();
                 card.elapsedTurns++;
             }
-        await effectManager.TurnEndEffect(p1_turn);
+        await effectManager.TurnEndEffect(turnManager.IsPlayerTurn);
         if (player1CardManager?.AllFields != null)
             foreach (var card in player1CardManager.AllFields)
             {
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
 
             }
 
-        turnChange();
+        turnManager.ToggleTurn();
         uIManager.phazeOperateButton.SetActive(false);
     }
 
@@ -214,7 +214,7 @@ public class GameManager : MonoBehaviour
         p2_turnElapsed++;
         player2CardManager.drawCard();
         manaManager.P2TurnStart();
-        await effectManager.TurnStartEffect(p1_turn);
+        await effectManager.TurnStartEffect(turnManager.IsPlayerTurn);
         turnStatus = TurnStatus.OnEnemyOnPlay;
         await enemyAI.PlayCard(manaManager);
         turnStatus = TurnStatus.OnEnemyAttack;
@@ -230,12 +230,12 @@ public class GameManager : MonoBehaviour
         foreach (var card in player2CardManager.AllFields)
             card.elapsedTurns++;
 
-        await effectManager.TurnEndEffect(p1_turn);
+        await effectManager.TurnEndEffect(turnManager.IsPlayerTurn);
         finishEnemyTurn = true;
         await WaitUntilFinishEnemyTurn(() => finishEnemyTurn);
         oneTime = false;
         isEnemyTurnProcessing = false;
-        turnChange();
+        turnManager.ToggleTurn();
     }
 
     private async Task WaitUntilFinishEnemyTurn(Func<bool> condition)
@@ -250,13 +250,7 @@ public class GameManager : MonoBehaviour
             await Task.Yield();
     }
 
-    private void turnChange()
-    {
-        if (p1_turn == true)
-            p1_turn = false;
-        else
-            p1_turn = true;
-    }
+    
 
     public void SoundSet()
     {

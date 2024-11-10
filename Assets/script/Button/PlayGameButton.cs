@@ -32,12 +32,15 @@ public class PlayGameButton : MonoBehaviour
             await WaitUntilFalse(() => gameManager.isDealing);
             gameManager.AttackPhaze();
             uIManager.phazeOperateButton.SetActive(true);
+            gameManager.tutorialManager.buttonComplete = true;
         }
         else if (GameManager.turnStatus == GameManager.TurnStatus.OnAttack)
         {
             uIManager.phazeOperateButton.SetActive(false);
+            gameManager.tutorialManager.buttonComplete = true;
             await WaitUntilFalse(() => gameManager.isDealing);
             await gameManager.TurnEndPhaze();
+            
         }
     }
 
@@ -67,7 +70,6 @@ public class PlayGameButton : MonoBehaviour
     public void SettingPanelInActive()
     {
         AudioManager.Instance.ButtonSound();
-        
         uIManager.SettingPanel.SetActive(false);
     }
 

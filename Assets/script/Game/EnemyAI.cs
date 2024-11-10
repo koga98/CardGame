@@ -43,7 +43,9 @@ public class EnemyAI : MonoBehaviour
             {
                 if (playCard == null || playCard.cost < hand.cost)
                 {
-                    playCard = await PlayCardSelecte(hand, manaManager);
+                    Card temp = await PlayCardSelecte(hand, manaManager);
+                    if(temp != null)
+                    playCard = temp;
                 }
             }
             if (playCard != null)
