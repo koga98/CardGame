@@ -250,7 +250,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                if (SceneManager.GetActiveScene().name == "playGame")
+                if (SceneManager.GetActiveScene().name == "playGame" && !blindPanel.activeSelf)
                     uIManager.DetailPanelActive(inf);
 
                 else if (SceneManager.GetActiveScene().name == "makeDeck")
