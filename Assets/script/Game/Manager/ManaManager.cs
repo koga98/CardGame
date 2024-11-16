@@ -93,14 +93,13 @@ public class ManaManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InitializeVariables();
     }
-    private void InitializeVariables()
+    private void InitializeVariables(int p1FirstMana,int p2FirstMana)
     {
-        P1_mana = 0;
-        P2_mana = 0;
-        P1MaxMana = P1_mana;
-        P2MaxMana = P2_mana;
+        P1MaxMana = p1FirstMana;
+        P2MaxMana = p2FirstMana;
+        P1_mana = P1MaxMana;
+        P2_mana = P2MaxMana;
         P1_manaText.text = manaChange();
         P2_manaText.text = P2manaChange();
     }
@@ -109,6 +108,15 @@ public class ManaManager : MonoBehaviour
     void Update()
     {
 
+    }
+
+    public void ManaArrangeOnFirstSecond(bool isP1First)
+    {
+        if (isP1First)
+        {
+            InitializeVariables(0,50);
+        }else
+            InitializeVariables(50,0);
     }
 
     public void P1TurnStart()
@@ -163,8 +171,8 @@ public class ManaManager : MonoBehaviour
         if (player1CardManager.Hands != null)
         {
             yield return StartCoroutine(ConfirmCanPlayCard());
-            if(SceneManager.GetActiveScene().name == "tutorial")
-            tutorialManager.ArrangeCandrag();
+            if (SceneManager.GetActiveScene().name == "tutorial")
+                tutorialManager.ArrangeCandrag();
         }
     }
 
@@ -175,41 +183,13 @@ public class ManaManager : MonoBehaviour
             var card = player1CardManager.Hands[i];
             GameObject cardObject = card.gameObject;
             CardDragAndDrop dragCard = cardObject.GetComponent<CardDragAndDrop>();
-            dragCard.canDrag = utilMethod.JudgeActiveCard(card,P1_mana,player1CardManager);
+            dragCard.canDrag = utilMethod.JudgeActiveCard(card, P1_mana, player1CardManager);
             yield return StartCoroutine(effectManager.BeforeCardDrag(card).AsCoroutine());
             // カードのActivePanelの状態をcanDragプロパティに基づいて設定
             card.ActivePanel.SetActive(dragCard.canDrag);
         }
     }
 
-    private bool IsPlayableCard(Card card)
-    {
-        bool isPlayable;
-        if (card.cost > P1_mana)
-        {
-            isPlayable = false;
-        }
-        else
-        {
-            isPlayable = true;
-        }
-
-        if (player1CardManager.AttackFields.Count >= 7 && card.inf.cardType == CardType.Attack 
-        || player1CardManager.DefenceFields.Count >= 7 && card.inf.cardType == CardType.Defence)
-        {
-            isPlayable = false;
-        }
-        else
-        {
-            isPlayable = true;
-        }
-        // P1CannotPlayDefenceCardが存在し、カードが防御タイプの場合、ドラッグ不可に設定
-        if (player1CardManager.CannotPlayDefenceCard.Count != 0 && card.inf.cardType == CardType.Defence)
-        {
-            isPlayable = false;
-        }
-        return isPlayable;
-    }
     public void P1MaxManaIncrease(int increaseAmount)
     {
         P1MaxMana += increaseAmount;

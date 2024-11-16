@@ -180,6 +180,12 @@ public class DeckMake : MonoBehaviour
                     objects[i].GetComponent<Card>().backColor.color = Color.black;
                 }
                 pageObject.Add(objects[i]);
+                if (i + 1 == allCardInfList.allList.Count)
+                {
+                    nextButton.SetActive(false);
+                    break;
+                }
+
             }
             else
             {

@@ -28,6 +28,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
     public bool canDrag = false;
     bool notStartDrag = true;
     string currentSceneName;
+    bool cardChoiceStop = false;
 
     int siblingIndex = 0;
 
@@ -72,14 +73,16 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
 
     private IEnumerator OnPointerClickCoroutine(PointerEventData eventData)
     {
-        if (OnCoroutine)
+        if (OnCoroutine && !cardChoiceStop)
         {
             clickedObject = GetCardObject(eventData.pointerCurrentRaycast.gameObject);
             if (clickedObject.tag == "Enemy" && !clickedObject.GetComponent<Card>().blindPanel.activeSelf)
             {
+                cardChoiceStop = true;
                 Card clickedObjectCard = clickedObject.GetComponent<Card>();
                 player1CardManager.choiceCard.GetComponent<CardDragAndDrop>().completeChoice = true;
                 yield return StartCoroutine(effectManager.PlayCardChoiceEffect(clickedObjectCard));
+                cardChoiceStop = false;
             }
             else
             {
@@ -333,6 +336,7 @@ public class CardDragAndDrop : MonoBehaviour, IDragHandler, IBeginDragHandler, I
         {
             cancelChoice = false;
             gameObject.transform.SetParent(myAttackField.transform, false);
+            OnCoroutine = false;
             uIManager.ChoicePanel.SetActive(false);
         }
         else

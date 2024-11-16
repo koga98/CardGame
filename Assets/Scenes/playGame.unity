@@ -511,6 +511,7 @@ MonoBehaviour:
   gameManager: {fileID: 1835211702}
   uIManager: {fileID: 1835211705}
   tutorialManager: {fileID: 517896987}
+  manaManager: {fileID: 1835211706}
 --- !u!4 &105091424
 Transform:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   voice: {fileID: 0}
   Id: 26
   attack: 200
-  hp: 700
+  hp: 550
   cost: 400
   cardType: 1
   cardName: "\u756A\u4EBA"

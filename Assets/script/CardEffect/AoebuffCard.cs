@@ -90,7 +90,7 @@ public class AoebuffCard : EffectInf
 
         List<Card> GetTargetNameCards(List<Card> fieldCards)
         {
-            return fieldCards.Where(card => card.inf.name == target).ToList();
+            return fieldCards.Where(card => card.inf.cardName == target).ToList();
         }
 
         List<Card> GetTargetFieldCards(ApplyEffectEventArgs e)

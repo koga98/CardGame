@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7536886c40d6f4e9a0eb068680469d, type: 3}
+  m_Name: "\u9B54\u738B\u306E\u5B50"
+  m_EditorClassIdentifier: 
+  attackClip: {fileID: 7400000, guid: e581bf56e45f10f42933ef156d8614b6, type: 2}
+  voice: {fileID: 0}
+  Id: 42
+  attack: 400
+  hp: 450
+  cost: 450
+  cardType: 1
+  cardName: "\u9B54\u738B\u306E\u5B50"
+  longText: "\u5834\u306B\u51FA\u305F\u3068\u304D\u3001\u76F8\u624B\u306E\u524D\u885B\u3059\u3079\u3066\u306B200\u30C0\u30E1\u30FC\u30B8"
+  cardSprite: {fileID: 21300000, guid: a3d61a8fa45631b409568edae8a65340, type: 3}
+  effectInfs:
+  - {fileID: 11400000, guid: 9b3f223933329a1429d62630f403336d, type: 2}

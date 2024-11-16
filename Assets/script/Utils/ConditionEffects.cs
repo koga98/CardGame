@@ -278,7 +278,7 @@ public class ConditionEffects
 
     public bool PlayIsTargetParticularCard(ApplyEffectEventArgs e, string target)
     {
-        if (e.Card.inf.name == target)
+        if (e.Card.inf.cardName == target)
         {
             return true;
         }
@@ -289,7 +289,7 @@ public class ConditionEffects
     {
         foreach (Card card in e.PCards)
         {
-            if (card.inf.name == target)
+            if (card.inf.cardName == target)
             {
                 return true;
             }
@@ -301,7 +301,7 @@ public class ConditionEffects
     {
         foreach (Card card in e.Cards)
         {
-            if (card.inf.name == target)
+            if (card.inf.cardName == target)
             {
                 return true;
             }

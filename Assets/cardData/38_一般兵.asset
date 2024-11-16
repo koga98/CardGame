@@ -10,17 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e7536886c40d6f4e9a0eb068680469d, type: 3}
-  m_Name: "\u30AC\u30FC\u30B4\u30A4\u30EB"
+  m_Name: "38_\u4E00\u822C\u5175"
   m_EditorClassIdentifier: 
-  attackClip: {fileID: 7400000, guid: a68b82faac6ecde44aaa33e454986d5a, type: 2}
-  Id: 37
-  attack: 300
-  hp: 300
-  cost: 250
+  attackClip: {fileID: 7400000, guid: 70154e5e28a151442a24aea9e07b145b, type: 2}
+  Id: 38
+  attack: 100
+  hp: 200
+  cost: 150
   cardType: 1
-  cardName: "\u30AC\u30FC\u30B4\u30A4\u30EB"
-  longText: '
-
-'
-  cardSprite: {fileID: 21300000, guid: a1f616cae7ad9e14ba2341f2d9ecda54, type: 3}
+  cardName: "\u4E00\u822C\u5175"
+  longText: 
+  cardSprite: {fileID: 21300000, guid: f7b06bc0d3dcb2d4094025eaf8886fa5, type: 3}
   effectInfs: []

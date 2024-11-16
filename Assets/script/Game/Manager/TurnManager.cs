@@ -11,6 +11,8 @@ public class TurnManager : MonoBehaviour
     private UIManager uIManager;
     [SerializeField]
     private TutorialManager tutorialManager;
+    [SerializeField]
+    private ManaManager manaManager;
     
 
     void Start()
@@ -32,6 +34,7 @@ public class TurnManager : MonoBehaviour
         System.Random random = new System.Random();
         bool isP1First = random.Next(2) == 0;
         IsPlayerTurn = isP1First;
+        manaManager.ManaArrangeOnFirstSecond(isP1First);
         string turnOrder = IsPlayerTurn ? "あなたは先攻" : "あなたは後攻";
         uIManager.messagePanel.SetActive(true);
         uIManager.ChangeMessageTexts(turnOrder);
